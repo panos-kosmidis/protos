@@ -40,7 +40,6 @@
     "liquor"            : ">= 0.0.2",
     "whiskers"          : ">= 0.1.2",
     "kernel"            : ">= 0.0.2",
-    "handlebars"        : ">= 1.0.2beta",
-    "dust"              : ">= 0.3.0"
+    "handlebars"        : ">= 1.0.2beta"
   }
 }
