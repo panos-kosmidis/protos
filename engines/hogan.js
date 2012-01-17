@@ -28,12 +28,4 @@ Hogan.prototype.render = function(data, vars) {
   return this.evaluate(func, arguments, true);
 }
 
-Hogan.prototype.returnPartials = function() {
-  var f, partials = {}, appPartials = this.app.views.partials;
-  for (f in appPartials) {
-    partials[f] = appPartials[f].tpl || appPartials[f];
-  }
-  return partials;
-}
-
 module.exports = Hogan;
