@@ -3,6 +3,9 @@
 
    The Dust engine uses `require.paths`, which has been deprecated in recent
    versions of node. The dust module should be manually created.
+   
+   When the dust module gets updated, things will be done following standard
+   procedures.
 
 */ 
 
