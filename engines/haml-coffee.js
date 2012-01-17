@@ -10,7 +10,7 @@ function HamlCoffee(app) {
   this.app = app;
   this.module = hamlCoffee;
   this.multiPart = false;
-  this.extensions = ['hamlc'];
+  this.extensions = ['hamlc', 'haml.coffee', 'hamlc.html'];
 }
 
 util.inherits(HamlCoffee, framework.lib.engine);

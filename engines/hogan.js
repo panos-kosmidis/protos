@@ -10,7 +10,7 @@ function Hogan(app) {
   this.app = app;
   this.module = hogan;
   this.multiPart = true;
-  this.extensions = ['mustache'];
+  this.extensions = ['hogan', 'hogan.html', 'hg.html'];
 }
 
 util.inherits(Hogan, framework.lib.engine);

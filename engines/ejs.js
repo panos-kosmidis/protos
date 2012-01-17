@@ -11,7 +11,7 @@ function EJS(app) {
   this.options = {open: '<%', close: '%>'}
   this.module = ejs;
   this.multiPart = true;
-  this.extensions = ['ejs'];
+  this.extensions = ['ejs', 'ejs.html'];
 }
 
 util.inherits(EJS, framework.lib.engine);

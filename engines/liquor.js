@@ -13,7 +13,7 @@ function Liquor(app) {
   }
   this.module = liquor;
   this.multiPart = true;
-  this.extensions = ['liquor'];
+  this.extensions = ['liquor', 'liquor.html', 'lq.html'];
 }
 
 util.inherits(Liquor, framework.lib.engine);

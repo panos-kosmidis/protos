@@ -16,7 +16,7 @@ function Swig(app) {
   };
   this.module = swig;
   this.multiPart = true;
-  this.extensions = ['swig'];
+  this.extensions = ['swig', 'swig.html', 'sw.html'];
 }
 
 util.inherits(Swig, framework.lib.engine);

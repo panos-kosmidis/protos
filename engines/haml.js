@@ -10,7 +10,7 @@ function Haml(app) {
   this.app = app;
   this.module = haml;
   this.multiPart = false;
-  this.extensions = ['haml'];
+  this.extensions = ['haml', 'haml.html'];
 }
 
 util.inherits(Haml, framework.lib.engine);

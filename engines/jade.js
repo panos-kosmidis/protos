@@ -14,7 +14,7 @@ function Jade(app) {
   }
   this.module = jade;
   this.multiPart = false;
-  this.extensions = ['jade']
+  this.extensions = ['jade', 'jade.html']
 }
 
 util.inherits(Jade, framework.lib.engine);

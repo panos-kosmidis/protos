@@ -10,7 +10,7 @@ function Handlebars(app) {
   this.app = app;
   this.module = handlebars;
   this.multiPart = true;
-  this.extensions = ['handlebars'];
+  this.extensions = ['handlebars', 'handlebars.html', 'hb.html'];
 }
 
 util.inherits(Handlebars, framework.lib.engine);

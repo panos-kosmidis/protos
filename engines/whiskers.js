@@ -10,7 +10,7 @@ function Whiskers(app) {
   this.app = app;
   this.module = whiskers;
   this.multiPart = true;
-  this.extensions = ['whiskers'];
+  this.extensions = ['whiskers', 'whiskers.html', 'wk.html'];
 }
 
 util.inherits(Whiskers, framework.lib.engine);

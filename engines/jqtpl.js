@@ -10,7 +10,7 @@ function JqueryTemplate(app) {
   this.app = app;
   this.module = jq;
   this.multiPart = true;
-  this.extensions = ['jqtpl'];
+  this.extensions = ['jqtpl', 'jqtpl.html', 'jq.html'];
 }
 
 util.inherits(JqueryTemplate, framework.lib.engine);

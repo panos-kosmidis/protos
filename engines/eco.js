@@ -10,7 +10,7 @@ function Eco(app) {
   this.app = app;
   this.module = eco;
   this.multiPart = true;
-  this.extensions = ['eco', 'coffee'];
+  this.extensions = ['eco', 'eco.html'];
 }
 
 util.inherits(Eco, framework.lib.engine);

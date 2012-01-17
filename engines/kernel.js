@@ -15,7 +15,7 @@ function Kernel(app) {
   this.module = kernel;
   this.async = true;
   this.multiPart = true;
-  this.extensions = ['kernel'];
+  this.extensions = ['kernel', 'kernel.html', 'k.html', 'khtml'];
 }
 
 util.inherits(Kernel, framework.lib.engine);

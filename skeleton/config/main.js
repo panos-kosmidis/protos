@@ -34,6 +34,11 @@ module.exports = {
     static: 'public',
     dynamic: 'private, must-revalidate, max-age=0',
     error: 'no-cache'
+  },
+  
+  viewExtensions: {
+    html: 'hogan',
+    mustache: 'handlebars'
   }
   
 }

@@ -11,7 +11,7 @@ function Jazz(app) {
   this.module = jazz;
   this.async = true;
   this.multiPart = true;
-  this.extensions = ['jazz'];
+  this.extensions = ['jazz', 'jazz.html'];
 }
 
 util.inherits(Jazz, framework.lib.engine);
