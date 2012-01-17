@@ -18,7 +18,7 @@ util.inherits(JqueryTemplate, framework.lib.engine);
 JqueryTemplate.prototype.render = function(data, vars, relPath) {
   var tpl, tplID, func = this.getCachedFunction(arguments);
   if (func === null) {
-    tplID = this.app.domain + relPath;
+    tplID = util.format('%s:%s', this.app.domain, relPath);
     jq.template(tplID, data);
     func = function(locals) {
       return jq.tmpl(tplID, locals);

@@ -1,0 +1,4 @@
+
+<p>Hello {name}!</p>
+
+<p>The title is {app.config.title}</p>
