@@ -1,0 +1,2 @@
+
+var CoreJS = require('../');
