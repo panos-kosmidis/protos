@@ -1,9 +1,7 @@
 
 function MainHelper(app) {
 
-  this.hello = 99;
-  
-  this.url = function(title, url) {
+  this.link = function(title, url) {
     return title.link(url);
   }
   
