@@ -6,7 +6,7 @@
  
 var path = require('path'),
     child_process = require('child_process'),
-    listenPort = require(path.resolve(__dirname, '../env/debug')).config.inspector_port,
+    listenPort = process.argv[2] || 3000,
     inspector = path.resolve(__dirname, '../node_modules/node-inspector/bin/inspector.js'),
     cmd;
 
