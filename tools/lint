@@ -26,7 +26,7 @@ var colorRegex = /(\n)?(.*?): line (\d+), (.*?), (.*?)(\n)/g
 function logger(data) {
   data = data.toString('utf-8');
   if (data.indexOf('Usage: jshint path path2 [options]') >= 0) {
-    console.log(util.format("Usage: %s [ --scan | file1 file2 ]\n", path.basename(process.argv[1])));
+    console.log(util.format("Usage: %s [ --all | file1 file2 ]\n", path.basename(process.argv[1])));
   } else {
     console.log(colorize(data));
   }
@@ -38,7 +38,7 @@ function colorize(data) {
 
 // Detect scan
 var p = path.resolve(rootPath, '../'),
-    scan = args.indexOf('--scan'),
+    scan = args.indexOf('--all'),
     scanIgnore = ['node_modules'],
     scanDirs = [];
 
