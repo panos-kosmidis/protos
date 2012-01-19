@@ -40,5 +40,5 @@ module.exports = {
     html: 'liquor',
     mustache: 'hogan'
   }
-  
+
 }
