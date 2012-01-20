@@ -3,7 +3,7 @@
 function MainController() {
   
   get('/', function(req, res) {
-    res.render('index', {data: {name: 'ernie'}});
+    res.render('index');
   });
 
 }
