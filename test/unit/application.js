@@ -2,7 +2,8 @@
 var CoreJS = require('../fixtures/get-corejs-constructor'),
     vows = require('vows'),
     assert = require('assert'),
-    framework = CoreJS.bootstrap(CoreJS.masterPath + '/skeleton', {}),
+    testSkeleton = CoreJS.masterPath + '/test/fixtures/test-skeleton',
+    framework = CoreJS.bootstrap(testSkeleton, {}),
     app = framework.defaultApp;
 
 vows.describe('lib/application.js').addBatch({
@@ -14,7 +15,7 @@ vows.describe('lib/application.js').addBatch({
     },
     
     'Properly set application path': function() {
-      assert.equal(app.path, CoreJS.masterPath + '/skeleton');
+      assert.equal(app.path, testSkeleton);
     },
     
     'Detected library overrides': function() {
