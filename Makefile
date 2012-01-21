@@ -8,5 +8,4 @@ deps:
 		@./tools/remove-sys-notice
 
 tests:
-		@./node_modules/vows/bin/vows ./test/unit/*.js
-		@echo "\n"
+		@./node_modules/vows/bin/vows --spec ./test/unit/*.js
