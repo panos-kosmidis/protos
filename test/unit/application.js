@@ -1,9 +1,4 @@
 
-var path = require('path'),
-    rootPath = path.resolve(__dirname, '../../'),
-    CoreJS = require(rootPath);
+var CoreJS = require('../fixtures/get-corejs-constructor');
     
-CoreJS.bootstrap(rootPath + '/skeleton', {
-  host: 'localhost',
-  port: '8080'
-});
+console.exit(CoreJS);
