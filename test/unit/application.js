@@ -85,7 +85,7 @@ vows.describe('lib/application.js').addBatch({
     'Passes config to registered function': function() {
       assert.equal(app.__PassedConfig.testVar, 99);
     }
-    
+
   }
   
 }).addBatch({
