@@ -6,7 +6,7 @@ var CoreJS = require('../fixtures/get-corejs-constructor'),
     framework = CoreJS.bootstrap(testSkeleton, {}),
     app = framework.defaultApp;
 
-vows.describe('lib/application.js').addBatch({
+vows.describe('lib/application.js')/*.addBatch({
   
   'Application Integrity Checks': {
     
@@ -40,6 +40,24 @@ vows.describe('lib/application.js').addBatch({
     
     'Initialized application engines': function() {
       assert.isTrue(app.engines.myengine instanceof framework.lib.engine);
+    }
+    
+  }
+  
+}).*/.addBatch({
+  
+  'Application::use': {
+    
+    'Loads application addons': function() {
+      assert.isTrue(false);
+    },
+    
+    'Loads framework addons': function() {
+       assert.isTrue(false);
+    },
+    
+    'Throws an error if addon not found': function() {
+       assert.isTrue(false);
     }
     
   }
