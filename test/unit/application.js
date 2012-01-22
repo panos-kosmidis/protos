@@ -6,7 +6,10 @@ var CoreJS = require('../fixtures/get-corejs-constructor'),
     framework = CoreJS.bootstrap(testSkeleton, {}),
     app = framework.defaultApp;
 
-vows.describe('lib/application.js')/*.addBatch({
+// Override framework's directory with test-framework/
+framework.path = CoreJS.path + '/test/fixtures/test-framework';
+
+vows.describe('lib/application.js').addBatch({
   
   'Application Integrity Checks': {
     
@@ -44,7 +47,7 @@ vows.describe('lib/application.js')/*.addBatch({
     
   }
   
-}).*/.addBatch({
+}).addBatch({
   
   'Application::use': {
     
@@ -53,18 +56,22 @@ vows.describe('lib/application.js')/*.addBatch({
       assert.isTrue(app.__LoadedApplicationAddon);
     },
 
-    'Provides correct arguments': function() {
+    'Provides correct arguments to app addons': function() {
       assert.equal(app.__ApplicationAddonConfig.testVal, 99);
     },
     
     'Loads framework addons': function() {
-      var p = framework.path;
-      framework.path = CoreJS.path + '/test/fixtures/test-framework';
-      assert.isTrue(false);
+      app.use('framework-addon', {testVal: 99});
+      assert.isTrue(app.__LoadedFrameworkAddon);
+    },
+    
+    'Provides correct arguments to framework addons': function() {
+      assert.equal(app.__FrameworkAddonConfig.testVal, 99);
     },
     
     'Throws an error if addon not found': function() {
-      assert.isTrue(false);
+      try { app.use('unknown-addon'); } 
+      catch(e) { assert.isTrue(e instanceof Error); }
     }
     
   }
