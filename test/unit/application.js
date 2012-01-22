@@ -49,7 +49,12 @@ vows.describe('lib/application.js')/*.addBatch({
   'Application::use': {
     
     'Loads application addons': function() {
-      assert.isTrue(false);
+      app.use('application-addon', {testVal: 99});
+      assert.isTrue(app.__LoadedApplicationAddon);
+    },
+
+    'Provides correct arguments': function() {
+      assert.equal(app.__ApplicationAddonConfig.testVal, 99);
     },
     
     'Loads framework addons': function() {
