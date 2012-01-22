@@ -49,6 +49,47 @@ vows.describe('lib/application.js').addBatch({
   
 }).addBatch({
   
+  'Application::registerEnable': {
+    
+    topic: function() {
+      app.registerEnable('myFeature', function(config) {
+        this.__ValidContext = true;
+        this.__PassedConfig = config;
+      });
+      return app;
+    },
+    
+    'Properly registers feature': function(topic) {
+      assert.isFunction(app.__enableFeatures.myFeature);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Application::enable': {
+    
+    topic: function() {
+      app.enable('myFeature', {testVar: 99});
+      return app;
+    },
+    
+    'Registers feature in app.supports': function() {
+      assert.isTrue(app.supports.myFeature);
+    },
+    
+    'Calls registered function correctly within app context': function() {
+      assert.isTrue(app.__ValidContext);
+    },
+    
+    'Passes config to registered function': function() {
+      assert.equal(app.__PassedConfig.testVar, 99);
+    }
+    
+  }
+  
+}).addBatch({
+  
   'Application::use': {
     
     'Loads application addons': function() {
