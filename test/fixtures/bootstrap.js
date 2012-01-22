@@ -3,6 +3,8 @@ var path = require('path'),
     rootPath = path.resolve(__dirname, '../../'),
     CoreJS = require(rootPath);
 
+CoreJS.configure('autoCurl', false); // Disable autoCurl requests
+
 var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
     framework = CoreJS.bootstrap(testSkeleton, {}),
     app = framework.defaultApp;
