@@ -1,13 +1,7 @@
 
-var CoreJS = require('../fixtures/get-corejs-constructor'),
+var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
-    assert = require('assert'),
-    testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
-    framework = CoreJS.bootstrap(testSkeleton, {}),
-    app = framework.defaultApp;
-
-// Override framework's directory with test-framework/
-framework.path = CoreJS.path + '/test/fixtures/test-framework';
+    assert = require('assert');
 
 vows.describe('lib/application.js').addBatch({
   
@@ -18,7 +12,7 @@ vows.describe('lib/application.js').addBatch({
     },
     
     'Set application path': function() {
-      assert.equal(app.path, testSkeleton);
+      assert.equal(app.path, framework.constructor.path + '/test/fixtures/test-skeleton');
     },
     
     'Detected library overrides': function() {
@@ -112,9 +106,15 @@ vows.describe('lib/application.js').addBatch({
     
     'Throws an error if addon not found': function() {
       try { app.use('unknown-addon'); } 
-      catch(e) { assert.isTrue(e instanceof Error); }
+      catch(e) { assert.isTrue(e instanceof Function); }
     }
     
+  }
+  
+}).addBatch({
+  
+  'Application::url': function() {
+    assert.isTrue(true);
   }
   
 }).export(module);
