@@ -10,11 +10,11 @@ vows.describe('lib/application.js').addBatch({
   
   'Application Integrity Checks': {
     
-    'Properly set domain': function() {
+    'Set domain': function() {
       assert.equal(app.domain, 'localhost');
     },
     
-    'Properly set application path': function() {
+    'Set application path': function() {
       assert.equal(app.path, testSkeleton);
     },
     
@@ -22,23 +22,23 @@ vows.describe('lib/application.js').addBatch({
       assert.isFunction(app.lib.controller);
     },
     
-    'Properly initialized models': function() {
+    'Initialized models': function() {
       assert.isTrue(app.models.users instanceof framework.lib.model);
     },
     
-    'Properly initialized helpers': function() {
+    'Initialized helpers': function() {
       assert.isTrue(app.helpers.main instanceof framework.lib.helper);
     },
     
-    'Properly initialized controllers': function() {
+    'Initialized controllers': function() {
       assert.isTrue(app.controllers.main instanceof framework.lib.controller);
     },
     
-    'Properly initialized framework engines': function() {
+    'Initialized framework engines': function() {
       assert.isTrue(app.engines.eco instanceof framework.lib.engine);
     },
     
-    'Properly initialized application engines': function() {
+    'Initialized application engines': function() {
       assert.isTrue(app.engines.myengine instanceof framework.lib.engine);
     }
     
