@@ -2,7 +2,7 @@
 var CoreJS = require('../fixtures/get-corejs-constructor'),
     vows = require('vows'),
     assert = require('assert'),
-    testSkeleton = CoreJS.masterPath + '/test/fixtures/test-skeleton',
+    testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
     framework = CoreJS.bootstrap(testSkeleton, {}),
     app = framework.defaultApp;
 
@@ -58,11 +58,13 @@ vows.describe('lib/application.js')/*.addBatch({
     },
     
     'Loads framework addons': function() {
-       assert.isTrue(false);
+      var p = framework.path;
+      framework.path = CoreJS.path + '/test/fixtures/test-framework';
+      assert.isTrue(false);
     },
     
     'Throws an error if addon not found': function() {
-       assert.isTrue(false);
+      assert.isTrue(false);
     }
     
   }
