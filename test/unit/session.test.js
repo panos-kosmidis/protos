@@ -41,6 +41,41 @@ vows.describe('lib/session.js').addBatch({
       assert.isTrue(props.length === 1 && props[0] == 'sessId' && md5Regex.test(hash.sessId));
     }
     
+  },
+  
+  'Session::typecast': {
+    
+    topic: function() {
+      app.session.config.typecastVars = ['vInt', 'vFloat', 'vNull', 'vBool']
+      return app.session.typecast({
+        vInt: '5',
+        noConv: '5',
+        vFloat: '2.3',
+        vNull: 'null',
+        vBool: 'true'
+      });
+    },
+    
+    'Converts integers': function(o) {
+      assert.isTrue(o.vInt === 5);
+    },
+    
+    'Converts floats': function(o) {
+      assert.isTrue(o.vFloat === 2.3);
+    },
+    
+    'Converts nulls': function(o) {
+      assert.isNull(o.vNull);
+    },
+    
+    'Converts booleans': function(o) {
+      assert.isTrue(o.vBool);
+    },
+    
+    'Skips keys not in typecastVars': function(o) {
+      assert.equal(o.noConv, '5');
+    }
+    
   }
   
 }).export(module);
