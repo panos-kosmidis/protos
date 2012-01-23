@@ -7,5 +7,8 @@ deps:
 		@npm install
 		@./tools/remove-sys-notice
 
-tests:
+test:
 		@./node_modules/vows/bin/vows --spec ./test/unit/*.js
+		
+		
+.PHONY: test
