@@ -1,7 +1,8 @@
 
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
-    assert = require('assert');
+    assert = require('assert'),
+    util = require('util');
 
 vows.describe('lib/application.js').addBatch({
   
@@ -106,15 +107,24 @@ vows.describe('lib/application.js').addBatch({
     
     'Throws an error if addon not found': function() {
       try { app.use('unknown-addon'); } 
-      catch(e) { assert.isTrue(e instanceof Function); }
+      catch(e) { assert.isTrue(e instanceof Error); }
     }
     
   }
   
 }).addBatch({
   
-  'Application::url': function() {
-    assert.isTrue(true);
+  'Application::url': {
+    
+    'Returns proper url when no args provided': function() {
+      assert.equal(app.url(), util.format('http://%s:%s/', app.domain, framework.config.server.listenPort));
+    },
+    
+    'Returns proper url when run with path argument': function() {
+      var q = '/item?id=25';
+      assert.equal(app.url(q), util.format('http://%s:%s%s', app.domain, framework.config.server.listenPort, q));
+    }
+    
   }
   
 }).export(module);
