@@ -143,10 +143,9 @@ vows.describe('lib/application.js').addBatch({
     'Handles offset argument w/slashes correctly': function() {
       var fullPath = app.path + '/views/main/main-index.html',
           expected = 'main-index.html';
-      var r1 = app.relPath(fullPath, '/views/main') == expected,
-          r2 = app.relPath(fullPath, '/views/main/') == expected,
-          r3 = app.relPath(fullPath, 'views/main/') == expected;
-      assert.isTrue(r1 && r2 && r3);
+      assert.equal(app.relPath(fullPath, '/views/main'), expected);
+      assert.equal(app.relPath(fullPath, '/views/main/'), expected);
+      assert.equal(app.relPath(fullPath, 'views/main/'), expected);
     }
     
   },

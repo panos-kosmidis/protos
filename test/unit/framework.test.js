@@ -26,9 +26,8 @@ vows.describe('lib/framework.js').addBatch({
     
     'Inherits from EventEmitter': function() {
       // Framework inherits from EventEmitter indirectly
-      var cond1 = framework.on instanceof Function,
-          cond2 = framework.emit instanceof Function;
-      assert.isTrue(cond1 && cond2);
+      assert.isFunction(framework.on);
+      assert.isFunction(framework.emit);
     },
     
     'Configures VHosts': function() {
@@ -65,9 +64,8 @@ vows.describe('lib/framework.js').addBatch({
     },
     
     'Accepts relative/absolute paths': function() {
-      var m1 = framework.require('./node_modules/multi') instanceof Function,
-          m2 = framework.require('/node_modules/multi') instanceof Function;
-      assert.isTrue(m1 && m2);
+      assert.isFunction(framework.require('./node_modules/multi'));
+      assert.isFunction(framework.require('/node_modules/multi'));
     }
     
   }

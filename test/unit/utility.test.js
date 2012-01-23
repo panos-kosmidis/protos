@@ -27,6 +27,23 @@ vows.describe('lib/utility.js').addBatch({
       assert. isTrue(f('true'));
     }
     
+  },
+  
+  'Utility::toCamelCase': {
+    
+    'Returns valid strings': function() {
+      assert.strictEqual(framework.util.toCamelCase('my_test_suite'), 'MyTestSuite');
+    }
+    
+  },
+  
+  'Utility::isTypeOf': {
+    
+    'Returns valid booleans': function() {
+      assert.isTrue(framework.util.isTypeOf(99, 'number'));
+      assert.isFalse(framework.util.isTypeOf(99, 'function'));
+    }
+    
   }
   
 }).export(module);

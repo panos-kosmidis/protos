@@ -25,10 +25,9 @@ vows.describe('lib/controller.js').addBatch({
     
     'Accepts start/end slashes in alias': function() {
       var ctor = framework.lib.controller;
-      var cond1 = app.controller.getControllerByAlias('/blog') instanceof ctor,
-          cond2 = app.controller.getControllerByAlias('blog/') instanceof ctor,
-          cond3 = app.controller.getControllerByAlias('/blog/') instanceof ctor;
-      assert.isTrue(cond1 && cond2 && cond3);
+      assert.isTrue(app.controller.getControllerByAlias('/blog') instanceof ctor);
+      assert.isTrue(app.controller.getControllerByAlias('blog/') instanceof ctor);
+      assert.isTrue(app.controller.getControllerByAlias('/blog/') instanceof ctor);
       delete app.controllers.blog;
     },
     
