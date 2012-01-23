@@ -4,8 +4,6 @@ var app = require('../fixtures/bootstrap'),
     assert = require('assert'),
     util = require('util');
     
-app.logging = false;
-
 vows.describe('lib/application.js').addBatch({
   
   'Application Integrity Checks': {
@@ -169,8 +167,11 @@ vows.describe('lib/application.js').addBatch({
   'Application::driver': {
     
     'Returns a driver object': function() {
+      var mysqlCtor = framework.drivers.mysql;
+      framework.drivers.mysql = function() { this.success = true; }
       var driver = app.driver('mysql', {});
-      assert.isTrue(driver instanceof framework.lib.driver);
+      assert.isTrue(driver.success);
+      framework.drivers.mysql = mysqlCtor;
     }
     
   }
@@ -180,8 +181,11 @@ vows.describe('lib/application.js').addBatch({
   'Application::storage': {
     
     'Returns a storage object': function() {
+      var redisCtor = framework.storages.redis;
+      framework.storages.redis = function() { this.success = true; }
       var storage = app.storage('redis', {});
-      assert.isTrue(storage instanceof framework.lib.storage);
+      assert.isTrue(storage.success);
+      framework.storages.redis = redisCtor; // restore redis object
     }
     
   }
