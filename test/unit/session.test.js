@@ -1,8 +1,7 @@
 
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
-    assert = require('assert'),
-    util = require('util');
+    assert = require('assert');
 
 // Enable session
 app.enable('session', {storage: 'redis'});
@@ -56,19 +55,19 @@ vows.describe('lib/session.js').addBatch({
       });
     },
     
-    'Converts integers': function(o) {
+    'Converts integer': function(o) {
       assert.isTrue(o.vInt === 5);
     },
     
-    'Converts floats': function(o) {
+    'Converts float': function(o) {
       assert.isTrue(o.vFloat === 2.3);
     },
     
-    'Converts nulls': function(o) {
+    'Converts null': function(o) {
       assert.isNull(o.vNull);
     },
     
-    'Converts booleans': function(o) {
+    'Converts boolean': function(o) {
       assert.isTrue(o.vBool);
     },
     
