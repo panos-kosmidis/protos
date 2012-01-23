@@ -2,45 +2,50 @@
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
-    util = require('util');
+    util = require('util'),
+    EventEmitter = require('events').EventEmitter;
     
 vows.describe('lib/application.js').addBatch({
   
   'Application Integrity Checks': {
     
-    'Set domain': function() {
+    'Sets domain': function() {
       assert.equal(app.domain, 'localhost');
     },
     
-    'Set application path': function() {
+    'Sets application path': function() {
       assert.equal(app.path, framework.constructor.path + '/test/fixtures/test-skeleton');
     },
     
-    'Detected library overrides': function() {
+    'Detects library overrides': function() {
       assert.isFunction(app.lib.controller);
     },
     
-    'Default controller is set': function() {
+    'Sets default controller': function() {
       assert.isTrue(app.controller instanceof framework.lib.controller);
     },
     
-    'Initialized models': function() {
+    'Inherits from EventEmitter': function() {
+      assert.isTrue(app instanceof EventEmitter);
+    },
+    
+    'Initializes models': function() {
       assert.isTrue(app.models.users instanceof framework.lib.model);
     },
     
-    'Initialized helpers': function() {
+    'Initializes helpers': function() {
       assert.isTrue(app.helpers.main instanceof framework.lib.helper);
     },
     
-    'Initialized controllers': function() {
+    'Initializes controllers': function() {
       assert.isTrue(app.controllers.main instanceof framework.lib.controller);
     },
     
-    'Initialized framework engines': function() {
+    'Initializes framework engines': function() {
       assert.isTrue(app.engines.eco instanceof framework.lib.engine);
     },
     
-    'Initialized application engines': function() {
+    'Initializes application engines': function() {
       assert.isTrue(app.engines.myengine instanceof framework.lib.engine);
     }
     
