@@ -8,6 +8,6 @@ deps:
 		@./tools/remove-sys-notice
 
 test:
-		@./node_modules/vows/bin/vows --spec ./test/unit/*.js
+		@./node_modules/vows/bin/vows --spec ./test/unit/framework.test.js
 
 .PHONY: test
