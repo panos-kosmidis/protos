@@ -13,6 +13,15 @@ vows.describe('lib/controller.js').addBatch({
       assert.isFunction(routeGet);
     }
     
+  },
+  
+  'Controller::getControllerByAlias': {
+    
+    'Returns the correct controler': function() {
+      
+      var controller = app.controller.getControllerByAlias('/blog');
+    }
+    
   }
     
 }).export(module);
