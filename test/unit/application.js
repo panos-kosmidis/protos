@@ -127,6 +127,31 @@ vows.describe('lib/application.js').addBatch({
     
   }
   
+}).addBatch({
+  
+  'Application::relPath': {
+    
+    'Returns a relative application path': function() {
+      var fullPath = app.path + '/views/main';
+      assert.equal(app.relPath(fullPath), 'views/main');
+    },
+    
+    'Works when passing offset argument': function() {
+      var fullPath = app.path + '/views/main/main-index.html';
+      assert.equal(app.relPath(fullPath, 'views/main'), 'main-index.html');
+    },
+    
+    'Handles offset argument w/slashes correctly': function() {
+      var fullPath = app.path + '/views/main/main-index.html',
+          expected = 'main-index.html';
+      var r1 = app.relPath(fullPath, '/views/main') == expected,
+          r2 = app.relPath(fullPath, '/views/main/') == expected,
+          r3 = app.relPath(fullPath, 'views/main/') == expected;
+      assert.isTrue(r1 && r2 && r3);
+    }
+    
+  }
+  
 }).export(module);
 
     
