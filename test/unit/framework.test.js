@@ -48,6 +48,41 @@ vows.describe('lib/framework.js').addBatch({
       assert.isFunction(framework.engines.eco);
     }
     
+  },
+  
+  'CoreJS::require': {
+    
+    'Returns the required module': function() {
+      var module = framework.require('node_modules/multi');
+      assert.isFunction(module);
+    },
+    
+    'Accepts relative/absolute paths': function() {
+      var m1 = framework.require('./node_modules/multi') instanceof Function,
+          m2 = framework.require('/node_modules/multi') instanceof Function;
+      assert.isTrue(m1 && m2);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'CoreJS::onAppEvent': {
+    
+    topic: function() {
+      // Attach event
+      framework.onAppEvent('__testing_event', function() {
+        app.__onAppEventSuccess = true;
+      });
+      // Emit event
+      app.emit('__testing_event');
+      return app.__onAppEventSuccess;
+    },
+    
+    'Properly registers events': function(topic) {
+      assert.isTrue(topic);
+    }
+    
   }
   
 }).export(module);
