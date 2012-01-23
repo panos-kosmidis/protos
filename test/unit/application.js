@@ -3,6 +3,8 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
     util = require('util');
+    
+app.logging = false;
 
 vows.describe('lib/application.js').addBatch({
   
@@ -148,6 +150,64 @@ vows.describe('lib/application.js').addBatch({
           r2 = app.relPath(fullPath, '/views/main/') == expected,
           r3 = app.relPath(fullPath, 'views/main/') == expected;
       assert.isTrue(r1 && r2 && r3);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Application::fullPath': {
+    
+    'Returns the full path of an application resource': function() {
+      assert.equal(app.fullPath('views/main'), app.path + '/views/main');
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Application::driver': {
+    
+    'Returns a driver object': function() {
+      var driver = app.driver('mysql', {});
+      assert.isTrue(driver instanceof framework.lib.driver);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Application::storage': {
+    
+    'Returns a storage object': function() {
+      var storage = app.storage('redis', {});
+      assert.isTrue(storage instanceof framework.lib.storage);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Application::getResource': {
+    
+    topic: function() {
+      app.context = {
+        alpha: {name: 'alpha'},
+        beta: {
+          gamma: {name: 'gamma'}
+        }
+      }
+      return app;
+    },
+    
+    'Gets {context}/{resource}': function() {
+      var drv = app.getResource('context/alpha');
+      assert.equal(drv.name, 'alpha');
+    },
+    
+    'Gets {context}/{group}:{resource}': function() {
+      var drv = app.getResource('context/beta:gamma');
+      assert.equal(drv.name, 'gamma');
     }
     
   }
