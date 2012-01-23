@@ -7,7 +7,7 @@ var app = require('../fixtures/bootstrap'),
     
 vows.describe('lib/application.js').addBatch({
   
-  'Application Integrity Checks': {
+  'Integrity Checks': {
     
     'Sets domain': function() {
       assert.equal(app.domain, 'localhost');

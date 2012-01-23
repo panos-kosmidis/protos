@@ -6,7 +6,7 @@ var app = require('../fixtures/bootstrap'),
 
 vows.describe('lib/controller.js').addBatch({
   
-  'Controller Integrity Checks': {
+  'Integrity Checks': {
     
     'Routing functions are set': function() {
       var routeGet = app.controller.constructor.routingFunctions.get;

@@ -8,7 +8,7 @@ var app = require('../fixtures/bootstrap'),
     
 vows.describe('lib/framework.js').addBatch({
   
-  'Framework Integrity Checks': {
+  'Integrity Checks': {
     
     'Sets Version': function() {
       var vRegex = /^\d+\.\d+\.\d+$/;
@@ -22,6 +22,13 @@ vows.describe('lib/framework.js').addBatch({
     'Sets framework path': function() {
       var path = pathModule.resolve(__dirname, '../../');
       assert.equal(framework.path, framework.constructor.path + '/test/fixtures/test-framework');
+    },
+    
+    'Inherits from EventEmitter': function() {
+      // Framework inherits from EventEmitter indirectly
+      var cond1 = framework.on instanceof Function,
+          cond2 = framework.emit instanceof Function;
+      assert.isTrue(cond1 && cond2);
     },
     
     'Configures VHosts': function() {
