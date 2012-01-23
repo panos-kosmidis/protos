@@ -212,6 +212,18 @@ vows.describe('lib/application.js').addBatch({
     
   }
   
+}).addBatch({
+  
+  'Application::createMulti': {
+    
+    'Returns a multi object': function() {
+      var ob = {method: function() {}}
+      var multi = app.createMulti(ob, {});
+      assert.equal(multi.constructor.name, 'Multi');
+    }
+    
+  }
+  
 }).export(module);
 
     
