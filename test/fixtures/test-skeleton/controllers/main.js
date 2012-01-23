@@ -2,6 +2,8 @@
 
 function MainController() {
   
+  this.authRequired = true;
+  
   get('/', function(req, res) {
     res.render('index');
   });

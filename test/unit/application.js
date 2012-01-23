@@ -20,6 +20,10 @@ vows.describe('lib/application.js').addBatch({
       assert.isFunction(app.lib.controller);
     },
     
+    'Default controller is set': function() {
+      assert.isTrue(app.controller instanceof framework.lib.controller);
+    },
+    
     'Initialized models': function() {
       assert.isTrue(app.models.users instanceof framework.lib.model);
     },
@@ -40,9 +44,7 @@ vows.describe('lib/application.js').addBatch({
       assert.isTrue(app.engines.myengine instanceof framework.lib.engine);
     }
     
-  }
-  
-}).addBatch({
+  },
   
   'Application::registerEnable': {
     
@@ -58,9 +60,7 @@ vows.describe('lib/application.js').addBatch({
       assert.isFunction(app.__enableFeatures.myFeature);
     }
     
-  }
-  
-}).addBatch({
+  },
   
   'Application::enable': {
     
@@ -81,9 +81,7 @@ vows.describe('lib/application.js').addBatch({
       assert.equal(app.__PassedConfig.testVar, 99);
     }
 
-  }
-  
-}).addBatch({
+  },
   
   'Application::use': {
     
@@ -110,9 +108,7 @@ vows.describe('lib/application.js').addBatch({
       catch(e) { assert.isTrue(e instanceof Error); }
     }
     
-  }
-  
-}).addBatch({
+  },
   
   'Application::url': {
     
@@ -125,9 +121,7 @@ vows.describe('lib/application.js').addBatch({
       assert.equal(app.url(q), util.format('http://%s:%s%s', app.domain, framework.config.server.listenPort, q));
     }
     
-  }
-  
-}).addBatch({
+  },
   
   'Application::relPath': {
     
@@ -150,9 +144,7 @@ vows.describe('lib/application.js').addBatch({
       assert.isTrue(r1 && r2 && r3);
     }
     
-  }
-  
-}).addBatch({
+  },
   
   'Application::fullPath': {
     
@@ -160,9 +152,7 @@ vows.describe('lib/application.js').addBatch({
       assert.equal(app.fullPath('views/main'), app.path + '/views/main');
     }
     
-  }
-  
-}).addBatch({
+  },
   
   'Application::driver': {
     
@@ -171,12 +161,10 @@ vows.describe('lib/application.js').addBatch({
       framework.drivers.mysql = function() { this.success = true; }
       var driver = app.driver('mysql', {});
       assert.isTrue(driver.success);
-      framework.drivers.mysql = mysqlCtor;
+      framework.drivers.mysql = mysqlCtor; // restore mysql constructor
     }
     
-  }
-  
-}).addBatch({
+  },
   
   'Application::storage': {
     
@@ -185,12 +173,10 @@ vows.describe('lib/application.js').addBatch({
       framework.storages.redis = function() { this.success = true; }
       var storage = app.storage('redis', {});
       assert.isTrue(storage.success);
-      framework.storages.redis = redisCtor; // restore redis object
+      framework.storages.redis = redisCtor; // restore redis constructor
     }
     
-  }
-  
-}).addBatch({
+  },
   
   'Application::getResource': {
     
@@ -214,9 +200,7 @@ vows.describe('lib/application.js').addBatch({
       assert.equal(drv.name, 'gamma');
     }
     
-  }
-  
-}).addBatch({
+  },
   
   'Application::createMulti': {
     
