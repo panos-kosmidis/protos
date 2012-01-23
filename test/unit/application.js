@@ -225,5 +225,3 @@ vows.describe('lib/application.js').addBatch({
   }
   
 }).export(module);
-
-    
