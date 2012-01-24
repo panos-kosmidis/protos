@@ -1,6 +1,10 @@
 {
   "testVal": "true",
   "mysql": {
+    "test"      : {
+      "m1"      : "Multilevel 1",
+      "m2"      : "Multilevel 2"
+    },
     "host"      : "localhost",
     "port"      : "3369",
     "user"      : "db_user",

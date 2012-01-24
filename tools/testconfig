@@ -11,8 +11,9 @@ function ObjectPrompt(jsonPath) {
   this.config = require(configPath);
   this.keys = Object.keys(this.config).reverse();
   
-  this.objectOnHold = null;
-  this.keysOnHold = null;
+  this.objectsOnHold = [];
+  this.keysOnHold = [];
+  this.contextKeys = [];
   this.currentContext = '';
   
   if (this.keys.length > 0) {
@@ -47,9 +48,10 @@ ObjectPrompt.prototype.nextPrompt = function() {
   else {
     val = this.config[key];
     if (typeof val == 'object') {
-      this.currentContext = key + '.';
-      this.objectOnHold = self.config;
-      this.keysOnHold = this.keys;
+      this.objectsOnHold.push(this.config);
+      this.keysOnHold.push(this.keys);
+      this.contextKeys.push(key);
+      this.currentContext = this.contextKeys.join('.') + '.';
       this.config = val;
       this.keys = Object.keys(val);
       this.emit('next_prompt');
@@ -63,16 +65,16 @@ ObjectPrompt.prototype.nextPrompt = function() {
 }
 
 ObjectPrompt.prototype.writeFile = function() {
-  if (this.objectOnHold === null) {
+  if (this.objectsOnHold.length === 0) {
     // If no contexts on hold, finalize
-    console.log('\nFinalize, at last!');
+    console.log('\nFinalize!');
+    console.log(this.config);
   } else {
     // Restore original context
-    this.config = this.objectOnHold;
-    this.objectOnHold = null;
-    this.keys = this.keysOnHold;
-    this.keysOnHold = null;
-    this.currentContext = '';
+    this.config = this.objectsOnHold.pop();
+    this.keys = this.keysOnHold.pop();
+    this.contextKeys.pop();
+    this.currentContext = this.contextKeys.join('.') + '.';
     this.emit('next_prompt');
   }
 }
