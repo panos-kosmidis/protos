@@ -11,6 +11,10 @@ function ObjectPrompt(jsonPath) {
   this.config = require(configPath);
   this.keys = Object.keys(this.config).reverse();
   
+  this.objectOnHold = null;
+  this.keysOnHold = null;
+  this.currentContext = '';
+  
   if (this.keys.length > 0) {
     console.log(colorize('\nTest Configuration Tool', '1;30'));
     console.log('\nEditing ' + colorize(jsonPath.replace(process.cwd()+'/', ''), '0;31'));
@@ -21,9 +25,7 @@ function ObjectPrompt(jsonPath) {
   }
 
   this.rl = readline.createInterface(process.stdin, process.stdout);
-  
-  this.rl.setPrompt('', 0);
-  
+
   this.rl.on('close', function() {
     process.stdin.destroy();
     console.log('');
@@ -40,22 +42,39 @@ function ObjectPrompt(jsonPath) {
 util.inherits(ObjectPrompt, EventEmitter);
 
 ObjectPrompt.prototype.nextPrompt = function() {
-  var val, key = this.keys.pop();
+  var val, self = this, key = this.keys.pop();
   if (key == null) this.emit('finalize');
   else {
     val = this.config[key];
     if (typeof val == 'object') {
-      
+      this.currentContext = key + '.';
+      this.objectOnHold = self.config;
+      this.keysOnHold = this.keys;
+      this.config = val;
+      this.keys = Object.keys(val);
+      this.emit('next_prompt');
     } else {
-      this.rl.question(util.format("%s [%s]> ", key, val), function(answer) {
-        console.log(answer);
+      this.rl.question(util.format("%s%s [%s]> ", this.currentContext, key, val), function(answer) {
+        if (answer.trim().length > 0) { self.config[key] = answer; }
+        self.emit('next_prompt');
       });
     }
   }
 }
 
 ObjectPrompt.prototype.writeFile = function() {
-  console.log('here');
+  if (this.objectOnHold === null) {
+    // If no contexts on hold, finalize
+    console.log('\nFinalize, at last!');
+  } else {
+    // Restore original context
+    this.config = this.objectOnHold;
+    this.objectOnHold = null;
+    this.keys = this.keysOnHold;
+    this.keysOnHold = null;
+    this.currentContext = '';
+    this.emit('next_prompt');
+  }
 }
 
 function colorize(str, color) {
