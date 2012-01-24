@@ -10,27 +10,56 @@ var fs = require('fs'),
 function ObjectPrompt(jsonPath) {
   this.config = require(configPath);
   this.keys = Object.keys(this.config).reverse();
+  
+  if (this.keys.length > 0) {
+    console.log(colorize('\nTest Configuration Tool', '1;30'));
+    console.log('\nEditing ' + colorize(jsonPath.replace(process.cwd()+'/', ''), '0;31'));
+  }
+  else {
+     console.log('\nNothing to be done\n');
+     return;
+  }
 
-  // this.rl = readline.createInterface(process.stdin, process.stdout);
+  this.rl = readline.createInterface(process.stdin, process.stdout);
+  
+  this.rl.setPrompt('', 0);
+  
+  this.rl.on('close', function() {
+    process.stdin.destroy();
+    console.log('');
+    process.exit();
+  });
 
   this.on('finalize', this.writeFile);
   this.on('next_prompt', this.nextPrompt);
 
   this.emit('next_prompt');
+
 }
 
 util.inherits(ObjectPrompt, EventEmitter);
 
 ObjectPrompt.prototype.nextPrompt = function() {
-  var current = this.keys.pop();
-  if (current == null) this.emit('finalize');
+  var val, key = this.keys.pop();
+  if (key == null) this.emit('finalize');
   else {
-    console.log('here');
+    val = this.config[key];
+    if (typeof val == 'object') {
+      
+    } else {
+      this.rl.question(util.format("%s [%s]> ", key, val), function(answer) {
+        console.log(answer);
+      });
+    }
   }
 }
 
 ObjectPrompt.prototype.writeFile = function() {
   console.log('here');
+}
+
+function colorize(str, color) {
+ return util.format('\u001b[%sm%s\u001b[0m', color, str); 
 }
 
 new ObjectPrompt(configPath);
