@@ -9,7 +9,7 @@ var fs = require('fs'),
 
 function ObjectPrompt(jsonPath) {
   this.config = require(configPath);
-  this.keys = Object.keys(this.config).reverse();
+  this.keys = Object.keys(this.config);
   
   this.objectsOnHold = [];
   this.keysOnHold = [];
@@ -43,7 +43,7 @@ function ObjectPrompt(jsonPath) {
 util.inherits(ObjectPrompt, EventEmitter);
 
 ObjectPrompt.prototype.nextPrompt = function() {
-  var val, self = this, key = this.keys.pop();
+  var val, self = this, key = this.keys.shift();
   if (key == null) this.emit('finalize');
   else {
     val = this.config[key];
