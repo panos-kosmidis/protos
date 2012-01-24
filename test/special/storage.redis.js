@@ -11,14 +11,14 @@ var redis, multi;
   Storage API Check Order:
   
   set
-  
+  delete
   get
   rename
+  
   setHash
   getHash
   updateHash
   deleteFromHash
-  delete
   expire
 
 */
@@ -77,17 +77,6 @@ vows.describe('lib/storages/redis.js').addBatch({
   
 }).addBatch({
   
-  /*
-    Retrieves one or more records from the storage backend
-
-    a) If a key is a string: provides [err, value]
-    b) If a key is an array: provides [err, results] 
-
-    @param {string|array} key
-    @param {function} callback
-    @public
-  */
-  
   'RedisStorage::get': {
     
     topic: function() {
@@ -96,16 +85,91 @@ vows.describe('lib/storages/redis.js').addBatch({
       multi.get('v1');
       multi.get(['v2', 'v3']);
       multi.exec(function(err, results) {
-        console.exit(results);
         promise.emit('success', results);
       });
       return promise;
     },
     
     'Retrieves a single value': function(results) {
-      
+      assert.strictEqual(results[0], 'Value 1');
     },
+    
+    'Retrieves multiple values': function(results) {
+      assert.deepEqual(results[1], {v2: 'Value 2', v3: 'Value 3'});
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'RedisStorage::delete': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      multi.set('delete_me', true);
+      multi.delete('delete_me');
+      multi.get('delete_me');
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      return promise;
+    },
+    
+    'Properly deletes keys': function(results) {
+      assert.deepEqual(results, ['OK', 'OK', null]);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'RedisStorage::rename': {
+
+    topic: function() {
+      var res, promise = new EventEmitter();
+      multi.rename('v1', 'v1_new');
+      multi.get('v1_new');
+      multi.rename('v1_new', 'v1');
+      multi.exec(function(err, results) {
+        res = err || (results[1] === 'Value 1');
+        promise.emit('success', res);
+      });
+      return promise;
+    },
+    
+    'Properly renames keys': function(topic) {
+      assert.isTrue(topic);
+    }
+
+  }
+  
+}).addBatch({
+  
+  'RedisStorage::setHash': {
+    
+    // topic: function() {
+    //   var promise = new EventEmitter();
+    //   return promise;
+    // },
+    // 
+    // 'Stores hash values': function(results) {
+    //   assert.equal
+    // }
     
   }
   
 }).export(module);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
