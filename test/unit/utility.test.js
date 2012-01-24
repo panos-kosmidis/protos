@@ -1,7 +1,9 @@
 
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
-    assert = require('assert');
+    assert = require('assert'),
+    net = require('net'),
+    EventEmitter = require('events').EventEmitter;
     
 vows.describe('lib/utility.js').addBatch({
   
@@ -86,6 +88,51 @@ vows.describe('lib/utility.js').addBatch({
     
     'Detects multiple matches w/ multiple finds': function(f) {
       assert.deepEqual(f('hello world', ['o', 'l']), {o: [4,7], l: [2,3,9]});
+    }
+    
+  },
+  
+  'Utility::extract': {
+    
+    'Returns an object with the extracted keys': function() {
+      assert.deepEqual(framework.util.extract({a:1, b:2, c:3}, ['a','b']), {a:1, b:2});
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Utility::checkPort': {
+    
+    topic: function() {
+      var promise = new EventEmitter(),
+          errors = [],
+          port = 9999,
+          server = net.createServer().listen(port); // listen on 9999;
+      // Check port when server is listening
+      framework.util.checkPort(port, function(err) {
+        errors.push(err); // err1
+        // Emitted when server closes
+        server.on('close', function(err) {
+          framework.util.checkPort(port, function(err) {
+            errors.push(err); // err2
+            promise.emit('success', errors); // Send topic
+          });
+        });
+        // Close server. Emits the 'close' event
+        server.close();
+      });
+      return promise;
+    },
+    
+    'Detects if a port is in use': function(err) {
+      err = err[0];
+      assert.isNull(err); // If err1 is null => open port
+    },
+    
+    'Detects if a port is not in use': function(err) {
+      err = err[1];
+      assert.isTrue(err instanceof Error && err.code == 'ECONNREFUSED'); // If err2 is Error => closed port
     }
     
   }
