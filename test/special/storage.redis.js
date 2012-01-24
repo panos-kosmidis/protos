@@ -11,6 +11,7 @@ var redis, multi;
   Storage API Check Order:
   
   set
+  
   get
   rename
   setHash
@@ -52,37 +53,58 @@ vows.describe('lib/storages/redis.js').addBatch({
   
 }).addBatch({
   
-  /**
-    Inserts one or more records into the storage backend
-
-    Provides: [err]
-
-    Key can be either a string or an object containing key/value pairs
-
-    @param {string|object} key
-    @param {string} value (optional)
-    @param {function} callback
-   */  
-  
   'RedisStorage::set': {
     
     topic: function() {
       var promise = new EventEmitter()
-      multi.set('v1', 'Value 1');
-      multi.set({v2: 'Value 2', v3: 'Value 3'});
+      multi.set('v1', 'Value 1'); // Single value
+      multi.set({v2: 'Value 2', v3: 'Value 3'}); // Multiple Values
       multi.exec(function(err, results) {
         promise.emit('success', results);
       });
       return promise;
     },
     
-    'Sets a single value': function(results) {
+    'Stores a single value': function(results) {
       assert.strictEqual(results[0], 'OK');
     },
     
-    'Sets multiple values': function(results) {
+    'Stores multiple values': function(results) {
       assert.strictEqual(results[1], 'OK');
     }
+    
+  }
+  
+}).addBatch({
+  
+  /*
+    Retrieves one or more records from the storage backend
+
+    a) If a key is a string: provides [err, value]
+    b) If a key is an array: provides [err, results] 
+
+    @param {string|array} key
+    @param {function} callback
+    @public
+  */
+  
+  'RedisStorage::get': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      // multi = redis.multi();
+      multi.get('v1');
+      multi.get(['v2', 'v3']);
+      multi.exec(function(err, results) {
+        console.exit(results);
+        promise.emit('success', results);
+      });
+      return promise;
+    },
+    
+    'Retrieves a single value': function(results) {
+      
+    },
     
   }
   

@@ -29,6 +29,9 @@ deps:
 testconfig:
 		@./tools/testconfig
 
+test:
+		@echo "\n\033[1;30mAvailable Test Commands\033[0m: tests  test-unit  test-spec  test-int\n"
+
 tests: test-unit test-spec test-int
 
 test-unit:
@@ -39,3 +42,5 @@ test-spec:
 		
 test-int:
 		@${vows} ${vowsOpts} ${integration}/*.js
+
+.PHONY: test
