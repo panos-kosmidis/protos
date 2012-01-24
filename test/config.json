@@ -1,4 +1,5 @@
 {
+  "testVal": "true",
   "mysql": {
     "host"      : "localhost",
     "port"      : "3369",

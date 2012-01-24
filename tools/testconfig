@@ -1,10 +1,37 @@
 #!/usr/bin/env node
 
 var fs = require('fs'),
-    path = require('path');
-    
-var configPath = path.resolve(__dirname, '../test/config.json'),
-    configJson = require(configPath);
-    
-console.log(configJson);
+    path = require('path'),
+    util = require('util'),
+    readline = require('readline'),
+    configPath = path.resolve(__dirname, '../test/config.json'),
+    EventEmitter = require('events').EventEmitter;
+
+function ObjectPrompt(jsonPath) {
+  this.config = require(configPath);
+  this.keys = Object.keys(this.config).reverse();
+
+  // this.rl = readline.createInterface(process.stdin, process.stdout);
+
+  this.on('finalize', this.writeFile);
+  this.on('next_prompt', this.nextPrompt);
+
+  this.emit('next_prompt');
+}
+
+util.inherits(ObjectPrompt, EventEmitter);
+
+ObjectPrompt.prototype.nextPrompt = function() {
+  var current = this.keys.pop();
+  if (current == null) this.emit('finalize');
+  else {
+    console.log('here');
+  }
+}
+
+ObjectPrompt.prototype.writeFile = function() {
+  console.log('here');
+}
+
+new ObjectPrompt(configPath);
 
