@@ -11,11 +11,11 @@ var redis, multi;
   Storage API Check Order:
   
   set
-  delete
   get
+  delete
   rename
-  
   setHash
+  
   getHash
   updateHash
   deleteFromHash
@@ -115,7 +115,7 @@ vows.describe('lib/storages/redis.js').addBatch({
       return promise;
     },
     
-    'Properly deletes keys': function(results) {
+    'Deletes keys': function(results) {
       assert.deepEqual(results, ['OK', 'OK', null]);
     }
     
@@ -137,7 +137,7 @@ vows.describe('lib/storages/redis.js').addBatch({
       return promise;
     },
     
-    'Properly renames keys': function(topic) {
+    'Renames keys': function(topic) {
       assert.isTrue(topic);
     }
 
@@ -147,14 +147,19 @@ vows.describe('lib/storages/redis.js').addBatch({
   
   'RedisStorage::setHash': {
     
-    // topic: function() {
-    //   var promise = new EventEmitter();
-    //   return promise;
-    // },
-    // 
-    // 'Stores hash values': function(results) {
-    //   assert.equal
-    // }
+    topic: function() {
+      var promise = new EventEmitter();
+      multi.delete('myhash');
+      multi.setHash('myhash', {a:1, b:2, c:3});
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      })
+      return promise;
+    },
+    
+    'Stores hash values': function(results) {
+      assert.equal(results[1], 'OK');
+    }
     
   }
   
