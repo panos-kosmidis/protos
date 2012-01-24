@@ -1,9 +1,16 @@
 
+# Reusable commands & options
+
 vows = ./node_modules/vows/bin/vows
 vowsOpts = --spec
+
+# Test directories
+
 unit = ./test/unit
 special = ./test/special
 integration = ./test/integration
+
+# Make commands
 
 default:
 		@echo
@@ -20,7 +27,7 @@ deps:
 		@./tools/remove-sys-notice
 
 testconfig:
-		@echo "\nTest Configuration tool\n"
+		@./tools/testconfig
 
 tests: test-unit test-spec test-int
 
