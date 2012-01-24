@@ -3,8 +3,8 @@
     "host"      : "localhost",
     "port"      : "3369",
     "user"      : "db_user",
-    "password"  : "db_password",
-    "database"  : "test_db",
+    "password"  : "db_pass",
+    "database"  : "test_db"
   },
   
   "redis": {

@@ -1,3 +1,10 @@
 #!/usr/bin/env node
 
-console.log('Test Configuration Tool');
+var fs = require('fs'),
+    path = require('path');
+    
+var configPath = path.resolve(__dirname, '../test/config.json'),
+    configJson = require(configPath);
+    
+console.log(configJson);
+
