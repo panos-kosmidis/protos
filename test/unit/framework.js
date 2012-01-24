@@ -39,7 +39,7 @@ vows.describe('lib/framework.js').addBatch({
     },
     
     'Registers apps by domain': function() {
-      assert.isTrue(framework.apps.localhost instanceof framework.lib.application);
+      assert.instanceOf(framework.apps.localhost, framework.lib.application);
     },
     
     'Detects drivers': function() {

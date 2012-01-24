@@ -15,7 +15,7 @@ vows.describe('lib/session.js').addBatch({
     },
     
     'Available via app.session': function() {
-      assert.isTrue(app.session instanceof framework.lib.session);
+      assert.instanceOf(app.session, framework.lib.session);
     },
     
   },

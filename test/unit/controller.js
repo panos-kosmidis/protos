@@ -20,14 +20,14 @@ vows.describe('lib/controller.js').addBatch({
     'Returns the correct controler': function() {
       app.controllers.blog = new framework.lib.controller;
       var controller = app.controller.getControllerByAlias('blog');
-      assert.isTrue(controller instanceof framework.lib.controller);
+      assert.instanceOf(controller, framework.lib.controller);
     },
     
     'Accepts start/end slashes in alias': function() {
       var ctor = framework.lib.controller;
-      assert.isTrue(app.controller.getControllerByAlias('/blog') instanceof ctor);
-      assert.isTrue(app.controller.getControllerByAlias('blog/') instanceof ctor);
-      assert.isTrue(app.controller.getControllerByAlias('/blog/') instanceof ctor);
+      assert.instanceOf(app.controller.getControllerByAlias('/blog'), ctor);
+      assert.instanceOf(app.controller.getControllerByAlias('blog/'), ctor);
+      assert.instanceOf(app.controller.getControllerByAlias('/blog/'), ctor);
       delete app.controllers.blog;
     },
     
@@ -51,7 +51,7 @@ vows.describe('lib/controller.js').addBatch({
     
     'Returns the helper associated with controller': function() {
       var helper = app.controller.getHelper();
-      assert.isTrue(helper instanceof framework.lib.helper);
+      assert.instanceOf(helper, framework.lib.helper);
     }
     
   }

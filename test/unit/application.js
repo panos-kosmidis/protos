@@ -22,31 +22,31 @@ vows.describe('lib/application.js').addBatch({
     },
     
     'Sets default controller': function() {
-      assert.isTrue(app.controller instanceof framework.lib.controller);
+      assert.instanceOf(app.controller, framework.lib.controller);
     },
     
     'Inherits from EventEmitter': function() {
-      assert.isTrue(app instanceof EventEmitter);
+      assert.instanceOf(app, EventEmitter);
     },
     
     'Initializes models': function() {
-      assert.isTrue(app.models.users instanceof framework.lib.model);
+      assert.instanceOf(app.models.users, framework.lib.model);
     },
     
     'Initializes helpers': function() {
-      assert.isTrue(app.helpers.main instanceof framework.lib.helper);
+      assert.instanceOf(app.helpers.main, framework.lib.helper);
     },
     
     'Initializes controllers': function() {
-      assert.isTrue(app.controllers.main instanceof framework.lib.controller);
+      assert.instanceOf(app.controllers.main, framework.lib.controller);
     },
     
     'Initializes framework engines': function() {
-      assert.isTrue(app.engines.eco instanceof framework.lib.engine);
+      assert.instanceOf(app.engines.eco, framework.lib.engine);
     },
     
     'Initializes application engines': function() {
-      assert.isTrue(app.engines.myengine instanceof framework.lib.engine);
+      assert.instanceOf(app.engines.myengine, framework.lib.engine);
     }
     
   },
@@ -110,7 +110,7 @@ vows.describe('lib/application.js').addBatch({
     
     'Throws an error if addon not found': function() {
       try { app.use('unknown-addon'); } 
-      catch(e) { assert.isTrue(e instanceof Error); }
+      catch(e) { assert.instanceOf(e, Error); }
     }
     
   },
