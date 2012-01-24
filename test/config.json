@@ -1,15 +1,13 @@
 {
-  "testVal": "true",
   "mysql": {
-    "host"      : "localhost",
-    "port"      : "3369",
-    "user"      : "db_user",
-    "password"  : "db_pass",
-    "database"  : "test_db"
+    "host": "localhost",
+    "port": "3369",
+    "user": "db_user",
+    "password": "db_pass",
+    "database": "test_db"
   },
-  
   "redis": {
-    "host"      : "localhost",
-    "port"      : "6379"
+    "host": "localhost",
+    "port": "6379"
   }
 }

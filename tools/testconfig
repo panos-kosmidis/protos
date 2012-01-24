@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+/*
+  Configures the Tests Suites
+ */
+
 var fs = require('fs'),
     path = require('path'),
     util = require('util'),
@@ -8,6 +12,7 @@ var fs = require('fs'),
     EventEmitter = require('events').EventEmitter;
 
 function ObjectPrompt(jsonPath) {
+  this.jsonPath = jsonPath;
   this.config = require(configPath);
   this.keys = Object.keys(this.config);
   
@@ -65,10 +70,15 @@ ObjectPrompt.prototype.nextPrompt = function() {
 }
 
 ObjectPrompt.prototype.writeFile = function() {
+  var self = this;
   if (this.objectsOnHold.length === 0) {
     // If no contexts on hold, finalize
-    console.log('\nFinalize!');
-    console.log(this.config);
+    var json = JSON.stringify(this.config, null, 2);
+    fs.writeFile(this.jsonPath, json, function(err) {
+      var msg = (err) ? '\n✗ Unable to save config' : '\n✔ Successfully saved';
+      console.log(colorize(msg, '1;30'))
+      self.rl.close();
+    });
   } else {
     // Restore original context
     this.config = this.objectsOnHold.pop();
@@ -84,4 +94,3 @@ function colorize(str, color) {
 }
 
 new ObjectPrompt(configPath);
-
