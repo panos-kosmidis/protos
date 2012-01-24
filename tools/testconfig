@@ -24,8 +24,7 @@ function ObjectPrompt(jsonPath) {
   if (this.keys.length > 0) {
     console.log(colorize('\nTest Configuration Tool', '1;30'));
     console.log('\nEditing ' + colorize(jsonPath.replace(process.cwd()+'/', ''), '0;31'));
-  }
-  else {
+  } else {
      console.log('\nNothing to be done\n');
      return;
   }
