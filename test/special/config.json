@@ -1,0 +1,14 @@
+{
+  "mysql": {
+    "host"      : "localhost",
+    "port"      : "3369",
+    "user"      : "db_user",
+    "password"  : "db_password",
+    "database"  : "test_db",
+  },
+  
+  "redis": {
+    "host"      : "localhost",
+    "port"      : "6379"
+  }
+}
