@@ -15,7 +15,7 @@ var table = app.config.database.mysql.table;
 
 // Test table
 var createTable = util.format('\
-CREATE TEMPORARY TABLE %s (\n\
+CREATE TABLE IF NOT EXISTS %s (\n\
   id INTEGER AUTO_INCREMENT NOT NULL,\n\
   user VARCHAR(255),\n\
   pass VARCHAR(255),\n\
@@ -109,6 +109,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     topic: function() {
       var mclient = app.createMulti(client),
           promise = new EventEmitter();
+      mclient.query('DROP TABLE IF EXISTS ' + table);
       mclient.query(createTable);
       mclient.exec(function(err, results) {
         promise.emit('success', err);
@@ -118,6 +119,33 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
     'Created temporary table': function(err) {
       assert.isNull(err);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::exec': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      multi.__exec({sql: util.format('SELECT COUNT(id) AS count FROM %s', table)});
+      multi.__exec({
+        sql: util.format('INSERT INTO %s VALUES (?,?,?)', table),
+        params: [null, 'username', 'password']
+      });
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      return promise;
+    },
+    
+    'Performs simple queries': function(results) {
+      assert.deepEqual(results[0], [{count: 0}]);
+    },
+    
+    'Performs queries with parameters': function(results) {
+      assert.strictEqual(results[1].affectedRows, 1);
     }
     
   }
