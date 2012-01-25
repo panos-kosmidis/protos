@@ -31,7 +31,7 @@ Driver API:
   * 'insertInto',
 
 2) Retrieval Operations
-  'query',
+  * 'query',
   'queryWhere',
   'queryAll',
   'queryById',
@@ -208,6 +208,61 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       assert.strictEqual(q2[0].id, 2);
       assert.strictEqual(q3[0].id, 2);
       assert.strictEqual(q3[1].id, 1);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::queryWhere': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // Query with cond + params + table
+      multi.queryWhere({
+        condition: 'id=?',
+        params: [1],
+        table: table
+      });
+      
+      // Query with cond + table
+      multi.queryWhere({
+        condition: 'id=1',
+        table: table
+      });
+      
+      // Query with cond + table + columns
+      multi.queryWhere({
+        condition: 'id=1',
+        table: table,
+        columns: 'user'
+      });
+      
+      // Query with cond + table + columns + appendSql
+      multi.queryWhere({
+        condition: 'id in (1,2)',
+        table: table,
+        columns: 'user',
+        appendSql: 'ORDER BY id ASC'
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Returns valid results': function(results) {
+      var q1 = results[0][0],
+          q2 = results[1][0],
+          q3 = results[2][0],
+          q4 = results[3][0];
+      assert.strictEqual(q1[0].id, 1);
+      assert.strictEqual(q2[0].id, 1);
+      assert.strictEqual(q3[0].user, 'username');
+      assert.deepEqual(q4, [{user: 'username'}, {user: 'user1'}]);
     }
     
   }
