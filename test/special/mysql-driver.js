@@ -8,7 +8,9 @@ var app = require('../fixtures/bootstrap'),
 var mysql, multi;
 
 /*
-Methods:
+Driver API:
+===========
+
 [ 'query',
   'exec',
   'queryWhere',
@@ -23,14 +25,51 @@ Methods:
   'idExists',
   'recordExists']
   
+1) Storage Operations
+  'exec',
+  'insertInto',
+
+2) Retrieval Operations
+  'query',
+  'queryWhere',
+  'queryAll',
+  'queryById',
+  'countRows',
+  'idExists',
+  'recordExists'
+
+3) Delete Operations
+  'deleteById',
+  'deleteWhere',
+
+4) Rename Operations
+  N/A
+
+5) Update Operations
+  'updateById',
+  'updateWhere',
+
+
 Model API:
+==========
+
 [ 'insert', 'get', 'getAll', 'save', 'delete' ]
 
 1) Storage Operations
+  'insert'
+  
 2) Retrieval Operations
+  'get',
+  'getAll'
+  
 3) Delete Operations
+  'delete'
+  
 4) Rename Operations
+  N/A
+  
 5) Update Operations
+  'save'
 
 */
 
