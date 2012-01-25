@@ -7,6 +7,33 @@ var app = require('../fixtures/bootstrap'),
     
 var mysql, multi;
 
+/*
+Methods:
+[ 'query',
+  'exec',
+  'queryWhere',
+  'queryAll',
+  'queryById',
+  'insertInto',
+  'deleteById',
+  'deleteWhere',
+  'updateById',
+  'updateWhere',
+  'countRows',
+  'idExists',
+  'recordExists']
+  
+Model API:
+[ 'insert', 'get', 'getAll', 'save', 'delete' ]
+
+1) Storage Operations
+2) Retrieval Operations
+3) Delete Operations
+4) Rename Operations
+5) Update Operations
+
+*/
+
 vows.describe('lib/drivers/mysql.js').addBatch({
   
   'Integrity Checks': {
