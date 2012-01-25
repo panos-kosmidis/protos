@@ -7,21 +7,21 @@ The Test Suites are divided into three categories:
 - **special**: Unit tests for Database Drivers & Storages.
 - **integration**: Integration tests for Applications.
 
-The _Special Tests_ require initial database configurations in to run. You need to run the _Test Configuration_
-tool to provide the configuration for the Database backends supported by the Framework Drivers & Storages.
+The _Core Functionality_ unit tests don't require any configuration to run. You can run these with:
+
+    make test-unit
+
+The _Special_ and _Integration_ tests require initial database configurations to run. The _Test Configuration
+Tool_ helps you configure your testing environment.
 
 To run the Test Configuration tool:
 
     make testconfig
 
-To run unit tests:
-
-    make test-unit
-    
 To run special tests:
 
     make test-spec
-    
+
 To run integration tests:
 
     make test-int
