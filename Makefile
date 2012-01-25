@@ -6,9 +6,9 @@ vowsOpts = --spec
 
 # Test directories
 
-unit = ./test/unit
-special = ./test/special
-integration = ./test/integration
+unit = ./test/unit/*.js
+special = ./test/special/*.js
+integration = ./test/integration/*.js
 
 # Make commands
 
@@ -32,15 +32,16 @@ testconfig:
 test:
 		@echo "\n\033[1;30mAvailable Test Commands\033[0m: tests  test-unit  test-spec  test-int\n"
 
-tests: test-unit test-spec test-int
+tests:
+		@${vows} ${vowsOpts} ${unit} ${special} # ${integration}
 
 test-unit:
-		@${vows} ${vowsOpts} ${unit}/*.js
+		@${vows} ${vowsOpts} ${unit}
 		
 test-spec:
-		@${vows} ${vowsOpts} ${special}/*.js
+		@${vows} ${vowsOpts} ${special}
 		
 test-int:
-		@${vows} ${vowsOpts} ${integration}/*.js
+		@${vows} ${vowsOpts} ${integration}
 
 .PHONY: test
