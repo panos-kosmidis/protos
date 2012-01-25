@@ -15,8 +15,8 @@ var redis, multi;
   delete
   rename
   setHash
-  
   getHash
+  
   updateHash
   deleteFromHash
   expire
@@ -159,6 +159,44 @@ vows.describe('lib/storages/redis.js').addBatch({
     
     'Stores hash values': function(results) {
       assert.equal(results[1], 'OK');
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'RedisStorage::getHash': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      redis.getHash('myhash', function(err, hash) {
+        promise.emit('success', hash);
+      });
+      return promise;
+    },
+    
+    'Retrieves hash values': function(hash) {
+      assert.deepEqual(hash, {a:1, b:2, c:3});
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'RedisStorage::updateHash': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      multi.updateHash('myhash', {a: 97, b:98, c:99});
+      multi.getHash('myhash');
+      multi.exec(function(err, results) {
+        promise.emit('success', results[1]);
+      });
+      return promise;
+    },
+    
+    "Properly updates hashes": function(hash) {
+      assert.deepEqual(hash, {a: 97, b: 98, c: 99});
     }
     
   }
