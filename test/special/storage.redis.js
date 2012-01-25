@@ -44,7 +44,7 @@ vows.describe('lib/storages/redis.js').addBatch({
       multi.set('v1', 'Value 1'); // Single value
       multi.set({v2: 'Value 2', v3: 'Value 3'}); // Multiple Values
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       return promise;
     },
@@ -69,7 +69,7 @@ vows.describe('lib/storages/redis.js').addBatch({
       multi.get('v1');
       multi.get(['v2', 'v3']);
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       return promise;
     },
@@ -91,16 +91,24 @@ vows.describe('lib/storages/redis.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       multi.set('delete_me', true);
+      multi.set({d1: 1, d2: 2, d3: 3});
       multi.delete('delete_me');
-      multi.get('delete_me');
+      multi.delete(['d1', 'd2', 'd3']);
+      multi.get(['delete_me', 'd1', 'd2', 'd3']);
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results.pop()); // Last result (get)
       });
       return promise;
     },
     
-    'Deletes keys': function(results) {
-      assert.deepEqual(results, ['OK', 'OK', null]);
+    'Deletes a single key': function(results) {
+      var keyExists = Object.hasOwnProperty.call(results, 'delete_me');
+      assert.isTrue(keyExists && results.delete_me === null);
+      delete results.delete_me;
+    },
+    
+    'Deletes multiple keys': function(results) {
+      assert.deepEqual(results, {d1: null, d2: null, d3: null});
     }
     
   }
@@ -136,7 +144,7 @@ vows.describe('lib/storages/redis.js').addBatch({
       multi.delete('myhash');
       multi.setHash('myhash', {a:1, b:2, c:3});
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       })
       return promise;
     },
@@ -154,7 +162,7 @@ vows.describe('lib/storages/redis.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       redis.getHash('myhash', function(err, hash) {
-        promise.emit('success', hash);
+        promise.emit('success', err || hash);
       });
       return promise;
     },
@@ -174,7 +182,7 @@ vows.describe('lib/storages/redis.js').addBatch({
       multi.updateHash('myhash', {a: 97, b:98, c:99});
       multi.getHash('myhash');
       multi.exec(function(err, results) {
-        promise.emit('success', results[1]);
+        promise.emit('success', err || results[1]);
       });
       return promise;
     },
@@ -194,7 +202,7 @@ vows.describe('lib/storages/redis.js').addBatch({
       multi.deleteFromHash('myhash', 'c');
       multi.getHash('myhash');
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       return promise;
     },
@@ -215,7 +223,7 @@ vows.describe('lib/storages/redis.js').addBatch({
         if (err) promise.emit('success', err);
         else {
           redis.client.ttl('v1', function(err, result) {
-            promise.emit('success', result);
+            promise.emit('success', err || result);
           });
         }
       });
