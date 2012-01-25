@@ -7,21 +7,6 @@ var app = require('../fixtures/bootstrap'),
     
 var redis, multi;
 
-/*
-  Storage API Check Order:
-  
-  set
-  get
-  delete
-  rename
-  setHash
-  getHash
-  updateHash
-  deleteFromHash
-  expire
-
-*/
-
 vows.describe('lib/storages/redis.js').addBatch({
   
   'Integrity Checks': {
@@ -220,18 +205,27 @@ vows.describe('lib/storages/redis.js').addBatch({
     
   }
   
+}).addBatch({
+  
+  'RedisStorage::expire': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      redis.expire('v1', 60, function(err) {
+        if (err) promise.emit('success', err);
+        else {
+          redis.client.ttl('v1', function(err, result) {
+            promise.emit('success', result);
+          });
+        }
+      });
+      return promise;
+    },
+    
+    'Deletes keys on expiration time': function(topic) {
+      assert.isTrue(topic !== -1);
+    }
+    
+  }
+  
 }).export(module);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
