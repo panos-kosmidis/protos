@@ -12,9 +12,9 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      app.on('init', function() {
-        mysql = app.getResource('drivers/mysql');
-        multi = mysql.multi({parallel: false, interrupt: false});
+      app.getResource('drivers/mysql', function(driver) {
+        mysql = driver;
+        multi = mysql.multi();
         promise.emit('success');
       });
       return promise;

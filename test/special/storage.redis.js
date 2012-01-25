@@ -13,9 +13,9 @@ vows.describe('lib/storages/redis.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      app.on('init', function() {
-        redis = app.getResource('storages/redis');
-        multi = redis.multi({parallel: false, interrupt: false});
+      app.getResource('storages/redis', function(resource) {
+        redis = resource;
+        multi = redis.multi();
         promise.emit('success');
       });
       return promise;
