@@ -7,7 +7,7 @@ The Test Suites are divided into three categories:
 - **special**: Unit tests for Database Drivers & Storages.
 - **integration**: Integration tests for Applications.
 
-The _Special Tests_ require initial database configurations in to run. You need to run the Test Configuration
+The _Special Tests_ require initial database configurations in to run. You need to run the _Test Configuration_
 tool to provide the configuration for the Database backends supported by the Framework Drivers & Storages.
 
 To run the Test Configuration tool:
