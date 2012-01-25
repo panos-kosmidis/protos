@@ -32,7 +32,7 @@ Driver API:
 
 2) Retrieval Operations
   * 'query',
-  'queryWhere',
+  * 'queryWhere',
   'queryAll',
   'queryById',
   'countRows',
@@ -129,11 +129,16 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
+      
+      // sql
       multi.__exec({sql: util.format('SELECT COUNT(id) AS count FROM %s', table)});
+      
+      // sql + params
       multi.__exec({
         sql: util.format('INSERT INTO %s VALUES (?,?,?)', table),
         params: [null, 'username', 'password']
       });
+      
       multi.exec(function(err, results) {
         promise.emit('success', results);
       });
@@ -180,14 +185,14 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      // Query with sql
+      // sql
       multi.query({sql: util.format('SELECT * FROM %s', table)});
-      // Query with sql + params
+      // sql + params
       multi.query({
         sql: util.format('SELECT * FROM %s WHERE id=?', table),
         params: [2]
       });
-      // Query with sql + params + appendSql
+      // sql + params + appendSql
       multi.query({
         sql: util.format('SELECT id,user FROM %s WHERE id=? OR id=1', table),
         params: [2],
@@ -219,27 +224,27 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      // Query with cond + params + table
+      // cond + params + table
       multi.queryWhere({
         condition: 'id=?',
         params: [1],
         table: table
       });
       
-      // Query with cond + table
+      // cond + table
       multi.queryWhere({
         condition: 'id=1',
         table: table
       });
       
-      // Query with cond + table + columns
+      // cond + table + columns
       multi.queryWhere({
         condition: 'id=1',
         table: table,
         columns: 'user'
       });
       
-      // Query with cond + table + columns + appendSql
+      // cond + table + columns + appendSql
       multi.queryWhere({
         condition: 'id in (1,2)',
         table: table,
@@ -263,6 +268,52 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       assert.strictEqual(q2[0].id, 1);
       assert.strictEqual(q3[0].user, 'username');
       assert.deepEqual(q4, [{user: 'username'}, {user: 'user1'}]);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::queryAll': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // table
+      multi.queryAll({
+        table: table
+      });
+      
+      // columns + table
+      multi.queryAll({
+        columns: 'user',
+        table: table
+      });
+      
+      // columns + table + appendSql
+      multi.queryAll({
+        columns: 'user, pass',
+        table: table,
+        appendSql: 'ORDER BY id DESC'
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Returns valid results': function(results) {
+      var q1 = results[0][0],
+          q2 = results[1][0],
+          q3 = results[2][0];
+      assert.strictEqual(q1[0].id, 1);
+      assert.strictEqual(q1[1].id, 2);
+      assert.strictEqual(q2[0].user, 'username');
+      assert.strictEqual(q2[1].user, 'user1');
+      assert.strictEqual(q3[0].user, 'user1');
+      assert.strictEqual(q3[1].user, 'username');
     }
     
   }
