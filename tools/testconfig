@@ -8,7 +8,7 @@ var fs = require('fs'),
     path = require('path'),
     util = require('util'),
     readline = require('readline'),
-    configPath = path.resolve(__dirname, '../test/config.json'),
+    configPath = path.resolve(__dirname, '../test/fixtures/dbconfig.json'),
     EventEmitter = require('events').EventEmitter;
 
 function ObjectPrompt(jsonPath) {

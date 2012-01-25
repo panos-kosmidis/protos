@@ -2,7 +2,7 @@
 var env, path = require('path'),
     rootPath = path.resolve(__dirname, '../../'),
     CoreJS = require(rootPath),
-    testConfig = require(rootPath + '/test/config.json');
+    testConfig = require(rootPath + '/test/fixtures/dbconfig.json');
 
 if (module.parent.id == '.') {
   // Running test directly
