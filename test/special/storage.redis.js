@@ -16,7 +16,6 @@ var redis, multi;
   rename
   setHash
   getHash
-  
   updateHash
   deleteFromHash
   expire
@@ -195,8 +194,28 @@ vows.describe('lib/storages/redis.js').addBatch({
       return promise;
     },
     
-    "Properly updates hashes": function(hash) {
+    "Updates values in hash": function(hash) {
       assert.deepEqual(hash, {a: 97, b: 98, c: 99});
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'RedisStorage::deleteFromHash': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      multi.deleteFromHash('myhash', 'c');
+      multi.getHash('myhash');
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      return promise;
+    },
+    
+    'Deletes values from hash': function(results) {
+      assert.deepEqual(results[1], {a: 97, b: 98});
     }
     
   }
