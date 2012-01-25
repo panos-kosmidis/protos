@@ -27,8 +27,8 @@ Driver API:
 ===========
 
 1) Storage Operations
-  'exec',
-  'insertInto',
+  * 'exec',
+  * 'insertInto',
 
 2) Retrieval Operations
   'query',
@@ -150,4 +150,83 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
   }
   
+}).addBatch({
+  
+  'MySQL::insertInto': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      mysql.insertInto({
+        table: table,
+        values: {
+          user: 'user1',
+          pass: 'pass1'
+        }
+      }, function(err, results) {
+        promise.emit('success', results);
+      });
+      return promise;
+    },
+    
+    'Inserts records into the database': function(results) {
+      assert.strictEqual(results.insertId, 2);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::query': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      // Query with sql
+      multi.query({sql: util.format('SELECT * FROM %s', table)});
+      // Query with sql + params
+      multi.query({
+        sql: util.format('SELECT * FROM %s WHERE id=?', table),
+        params: [2]
+      });
+      // Query with sql + params + appendSql
+      multi.query({
+        sql: util.format('SELECT id,user FROM %s WHERE id=? OR id=1', table),
+        params: [2],
+        appendSql: 'ORDER BY id DESC'
+      });
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      return promise;
+    },
+    
+    'Returns valid results': function(results) {
+      var q1 = results[0][0],
+          q2 = results[1][0],
+          q3 = results[2][0];
+      assert.strictEqual(q1[0].id, 1);
+      assert.strictEqual(q1[1].id, 2);
+      assert.strictEqual(q2[0].id, 2);
+      assert.strictEqual(q3[0].id, 2);
+      assert.strictEqual(q3[1].id, 1);
+    }
+    
+  }
+  
 }).export(module);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
