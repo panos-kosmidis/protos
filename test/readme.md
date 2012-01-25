@@ -1,14 +1,14 @@
 
 # Test Suites
 
-The tests are organized in the following fashion:
+The tests are divided into three categories:
 
 - **unit**: Framework & Application unit tests.
 - **special**: Unit tests for Drivers & Storages.
 - **integration**: Integration tests for applications.
 
 The _Special Tests_ require initial database configurations in order to run, since client
-connections are required to perform the tests.
+connections are needed to perform the tests.
 
 To run the Test Configuration tool:
 
@@ -38,5 +38,5 @@ You can also run tests manually using vows:
 
     vows --spec test/unit/application.js
 
-Each test is independent from each other. You can run them in groups, following any order
+Tests are independent from each other. You can run them in groups, following any order
 or individually to focus on specific areas.
