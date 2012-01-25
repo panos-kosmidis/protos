@@ -32,11 +32,7 @@ To run all tests:
     
 To run a single test suite:
 
-    vows --spec 
-    
-You can also run tests manually using vows:
-
     vows --spec test/unit/application.js
-
+    
 Tests are independent from each other. You can run them in groups, following any order
 or individually to focus on specific areas.
