@@ -1,30 +1,31 @@
 
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
+    util = require('util'),
     assert = require('assert'),
-    Client = require('mysql').Client,
+    createClient = require('mysql').createClient;
     EventEmitter = require('events').EventEmitter;
-    
+
 var mysql, multi;
+
+var config = app.config.database.mysql,
+    client = createClient(config);
+
+var table = app.config.database.mysql.table;
+
+// Test table
+var createTable = util.format('\
+CREATE TEMPORARY TABLE %s (\n\
+  id INTEGER AUTO_INCREMENT NOT NULL,\n\
+  user VARCHAR(255),\n\
+  pass VARCHAR(255),\n\
+  PRIMARY KEY (id)\n\
+)', table);
 
 /*
 Driver API:
 ===========
 
-[ 'query',
-  'exec',
-  'queryWhere',
-  'queryAll',
-  'queryById',
-  'insertInto',
-  'deleteById',
-  'deleteWhere',
-  'updateById',
-  'updateWhere',
-  'countRows',
-  'idExists',
-  'recordExists']
-  
 1) Storage Operations
   'exec',
   'insertInto',
@@ -40,14 +41,14 @@ Driver API:
 
 3) Delete Operations
   'deleteById',
-  'deleteWhere',
+  'deleteWhere'
 
 4) Rename Operations
   N/A
 
 5) Update Operations
   'updateById',
-  'updateWhere',
+  'updateWhere'
 
 
 Model API:
@@ -96,9 +97,29 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     },
     
     'Sets client': function() {
-      assert.instanceOf(mysql.client, Client);
+      assert.instanceOf(mysql.client, client.constructor);
     }
 
+  }
+  
+}).addBatch({
+  
+  'Preliminaries': {
+    
+    topic: function() {
+      var mclient = app.createMulti(client),
+          promise = new EventEmitter();
+      mclient.query(createTable);
+      mclient.exec(function(err, results) {
+        promise.emit('success', err);
+      });
+      return promise;
+    },
+    
+    'Created temporary table': function(err) {
+      assert.isNull(err);
+    }
+    
   }
   
 }).export(module);
