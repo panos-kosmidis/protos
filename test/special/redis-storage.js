@@ -13,8 +13,8 @@ vows.describe('lib/storages/redis.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      app.getResource('storages/redis', function(resource) {
-        redis = resource;
+      app.getResource('storages/redis', function(storage) {
+        redis = storage;
         multi = redis.multi();
         promise.emit('success');
       });
