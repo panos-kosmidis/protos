@@ -180,18 +180,26 @@ vows.describe('lib/application.js').addBatch({
       framework.storages.redis = redisCtor; // restore redis constructor
     }
     
-  },
+  }
+  
+}).addBatch({
   
   'Application::getResource': {
     
     topic: function() {
+      var promise = new EventEmitter();
       app.context = {
         alpha: {name: 'alpha'},
         beta: {
           gamma: {name: 'gamma'}
         }
       }
-      return app;
+
+      app.getResource('storages/redis', function(storage) {
+        promise.emit('success', storage);
+      });
+      
+      return promise;
     },
     
     'Gets {context}/{resource}': function() {
@@ -202,9 +210,15 @@ vows.describe('lib/application.js').addBatch({
     'Gets {context}/{group}:{resource}': function() {
       var drv = app.getResource('context/beta:gamma');
       assert.equal(drv.name, 'gamma');
+    },
+    
+    'Works asynchronously if callback provided': function(storage) {
+      assert.instanceOf(storage, framework.storages.redis);
     }
     
-  },
+  }
+  
+}).addBatch({
   
   'Application::createMulti': {
     
