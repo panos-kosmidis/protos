@@ -38,7 +38,7 @@ test-unit:
 		@${vows} ${vowsOpts} ${unit}/*.js
 		
 test-spec:
-		@${vows} ${vowsOpts} ${special}/mysql*.js
+		@${vows} ${vowsOpts} ${special}/*.js
 		
 test-int:
 		@${vows} ${vowsOpts} ${integration}/*.js

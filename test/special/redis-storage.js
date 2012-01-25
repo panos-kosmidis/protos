@@ -22,7 +22,7 @@ vows.describe('lib/storages/redis.js').addBatch({
     },
 
     'Sets db': function() {
-      assert.isNumber(redis.db);
+      assert.isNotNull(redis.db);
     },
     
     'Sets config': function() {

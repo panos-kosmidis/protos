@@ -2,6 +2,7 @@
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
+    Client = require('mysql').Client,
     EventEmitter = require('events').EventEmitter;
     
 var mysql, multi;
@@ -19,13 +20,17 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
       return promise;
     },
+    
+    'Sets db': function() {
+      assert.isNotNull(mysql.db);
+    },
 
     'Sets config': function() {
-      assert.isTrue(true);
+      assert.strictEqual(mysql.config.host, app.config.database.mysql.host);
     },
     
     'Sets client': function() {
-      assert.isTrue(true);
+      assert.instanceOf(mysql.client, Client);
     }
 
   }
