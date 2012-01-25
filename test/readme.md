@@ -11,7 +11,8 @@ The _Core Functionality_ unit tests don't require any configuration to run. Run 
 
     make test-unit
 
-The _Special_ and _Integration_ tests require initial database configurations to run. 
+The _Special_ and _Integration_ cover the various Database Drivers & Storages functionality. These
+operate on databases, which need to be configured prior to runing the tests.
 
 The _Test Configuration Tool_ helps you configure your testing environment. Run it with:
 
