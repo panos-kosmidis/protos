@@ -7,6 +7,7 @@ var _ = require('underscore'),
     createClient = require('mysql').createClient;
     EventEmitter = require('events').EventEmitter;
 
+app.logging = true;
 // app.debugMode = true;
 
 var mysql, multi, model, storageMulti;

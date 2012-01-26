@@ -7,6 +7,8 @@ var app = require('../fixtures/bootstrap'),
     
 var redis, multi;
 
+app.logging = true;
+
 vows.describe('lib/storages/redis.js').addBatch({
   
   'Integrity Checks': {

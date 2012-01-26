@@ -15,17 +15,15 @@ if (module.parent.id == '.') {
 CoreJS.configure('autoCurl', false);
 
 CoreJS.on('app_init', function(app) {
-  if (env == 'special' || env == 'integration') {
-    app.config.database.mysql = testConfig.mysql;
-    app.config.storage.redis = testConfig.redis;
-  }
+  app.config.database.mysql = testConfig.mysql;
+  app.config.storage.redis = testConfig.redis;
 });
 
 var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
     framework = CoreJS.bootstrap(testSkeleton, {}),
     app = framework.defaultApp;
     
-if (env == 'unit') app.logging = false;
+app.logging = false;
 
 framework.path = CoreJS.path + '/test/fixtures/test-framework';
 

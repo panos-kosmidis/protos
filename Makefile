@@ -7,7 +7,7 @@ vowsOpts = --spec
 # Test directories
 
 unit = ./test/unit/*.js
-special = ./test/special/mysql*.js
+special = ./test/special/*.js
 integration = ./test/integration/*.js
 
 # Make commands
