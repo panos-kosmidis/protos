@@ -2,9 +2,9 @@
 
 function MainController() {
   
-  this.authRequired = true;
+  this.authRequired = false;
   
-  get('/', function(req, res) {
+  get('/:engine', function(req, res) {
     res.render('index');
   });
 

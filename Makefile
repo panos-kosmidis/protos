@@ -8,7 +8,7 @@ vowsOpts = --spec
 
 unit = ./test/unit/*.js
 special = ./test/special/*.js
-integration = ./test/integration/*.js
+integration = ./test/integration/view-engines.js
 
 # Make commands
 
