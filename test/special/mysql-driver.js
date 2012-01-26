@@ -35,7 +35,7 @@ Driver API:
   * 'queryWhere',
   * 'queryAll',
   * 'queryById',
-  'countRows',
+  * 'countRows',
   'idExists',
   'recordExists'
 
@@ -185,22 +185,27 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
+      
       // sql
       multi.query({sql: util.format('SELECT * FROM %s', table)});
+      
       // sql + params
       multi.query({
         sql: util.format('SELECT * FROM %s WHERE id=?', table),
         params: [2]
       });
+      
       // sql + params + appendSql
       multi.query({
         sql: util.format('SELECT id,user FROM %s WHERE id=? OR id=1', table),
         params: [2],
         appendSql: 'ORDER BY id DESC'
       });
+      
       multi.exec(function(err, results) {
         promise.emit('success', results);
       });
+      
       return promise;
     },
     
@@ -395,6 +400,80 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       assert.strictEqual(q4[0].id, 2);
       assert.strictEqual(q4[1].id, 1);
       assert.deepEqual(Object.keys(q4[0]), ['id', 'user']);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::countRows': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      mysql.countRows({table: table}, function(err, count) {
+        promise.emit('success', count);
+      });
+      
+      return promise;
+    },
+    
+    'Returns correct count': function(count) {
+      assert.strictEqual(count, 2);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::idExists': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // id (array) + table
+      multi.idExists({
+        id: [1,2,3],
+        table: table
+      });
+      
+      // id + table + columns
+      multi.idExists({
+        id: 1,
+        table: table,
+        columns: 'id'
+      });
+      
+      // id + table + appendSql
+      multi.idExists({
+        id: [1,2],
+        table: table,
+        appendSql: 'ORDER BY id DESC'
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Returns valid results': function(results) {
+      var q1 = results[0],
+          q1Keys = Object.keys(q1),
+          q2 = results[1],
+          q3 = results[2],
+          q3Keys = Object.keys(q3);
+      assert.strictEqual(q1Keys.length, 3);
+      assert.strictEqual(q1[1].id, 1);
+      assert.strictEqual(q1[2].id, 2);
+      assert.isNull(q1[3]);
+      assert.deepEqual(q1Keys, ['1', '2', '3']);
+      assert.deepEqual(q2, {id: 1});
+      assert.strictEqual(q3Keys.length, 2);
+      assert.strictEqual(q3[1].id, 1);
+      assert.strictEqual(q3[2].id, 2);
+      assert.deepEqual(q3Keys, ['1', '2']);
     }
     
   }
