@@ -13,7 +13,7 @@ vows.describe('View Engines').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      app.clientRequest('/eco', function(err, buffer, headers) {
+      app.clientRequest('/eco.eco', function(err, buffer, headers) {
         promise.emit('success', err || {buffer: buffer, headers: headers});
       });
       return promise;

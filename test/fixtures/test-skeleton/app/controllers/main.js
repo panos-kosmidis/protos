@@ -4,8 +4,8 @@ function MainController() {
   
   this.authRequired = false;
   
-  get('/:engine', function(req, res) {
-    res.render('index');
+  get('/', function(req, res) {
+   console.exit('here');
   });
 
 }

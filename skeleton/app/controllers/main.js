@@ -6,6 +6,10 @@ function MainController() {
     res.render('index');
   });
 
+  get('/eco.eco', function(req, res) {
+    console.exit('GOTCHA!');
+  });
+
 }
 
 module.exports = MainController;
