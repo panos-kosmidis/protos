@@ -704,6 +704,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       model = new TestModel();
       model.prepare(app);
       model.context = table; // Override context
+      multi = model.multi(); // Override multi
       return model;
     },
     
@@ -713,4 +714,25 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
   }
   
+}).addBatch({
+  
+  'Model API: insert': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      console.exit(multi);
+      
+      return promise;
+    },
+    
+    'Inserts new models': function(results) {
+      
+    }
+    
+  }
+  
 }).export(module);
+
+
+
