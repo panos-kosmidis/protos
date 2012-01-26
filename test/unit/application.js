@@ -7,6 +7,8 @@ var app = require('../fixtures/bootstrap'),
 
 app.logging = false;
 
+var multi = app.createMulti(app);
+
 vows.describe('lib/application.js').addBatch({
   
   'Integrity Checks': {
@@ -228,6 +230,56 @@ vows.describe('lib/application.js').addBatch({
       var ob = {method: function() {}}
       var multi = app.createMulti(ob, {});
       assert.equal(multi.constructor.name, 'Multi');
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Application::curl': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      multi.curl('/robots.txt');
+      multi.curl('-X PUT /');
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      return promise;
+    },
+    
+    'Returns valid data': function(results) {
+      var r1 = results[0],
+          r2 = results[1];
+      assert.isTrue(r1.indexOf('www.robotstxt.org') >= 0);
+      assert.isTrue(r2.indexOf('400 Bad Request') >= 0);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Application::clientRequest': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      multi.clientRequest('/');
+      multi.clientRequest({path: '/', method: 'PUT'});
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      return promise;
+    },
+    
+    'Returns valid data': function(results) {
+      var r1 = results[0],
+          r2 = results[1];
+      assert.isString(r1[0]);
+      assert.isTrue(r1[0].length > 0);
+      assert.strictEqual(r1[1].status, '200 OK');
+      assert.isString(r2[0]);
+      assert.isTrue(r2[0].length > 0);
+      assert.strictEqual(r2[1].status, '400 Bad Request');
     }
     
   }
