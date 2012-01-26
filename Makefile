@@ -8,7 +8,8 @@ vowsOpts = --spec
 
 unit = ./test/unit/*.js
 special = ./test/special/*.js
-integration = ./test/integration/view-engines.js
+engines = ./test/engines/*.js
+integration = ./test/integration/*.js
 
 # Make commands
 
@@ -16,10 +17,11 @@ default:
 		@echo
 		@echo "\033[1;31mmake deps\033[0m             Dependency Install & Cleanup"
 		@echo "\033[1;31mmake testconfig\033[0m       Test Configuration Tool"
-		@echo "\033[1;31mmake tests\033[0m            Runs All tests"
-		@echo "\033[1;31mmake test-unit\033[0m        Runs Unit tests"
-		@echo "\033[1;31mmake test-spec\033[0m        Runs Special tests"
-		@echo "\033[1;31mmake test-int\033[0m         Runs Integration tests"
+		@echo "\033[1;31mmake tests\033[0m            Run All tests"
+		@echo "\033[1;31mmake test-unit\033[0m        Run Unit tests"
+		@echo "\033[1;31mmake test-spec\033[0m        Run Special tests"
+		@echo "\033[1;31mmake test-eng\033[0m         Run View Engine tests"
+		@echo "\033[1;31mmake test-int\033[0m         Run Integration tests"
 		@echo
 
 deps:
@@ -30,17 +32,20 @@ testconfig:
 		@./tools/testconfig
 
 test:
-		@echo "\n\033[1;30mAvailable Test Commands\033[0m: tests  test-unit  test-spec  test-int\n"
+		@echo "\n\033[1;30mAvailable Test Commands\033[0m: tests  test-unit  test-spec test-eng test-int\n"
 
 tests:
-		@${vows} ${vowsOpts} ${unit} ${special} ${integration}
+		@${vows} ${vowsOpts} ${unit} ${special} ${integration} # ${engines}
 
 test-unit:
 		@${vows} ${vowsOpts} ${unit}
 		
 test-spec:
 		@${vows} ${vowsOpts} ${special}
-		
+
+test-eng:
+		@${vows} ${vowsOpts} ${engines}
+
 test-int:
 		@${vows} ${vowsOpts} ${integration}
 

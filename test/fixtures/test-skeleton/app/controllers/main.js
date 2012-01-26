@@ -5,9 +5,15 @@ function MainController() {
   this.authRequired = false;
   
   get('/', function(req, res) {
-   console.exit('here');
+    res.render('index');
   });
-
+  
+  get('/:engine.:ext', {engine: app.engineRegex, ext: /^[a-z]+$/}, function(req, res) {
+    var engine = req.__params.engine,
+        ext = req.__params.ext;
+    res.render('main/' + engine + '.' + ext);
+  });
+  
 }
 
 module.exports = MainController;
