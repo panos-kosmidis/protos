@@ -4,6 +4,8 @@ var app = require('../fixtures/bootstrap'),
     assert = require('assert'),
     util = require('util');
 
+app.logging = false;
+
 vows.describe('lib/controller.js').addBatch({
   
   'Integrity Checks': {

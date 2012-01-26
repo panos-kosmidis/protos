@@ -3,6 +3,8 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert');
 
+app.logging = false;
+
 // Enable session
 app.enable('session', {storage: 'redis'});
 

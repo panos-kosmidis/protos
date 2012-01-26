@@ -5,7 +5,9 @@ var app = require('../fixtures/bootstrap'),
     util = require('util'),
     pathModule = require('path'),
     EventEmitter = require('events').EventEmitter;
-    
+
+app.logging = false;
+
 vows.describe('lib/framework.js').addBatch({
   
   'Integrity Checks': {

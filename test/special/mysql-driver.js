@@ -9,7 +9,6 @@ var _ = require('underscore'),
     EventEmitter = require('events').EventEmitter;
 
 app.logging = true;
-// app.debugMode = true;
 
 var mysql, multi, model, storageMulti;
 
@@ -29,7 +28,6 @@ CREATE TABLE IF NOT EXISTS %s (\n\
 )', table);
 
 // Cache Events
-
 app.on('mysql_cache_store', function(cacheID, cache) {
   console.log('    ✓ %s', colorize('Stored cache for ' + cacheID, '0;33'));
 });

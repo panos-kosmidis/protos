@@ -4,7 +4,9 @@ var app = require('../fixtures/bootstrap'),
     assert = require('assert'),
     net = require('net'),
     EventEmitter = require('events').EventEmitter;
-    
+
+app.logging = false;
+
 vows.describe('lib/utility.js').addBatch({
   
   'Utility::typecast': {

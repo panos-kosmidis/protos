@@ -4,7 +4,9 @@ var app = require('../fixtures/bootstrap'),
     assert = require('assert'),
     util = require('util'),
     EventEmitter = require('events').EventEmitter;
-    
+
+app.logging = false;
+
 vows.describe('lib/application.js').addBatch({
   
   'Integrity Checks': {
