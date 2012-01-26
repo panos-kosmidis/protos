@@ -40,28 +40,6 @@ function TestModel(app) {
 
 util.inherits(TestModel, framework.lib.model);
 
-/*
-Model API:
-==========
-
-1) Storage Operations
-  * 'insert'
-  
-2) Retrieval Operations
-  * 'get',
-  * 'getAll'
-  
-3) Update Operations
-  * 'save'
-
-4) Rename Operations
-  N/A
-
-5) Delete Operations
-  'delete'
-  
-*/
-
 vows.describe('lib/drivers/mysql.js').addBatch({
   
   'Integrity Checks': {
@@ -788,10 +766,10 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      // object
+      // getall
       multi.getAll();
       
-      // object + caching
+      // getall + invalidate
       multi.getAll({cacheID: 'api_getall', cacheTimeout: 3600});
       
       multi.exec(function(err, results) {
@@ -819,10 +797,10 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      // data + caching
+      // save + caching
       multi.save({id: 1, user: '__user1', pass: '__pass1'}, {cacheInvalidate: ['api_get', 'api_getall']});
       
-      // data
+      // save
       multi.save({id: 1, user: '__user1__', pass: '__pass1__'});
       
       multi.exec(function(err, results) {
@@ -838,17 +816,30 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
   }
   
+}).addBatch({
+  
+  'Model API: delete': {
+  
+    topic: function() {
+      var promise = new EventEmitter();
+
+      // integer + invalidate
+      multi.delete(2, {cacheInvalidate: ['api_get', 'api_getall']});
+
+      // array
+      multi.delete([1,2]);
+
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+
+      return promise;
+    },
+
+    'Properly deletes from database + invalidates caches': function(results) {
+      assert.deepEqual(results, ['OK', ['OK', 'OK'] ]);
+    }
+    
+  }
+  
 }).export(module);
-
-
-
-
-
-
-
-
-
-
-
-
-
