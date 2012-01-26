@@ -7,6 +7,8 @@ var _ = require('underscore'),
     createClient = require('mysql').createClient;
     EventEmitter = require('events').EventEmitter;
 
+// app.debugMode = true;
+
 var mysql, multi, model, storageMulti;
 
 var config = app.config.database.mysql,
@@ -47,7 +49,7 @@ Model API:
   
 2) Retrieval Operations
   * 'get',
-  'getAll'
+  * 'getAll'
   
 3) Update Operations
   'save'
@@ -725,7 +727,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      multi.insert({user: 'user1', pass: 'pass1'});
+      multi.insert({user: 'user1', pass: 'pass1'}, {cacheInvalidate: ['api_get', 'api_getall']});
       multi.insert({user: 'user2', pass: 'pass2'});
       
       multi.exec(function(err, results) {
@@ -769,12 +771,43 @@ vows.describe('lib/drivers/mysql.js').addBatch({
           q2 = results[1],
           q3 = results[2];
       var expected1 = { id: 1, user: 'user1', pass: 'pass1' },
-          expected2 = { id: 2, user: 'user2', pass: 'pass2' }
+          expected2 = { id: 2, user: 'user2', pass: 'pass2' };
       assert.deepEqual(q1.__currentState, expected1);
       assert.deepEqual(q2.__currentState, expected1);
       assert.strictEqual(q3.length, 2);
       assert.deepEqual(q3[0].__currentState, expected1);
       assert.deepEqual(q3[1].__currentState, expected2);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Model API: getAll': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // object
+      multi.getAll();
+      
+      // object + caching
+      multi.getAll({cacheID: 'api_getall', cacheTimeout: 3600});
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Returns valid results + caches data': function(results) {
+      var q1 = results[0],
+          q2 = results[1];
+      var expected1 = { id: 1, user: 'user1', pass: 'pass1' },
+          expected2 = { id: 2, user: 'user2', pass: 'pass2' };
+      assert.deepEqual(q1, [expected1, expected2]);
+      assert.deepEqual(q2, [expected1, expected2]);
     }
     
   }
