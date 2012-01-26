@@ -863,4 +863,22 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
   }
   
+}).addBatch({
+  
+  'Cleanup': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      mysql.exec({sql: 'DROP TABLE IF EXISTS ' + table}, function(err) {
+        promise.emit('success', err);
+      });
+      return promise;
+    },
+    
+    'Removed test data': function(err) {
+      assert.isNull(err);
+    }
+    
+  }
+  
 }).export(module);

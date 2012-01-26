@@ -238,4 +238,22 @@ vows.describe('lib/storages/redis.js').addBatch({
     
   }
   
+}).addBatch({
+  
+  'Cleanup': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      redis.delete(['v1', 'v2', 'v3', 'myhash'], function(err) {
+        promise.emit('success', err);
+      });
+      return promise;
+    },
+    
+    'Removed test data': function(err) {
+      assert.isNull(err);
+    }
+    
+  }
+  
 }).export(module);
