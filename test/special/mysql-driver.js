@@ -1,6 +1,5 @@
 
-var _ = require('underscore'),
-    app = require('../fixtures/bootstrap'),
+var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     util = require('util'),
     assert = require('assert'),
