@@ -120,7 +120,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       return promise;
     },
@@ -148,7 +148,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
           pass: 'pass1'
         }
       }, function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       return promise;
     },
@@ -183,7 +183,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -244,7 +244,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -296,7 +296,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -357,7 +357,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });      
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -432,7 +432,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -487,7 +487,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
      
       return promise;
@@ -542,7 +542,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
 
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
 
       return promise;
@@ -582,7 +582,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -630,7 +630,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
 
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -673,7 +673,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       });
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -706,7 +706,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
         mysql.storage = app.getResource('storages/redis'); // Manually set cache storage
         mysql.setCacheFunc(mysql.client, 'query'); // Manually set cache function
         storageMulti = mysql.storage.multi();
-        promise.emit('success', model);
+        promise.emit('success', err || model);
       });
       return promise;
     },
@@ -730,7 +730,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       multi.insert({user: 'user2', pass: 'pass2'});
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -759,7 +759,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       multi.get([1,2]);
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -794,7 +794,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       multi.getAll({cacheID: 'api_getall', cacheTimeout: 3600});
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -825,7 +825,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       multi.save({id: 1, user: '__user1__', pass: '__pass1__'});
       
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
       
       return promise;
@@ -851,7 +851,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       multi.delete([1,2]);
 
       multi.exec(function(err, results) {
-        promise.emit('success', results);
+        promise.emit('success', err || results);
       });
 
       return promise;
