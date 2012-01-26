@@ -184,6 +184,45 @@ vows.describe('lib/application.js').addBatch({
       framework.storages.redis = redisCtor; // restore redis constructor
     }
     
+  },
+  
+  'Application::addFilter': {
+    
+    topic: function() {
+      app.addFilter('filter', function(data) {
+        /* Filter 1 */
+        data.push('>>');
+        return data;
+      });
+      
+      app.addFilter('filter', function(data) {
+        /* Filter 2 */
+        data.unshift('<<');
+        return data;
+      });
+      
+      return app.__filters;
+    },
+    
+    'Properly registers filters': function(filters) {
+      assert.deepEqual(Object.keys(filters), ['filter']);
+      assert.strictEqual(filters.filter.length, 2);
+      assert.isTrue(filters.filter[0].toString().indexOf('/* Filter 1 */') >= 0);
+      assert.isTrue(filters.filter[1].toString().indexOf('/* Filter 2 */') >= 0);
+    }
+    
+  },
+  
+  'Application::applyFilters': {
+    
+    topic: function() {
+      return app.applyFilters('filter', ['data']);
+    },
+    
+    'Returns valid values': function(topic) {
+      assert.deepEqual(topic, ['<<', 'data', '>>']);
+    }
+    
   }
   
 }).addBatch({

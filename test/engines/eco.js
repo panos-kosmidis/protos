@@ -20,7 +20,7 @@ vows.describe('View Engines').addBatch({
     },
     
     'Returns valid view buffer': function(results) {
-      console.exit(results);
+      console.exit(results.buffer);
     }
     
   }
