@@ -40,8 +40,8 @@ Driver API:
   * 'recordExists'
 
 3) Update Operations
-  'updateById',
-  'updateWhere'
+  * 'updateById',
+  * 'updateWhere'
 
 4) Rename Operations
   N/A
@@ -525,6 +525,185 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       assert.strictEqual(q3.length, 2);
       assert.isTrue(q3[0]);
       assert.deepEqual(q3[1], [{id: 2, pass: 'pass1'}]);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::updateWhere': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+
+      // condition + table + values
+      multi.updateWhere({
+        condition: 'id=1',
+        table: table,
+        values: {user: '__user', pass: '__pass'}
+      });
+
+      // condition + params + table + values
+      multi.updateWhere({
+        condition: 'id=?',
+        params: [1],
+        table: table,
+        values: {user: '__user1', pass: '__pass1'}
+      });
+
+      // condition + params + table + values + appendSql
+      multi.updateWhere({
+        condition: 'id=? OR id=?',
+        params: [1, 2],
+        table: table,
+        values: {user: 'user', pass: 'pass'},
+        appendSql: 'LIMIT 1'
+      });
+
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+
+      return promise;
+    },
+
+    'Updates values correctly': function(results) {
+      var q1 = results[0],
+          q2 = results[1],
+          q3 = results[2];
+      assert.strictEqual(q1.affectedRows, 1);
+      assert.strictEqual(q2.affectedRows, 1);
+      assert.strictEqual(q3.affectedRows, 1);
+    }
+    
+  }
+
+}).addBatch({
+  
+  'MySQL::updateById': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // id + table + values
+      multi.updateById({
+        id: 1,
+        table: table,
+        values: {pass: 'p1234'}
+      });
+      
+      // id (array) + table + values + appendSql
+      multi.updateById({
+        id: [1,2],
+        table: table,
+        values: {pass: 'p9999'},
+        appendSql: 'LIMIT 1'
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Updates values correctly': function(results) {
+      var q1 = results[0],
+          q2 = results[1];
+      assert.strictEqual(q1.affectedRows, 1);
+      assert.strictEqual(q2.affectedRows, 1);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::deleteWhere': {
+
+    topic: function() {
+      var promise = new EventEmitter();
+
+      // Insert 2 more entries
+      multi.insertInto({table: table, values: {user: 'user3', pass: 'pass3'}});
+      multi.insertInto({table: table, values: {user: 'user4', pass: 'pass4'}});
+
+      // condition + table
+      multi.deleteWhere({
+        condition: 'id=4',
+        table: table
+      });
+      
+      // condition + params + table
+      multi.deleteWhere({
+        condition: 'id=?',
+        params: [3],
+        table: table
+      });
+      
+      // condition + params + table + appendSql
+      multi.deleteWhere({
+        condition: 'id=? OR id=?',
+        params: [1, 2],
+        table: table,
+        appendSql: 'LIMIT 1'
+      });
+
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Properly deletes values': function(results) {
+      // Note: The first two insert the new entries
+      var q1 = results[2],
+          q2 = results[3],
+          q3 = results[4];
+      assert.strictEqual(q1.affectedRows, 1);
+      assert.strictEqual(q2.affectedRows, 1);
+      assert.strictEqual(q3.affectedRows, 1);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::deleteById': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // Insert 2 more entries
+      multi.insertInto({table: table, values: {user: 'user5', pass: 'pass5'}});
+      multi.insertInto({table: table, values: {user: 'user6', pass: 'pass6'}});
+      
+      // id + table
+      multi.deleteById({
+        id: 2, // Present from previous batches
+        table: table
+      });
+      
+      // id (array) + table + appendSql
+      multi.deleteById({
+        id: [5,6,99],
+        table: table,
+        appendSql: 'LIMIT 2'
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Properly deletes values': function(results) {
+      // Note: The first two insert the new entries
+      var q1 = results[2],
+          q2 = results[3];
+      assert.strictEqual(q1.affectedRows, 1);
+      assert.strictEqual(q2.affectedRows, 2);
     }
     
   }
