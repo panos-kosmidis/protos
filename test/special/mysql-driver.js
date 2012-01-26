@@ -12,7 +12,8 @@ var _ = require('underscore'),
 var mysql, multi, model, storageMulti;
 
 var config = app.config.database.mysql,
-    client = createClient(config);
+    client = createClient(config),
+    mclient = app.createMulti(client);
 
 var table = app.config.database.mysql.table;
 
@@ -73,8 +74,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
   'Preliminaries': {
     
     topic: function() {
-      var mclient = app.createMulti(client),
-          promise = new EventEmitter();
+      var promise = new EventEmitter();
       mclient.query('DROP TABLE IF EXISTS ' + table);
       mclient.query(createTable);
       mclient.exec(function(err, results) {
@@ -89,7 +89,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
   }
   
-})/*.addBatch({
+}).addBatch({
   
   'MySQL::exec': {
     
@@ -675,19 +675,26 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
   }
   
-})*/.addBatch({
+}).addBatch({
   
   'Model API Compliance': {
     
     topic: function() {
-      model = new TestModel();
-      model.prepare(app);
-      model.context = table; // Override context
-      multi = model.multi(); // Override multi
-      mysql.storage = app.getResource('storages/redis'); // Manually set cache storage
-      mysql.setCacheFunc(mysql.client, 'query'); // Manually set cache function
-      storageMulti = mysql.storage.multi();
-      return model;
+      var promise = new EventEmitter();
+      // Reset table ID's, disregard previous operations
+      mclient.query('DROP TABLE IF EXISTS ' + table);
+      mclient.query(createTable);
+      mclient.exec(function(err, results) {
+        model = new TestModel();
+        model.prepare(app);
+        model.context = table; // Override context
+        multi = model.multi(); // Override multi
+        mysql.storage = app.getResource('storages/redis'); // Manually set cache storage
+        mysql.setCacheFunc(mysql.client, 'query'); // Manually set cache function
+        storageMulti = mysql.storage.multi();
+        promise.emit('success', model);
+      });
+      return promise;
     },
     
     'Created testing model': function(model) {
