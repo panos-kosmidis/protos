@@ -1,7 +1,7 @@
 
 /* Debug Environment */
 
-function Debug() {
+function Debug(app) {
   
 }
 

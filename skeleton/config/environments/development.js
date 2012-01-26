@@ -4,7 +4,7 @@
 function Development(app) {
   
   app.on('init', function() {
-    // Runs on post-init
+    // Runs on application init
   });
   
 }
