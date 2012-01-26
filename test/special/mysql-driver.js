@@ -4,6 +4,7 @@ var _ = require('underscore'),
     vows = require('vows'),
     util = require('util'),
     assert = require('assert'),
+    colorize = framework.util.colorize,
     createClient = require('mysql').createClient;
     EventEmitter = require('events').EventEmitter;
 
@@ -26,6 +27,20 @@ CREATE TABLE IF NOT EXISTS %s (\n\
   pass VARCHAR(255),\n\
   PRIMARY KEY (id)\n\
 )', table);
+
+// Cache Events
+
+app.on('mysql_cache_store', function(cacheID, cache) {
+  console.log('    ✓ %s', colorize('Stored cache for ' + cacheID, '0;33'));
+});
+
+app.on('mysql_cache_use', function(cacheID, cache) {
+  console.log('    ✓ %s', colorize('Using cacheID' + cacheID, '0;33'));
+});
+
+app.on('mysql_cache_invalidate', function(invalidated) {
+  console.log('    ✓ %s', colorize('Invalidated ' + invalidated.join(', '), '0;33'));
+});
 
 // Test Model
 function TestModel(app) {
