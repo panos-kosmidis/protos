@@ -7,6 +7,10 @@ var app = require('../fixtures/bootstrap'),
 
 var multi = app.createMulti(app);
 
+app.addFilter('eco_template', function(data) {
+  console.exit(99);
+});
+
 vows.describe('View Engines').addBatch({
   
   'Eco': {
