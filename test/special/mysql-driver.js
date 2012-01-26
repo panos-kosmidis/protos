@@ -42,13 +42,11 @@ util.inherits(TestModel, framework.lib.model);
 Model API:
 ==========
 
-[ 'insert', 'get', 'getAll', 'save', 'delete' ]
-
 1) Storage Operations
-  'insert'
+  * 'insert'
   
 2) Retrieval Operations
-  'get',
+  * 'get',
   'getAll'
   
 3) Update Operations
@@ -706,7 +704,8 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       model.prepare(app);
       model.context = table; // Override context
       multi = model.multi(); // Override multi
-      mysql.storage = app.getResource('storages/redis'); // Set storage, for caching
+      mysql.storage = app.getResource('storages/redis'); // Manually set cache storage
+      mysql.setCacheFunc(mysql.client, 'query'); // Manually set cache function
       storageMulti = mysql.storage.multi();
       return model;
     },
@@ -726,23 +725,71 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      model.insert({
-        user: 'user1',
-        pass: 'pass1'
-      }, function(err, id) {
-        promise.emit('success', id);
+      multi.insert({user: 'user1', pass: 'pass1'});
+      multi.insert({user: 'user2', pass: 'pass2'});
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
       });
       
       return promise;
     },
     
-    'Inserts new models': function(id) {
-      assert.strictEqual(id, 1);
+    'Inserts new models': function(results) {
+      assert.deepEqual(results, [1, 2]);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Model API: get': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // object + caching
+      multi.get({user: 'user1'}, {cacheID: 'api_get', cacheTimeout: 3600});
+      
+      // integer
+      multi.get(1);
+      
+      // array
+      multi.get([1,2]);
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Returns valid results + caches data': function(results) {
+      var q1 = results[0],
+          q2 = results[1],
+          q3 = results[2];
+      var expected1 = { id: 1, user: 'user1', pass: 'pass1' },
+          expected2 = { id: 2, user: 'user2', pass: 'pass2' }
+      assert.deepEqual(q1.__currentState, expected1);
+      assert.deepEqual(q2.__currentState, expected1);
+      assert.strictEqual(q3.length, 2);
+      assert.deepEqual(q3[0].__currentState, expected1);
+      assert.deepEqual(q3[1].__currentState, expected2);
     }
     
   }
   
 }).export(module);
+
+
+
+
+
+
+
+
+
+
 
 
 
