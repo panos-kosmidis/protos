@@ -33,8 +33,8 @@ Driver API:
 2) Retrieval Operations
   * 'query',
   * 'queryWhere',
-  'queryAll',
-  'queryById',
+  * 'queryAll',
+  * 'queryById',
   'countRows',
   'idExists',
   'recordExists'
@@ -208,11 +208,17 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       var q1 = results[0][0],
           q2 = results[1][0],
           q3 = results[2][0];
+      assert.strictEqual(q1.length, 2);
       assert.strictEqual(q1[0].id, 1);
       assert.strictEqual(q1[1].id, 2);
+      assert.deepEqual(Object.keys(q1[0]), ['id', 'user', 'pass']);
+      assert.strictEqual(q2.length, 1);
       assert.strictEqual(q2[0].id, 2);
+      assert.deepEqual(Object.keys(q2[0]), ['id', 'user', 'pass']);
+      assert.strictEqual(q3.length, 2);
       assert.strictEqual(q3[0].id, 2);
       assert.strictEqual(q3[1].id, 1);
+      assert.deepEqual(Object.keys(q3[0]), ['id', 'user']);
     }
     
   }
@@ -264,9 +270,16 @@ vows.describe('lib/drivers/mysql.js').addBatch({
           q2 = results[1][0],
           q3 = results[2][0],
           q4 = results[3][0];
+      assert.strictEqual(q1.length, 1);
       assert.strictEqual(q1[0].id, 1);
+      assert.deepEqual(Object.keys(q1[0]), ['id', 'user', 'pass']);
+      assert.strictEqual(q2.length, 1);
       assert.strictEqual(q2[0].id, 1);
+      assert.deepEqual(Object.keys(q2[0]), ['id', 'user', 'pass']);
+      assert.strictEqual(q3.length, 1);
       assert.strictEqual(q3[0].user, 'username');
+      assert.deepEqual(Object.keys(q3[0]), ['user']);
+      assert.strictEqual(q4.length, 2);
       assert.deepEqual(q4, [{user: 'username'}, {user: 'user1'}]);
     }
     
@@ -308,12 +321,80 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       var q1 = results[0][0],
           q2 = results[1][0],
           q3 = results[2][0];
+      assert.strictEqual(q1.length, 2);
       assert.strictEqual(q1[0].id, 1);
       assert.strictEqual(q1[1].id, 2);
+      assert.deepEqual(Object.keys(q1[0]), ['id', 'user', 'pass']);
+      assert.strictEqual(q2.length, 2);
       assert.strictEqual(q2[0].user, 'username');
       assert.strictEqual(q2[1].user, 'user1');
+      assert.deepEqual(Object.keys(q2[0]), ['user']);
+      assert.strictEqual(q3.length, 2);
       assert.strictEqual(q3[0].user, 'user1');
       assert.strictEqual(q3[1].user, 'username');
+      assert.deepEqual(Object.keys(q3[0]), ['user', 'pass']);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MySQL::queryById': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // id (array) + table
+      multi.queryById({
+        id: [1,2],
+        table: table
+      });
+      
+      // id + table
+      multi.queryById({
+        id: 1,
+        table: table
+      });
+      
+      // id + table + columns
+      multi.queryById({
+        id: 1,
+        table: table,
+        columns: 'id'
+      });
+
+      // id (array) + table + columns + appendSql
+      multi.queryById({
+        id: [1,2],
+        table: table,
+        columns: 'id, user',
+        appendSql: 'ORDER BY user ASC'
+      });      
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Returns valid results': function(results) {
+      var q1 = results[0][0],
+          q2 = results[1][0],
+          q3 = results[2][0],
+          q4 = results[3][0];
+      assert.strictEqual(q1.length, 2);
+      assert.strictEqual(q1[0].id, 1);
+      assert.strictEqual(q1[1].id, 2);
+      assert.strictEqual(q2.length, 1);
+      assert.strictEqual(q2[0].id, 1);
+      assert.strictEqual(q3.length, 1);
+      assert.deepEqual(Object.keys(q3[0]), ['id']);
+      assert.strictEqual(q3[0].id, 1);
+      assert.strictEqual(q4.length, 2);
+      assert.strictEqual(q4[0].id, 2);
+      assert.strictEqual(q4[1].id, 1);
+      assert.deepEqual(Object.keys(q4[0]), ['id', 'user']);
     }
     
   }
