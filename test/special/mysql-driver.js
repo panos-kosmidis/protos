@@ -6,7 +6,7 @@ var app = require('../fixtures/bootstrap'),
     createClient = require('mysql').createClient;
     EventEmitter = require('events').EventEmitter;
 
-var mysql, multi;
+var mysql, multi, model;
 
 var config = app.config.database.mysql,
     client = createClient(config);
@@ -22,34 +22,22 @@ CREATE TABLE IF NOT EXISTS %s (\n\
   PRIMARY KEY (id)\n\
 )', table);
 
+// Test Model
+function TestModel(app) {
+
+  this.driver = 'mysql';
+
+  this.properties = {
+    id    : {type: 'integer'},
+    user  : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},
+    pass  : {type: 'string', required: true, validates: 'alpha'},
+  }
+
+}
+
+util.inherits(TestModel, framework.lib.model);
+
 /*
-Driver API:
-===========
-
-1) Storage Operations
-  * 'exec',
-  * 'insertInto',
-
-2) Retrieval Operations
-  * 'query',
-  * 'queryWhere',
-  * 'queryAll',
-  * 'queryById',
-  * 'countRows',
-  * 'idExists',
-  * 'recordExists'
-
-3) Update Operations
-  * 'updateById',
-  * 'updateWhere'
-
-4) Rename Operations
-  N/A
-
-5) Delete Operations
-  'deleteById',
-  'deleteWhere'
-
 Model API:
 ==========
 
@@ -122,7 +110,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     
   }
   
-}).addBatch({
+})/*.addBatch({
   
   'MySQL::exec': {
     
@@ -704,6 +692,23 @@ vows.describe('lib/drivers/mysql.js').addBatch({
           q2 = results[3];
       assert.strictEqual(q1.affectedRows, 1);
       assert.strictEqual(q2.affectedRows, 2);
+    }
+    
+  }
+  
+})*/.addBatch({
+  
+  'Model API Compliance': {
+    
+    topic: function() {
+      model = new TestModel();
+      model.prepare(app);
+      model.context = table; // Override context
+      return model;
+    },
+    
+    'Created testing model': function(model) {
+      assert.instanceOf(model, TestModel);
     }
     
   }
