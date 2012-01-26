@@ -52,7 +52,7 @@ Model API:
   * 'getAll'
   
 3) Update Operations
-  'save'
+  * 'save'
 
 4) Rename Operations
   N/A
@@ -737,7 +737,7 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       return promise;
     },
     
-    'Inserts new models': function(results) {
+    'Inserts new models + invalidates caches': function(results) {
       assert.deepEqual(results, [1, 2]);
     }
     
@@ -808,6 +808,32 @@ vows.describe('lib/drivers/mysql.js').addBatch({
           expected2 = { id: 2, user: 'user2', pass: 'pass2' };
       assert.deepEqual(q1, [expected1, expected2]);
       assert.deepEqual(q2, [expected1, expected2]);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Model API: save': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // data + caching
+      multi.save({id: 1, user: '__user1', pass: '__pass1'}, {cacheInvalidate: ['api_get', 'api_getall']});
+      
+      // data
+      multi.save({id: 1, user: '__user1__', pass: '__pass1__'});
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', results);
+      });
+      
+      return promise;
+    },
+    
+    'Updates model data + invalidates caches': function(results) {
+      assert.deepEqual(results, ['OK', 'OK']);
     }
     
   }
