@@ -33,7 +33,7 @@ test:
 		@echo "\n\033[1;30mAvailable Test Commands\033[0m: tests  test-unit  test-spec  test-int\n"
 
 tests:
-		@${vows} ${vowsOpts} ${unit} ${special} # ${integration}
+		@${vows} ${vowsOpts} ${unit} ${special} ${integration}
 
 test-unit:
 		@${vows} ${vowsOpts} ${unit}
