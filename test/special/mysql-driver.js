@@ -1,12 +1,13 @@
 
-var app = require('../fixtures/bootstrap'),
+var _ = require('underscore'),
+    app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     util = require('util'),
     assert = require('assert'),
     createClient = require('mysql').createClient;
     EventEmitter = require('events').EventEmitter;
 
-var mysql, multi, model;
+var mysql, multi, model, storageMulti;
 
 var config = app.config.database.mysql,
     client = createClient(config);
@@ -30,7 +31,7 @@ function TestModel(app) {
   this.properties = {
     id    : {type: 'integer'},
     user  : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},
-    pass  : {type: 'string', required: true, validates: 'alpha'},
+    pass  : {type: 'string', required: true, validates: 'alnum_underscores'},
   }
 
 }
@@ -705,10 +706,14 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       model.prepare(app);
       model.context = table; // Override context
       multi = model.multi(); // Override multi
+      mysql.storage = app.getResource('storages/redis'); // Set storage, for caching
+      storageMulti = mysql.storage.multi();
       return model;
     },
     
     'Created testing model': function(model) {
+      
+      
       assert.instanceOf(model, TestModel);
     }
     
@@ -721,13 +726,18 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      console.exit(multi);
+      model.insert({
+        user: 'user1',
+        pass: 'pass1'
+      }, function(err, id) {
+        promise.emit('success', id);
+      });
       
       return promise;
     },
     
-    'Inserts new models': function(results) {
-      
+    'Inserts new models': function(id) {
+      assert.strictEqual(id, 1);
     }
     
   }
