@@ -2,7 +2,7 @@
 var app = require('../fixtures/bootstrap');
 
 app.addFilter('hamlcoffee_template', function(data) {
-  data = app.__addEnginePartials('hamlcoffee', data, '!= main_%s(locals)');
+  data = app.__addEnginePartials('hamlcoffee', data, '!= @main_%s(@locals)');
   // console.exit(data);
   return data;
 });
