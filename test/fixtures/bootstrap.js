@@ -56,6 +56,7 @@ function engineCompatibility(buffer) {
 // Automate engine tests
 
 app.__addEnginePartials = function(current, data, repl) {
+  app.logging = true;
   var buf = engines.map(function(engine) {
     if (app.engines[current].async == false && app.engines[engine].async) return '';
     else {
