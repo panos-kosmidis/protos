@@ -46,7 +46,7 @@ function engineCompatibility(buffer, __engine__) {
   if (buffer.indexOf('hello'.link('google.com')) >= 0) {
     console.log('    ✓ ' + colorize('Supports JavaScript functions', '0;32'));
   } else {
-    console.log('    ✗ ' + colorize('Does not support JavaScript functions', '0;36'));
+    console.log('    ✗ ' + colorize('Does not support function calls', '0;33'));
   }
   
   for (var engine,i=0; i < engines.length; i++) {
@@ -56,7 +56,7 @@ function engineCompatibility(buffer, __engine__) {
     if (pass) console.log('    ✓ ' + colorize('Compatible with ' + engine, '0;32'));
     else {
       failed.push(engine);
-      console.log('    ✗ ' + colorize('Not Compatible with ' + engine, '0;36'));
+      console.log('    ✗ ' + colorize('Not Compatible with ' + engine, '0;33'));
     }
   }
   
@@ -114,7 +114,7 @@ app.__createEngineBatch = function(className, engine, testUrl, __module__) {
         assert.isTrue(buffer.indexOf(className + ' Template Engine') >= 0);
       },
       
-      'Supports partials from self & other engines': function(buffer) {
+      'Supports partials from compatible engines': function(buffer) {
         engineCompatibility(buffer, engine);
       }
 
