@@ -5,8 +5,6 @@ var app = require('../fixtures/bootstrap'),
     util = require('util'),
     EventEmitter = require('events').EventEmitter;
 
-var multi = app.createMulti(app);
-
 app.addFilter('eco_template', function(data) {
   var key, engine,
       async = app.engines.eco.async,
@@ -20,20 +18,24 @@ app.addFilter('eco_template', function(data) {
   return data + buf;
 });
 
-vows.describe('View Engines').addBatch({
+vows.describe('Eco Template Engine').addBatch({
   
-  'Eco': {
+  '': {
     
     topic: function() {
       var promise = new EventEmitter();
       app.clientRequest('/eco.eco', function(err, buffer, headers) {
-        promise.emit('success', err || {buffer: buffer, headers: headers});
+        promise.emit('success', err || buffer);
       });
       return promise;
     },
+
+    'Returns valid view buffer': function(buffer) {
+      assert.isTrue(buffer.indexOf('Eco Template Engine') >= 0);
+    },
     
-    'Returns valid view buffer': function(results) {
-      console.exit(results.buffer);
+    'Supports partials from self & other engines': function(buffer) {
+      assert.engineCompatibility(buffer);
     }
     
   }

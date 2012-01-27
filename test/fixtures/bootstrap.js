@@ -1,5 +1,6 @@
 
 var env, path = require('path'),
+    assert = require('assert'),
     rootPath = path.resolve(__dirname, '../../'),
     CoreJS = require(rootPath),
     testConfig = require(rootPath + '/test/fixtures/dbconfig.json');
@@ -26,5 +27,25 @@ var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
 app.logging = false;
 
 framework.path = CoreJS.path + '/test/fixtures/test-framework';
+
+// Extend assert to check view engine compatibility
+
+var engines = Object.keys(app.engines),
+    colorize = framework.util.colorize;
+
+assert.engineCompatibility = function(buffer) {
+  var pass, checks = [];
+  for (var engine,i=0; i < engines.length; i++) {
+    engine = engines[i];
+    pass = buffer.indexOf('Rendered Partial: ' + engine.toUpperCase()) >= 0;
+    checks.push(pass);
+    if (pass) console.log('    ✓ ' + colorize('Compatible with ' + engine, '0;33'));
+    else console.log('    ✗ ' + colorize('Not Compatible with ' + engine, '0;36'));
+  }
+  for (i=0; i < engines.length; i++) {
+    return assert.isTrue(checks[i]);
+  }
+}
+
 
 module.exports = app;
