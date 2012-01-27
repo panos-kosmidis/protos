@@ -3,7 +3,7 @@ var env, path = require('path'),
     vows = require('vows'),
     assert = require('assert'),
     rootPath = path.resolve(__dirname, '../../'),
-    testConfig = require(rootPath + '/test/fixtures/dbconfig.json')
+    testConfig = require(rootPath + '/test/fixtures/dbconfig.json'),
     CoreJS = require(rootPath),
     EventEmitter = require('events').EventEmitter;
 
