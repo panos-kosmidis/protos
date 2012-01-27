@@ -6,16 +6,7 @@ var app = require('../fixtures/bootstrap'),
     EventEmitter = require('events').EventEmitter;
 
 app.addFilter('eco_template', function(data) {
-  var key, engine,
-      async = app.engines.eco.async,
-      buf = '\n';
-  for (key in app.engines) {
-    engine = app.engines[key];
-    // Skip async partials on sync engines
-    if (async == false && engine.async == true) continue;
-    buf += util.format('<%- @main_%s(@locals) %>\n', key);
-  }
-  return data + buf;
+  return app.__addEnginePartials('eco', data, '<%- @main_%s(@locals) %>');
 });
 
 vows.describe('Eco Template Engine').addBatch({

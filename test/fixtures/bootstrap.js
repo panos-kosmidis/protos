@@ -47,5 +47,19 @@ assert.engineCompatibility = function(buffer) {
   }
 }
 
+// Automate engine tests
+
+app.__addEnginePartials = function(current, data, repl) {
+  var buf = engines.map(function(engine) {
+    if (app.engines[current].async == false && app.engines[engine].async) return '';
+    else {
+      return repl.replace(/%s/g, engine) + '\n';
+    }
+  });
+  data += '\n' + buf.join('');
+  // console.exit(data);
+  return data;
+}
+
 
 module.exports = app;
