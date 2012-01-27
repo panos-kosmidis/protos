@@ -55,7 +55,7 @@ function engineCompatibility(buffer) {
 
 // Automate engine tests
 
-engines = ['swig'];
+// engines = ['swig'];
 
 app.__addEnginePartials = function(current, data, repl) {
   app.logging = true;
@@ -81,7 +81,7 @@ app.__createEngineBatch = function(className, testUrl, __module__) {
       topic: function() {
         var promise = new EventEmitter();
         app.clientRequest(testUrl  , function(err, buffer, headers) {
-          console.exit(buffer);
+          // console.exit(buffer);
           promise.emit('success', err || buffer);
         });
         return promise;
