@@ -44,7 +44,7 @@ function engineCompatibility(buffer, __engine__) {
   
   // Support for callbacks
   if (buffer.indexOf('hello'.link('google.com')) >= 0) {
-    console.log('    ✓ ' + colorize('Supports JavaScript functions', '0;32'));
+    console.log('    ✓ ' + colorize('Supports function calls', '0;32'));
   } else {
     console.log('    ✗ ' + colorize('Does not support function calls', '0;33'));
   }
