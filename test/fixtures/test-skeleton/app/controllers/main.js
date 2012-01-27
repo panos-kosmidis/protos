@@ -11,7 +11,9 @@ function MainController() {
   get('/:engine.:ext', {engine: app.engineRegex, ext: /^[a-z]+$/}, function(req, res) {
     var engine = req.__params.engine,
         ext = req.__params.ext;
-    res.render('main/' + engine + '.' + ext, {prefix: 'Rendered Partial:'}, true);
+    var view = 'main/' + engine + '.' + ext;
+    // console.exit(view);
+    res.render(view, {prefix: 'Rendered Partial:'}, true);
   });
   
 }

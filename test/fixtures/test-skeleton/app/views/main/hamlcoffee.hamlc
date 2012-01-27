@@ -1,0 +1,3 @@
+%h1= res.engine.className + ' Template Engine'
+%p= @helperProperty
+!= @link 'hello', 'google.com'
