@@ -60,10 +60,10 @@ function engineCompatibility(buffer, __engine__) {
     }
   }
   
-  if (app.engines[__engine__].async == false && failed.length > 0) {
+  if (app.engines[__engine__].async === false && failed.length > 0) {
     for (i=0; i < failed.length; i++) {
       engine = failed[i];
-      if (app.engines[engine].async == true) {
+      if (app.engines[engine].async === true) {
         // Async engines can't work on sync engines
         notCompatible.push(engines.indexOf(engine));
       }
@@ -83,7 +83,7 @@ function engineCompatibility(buffer, __engine__) {
 app.__addEnginePartials = function(current, data, repl) {
   app.logging = true;
   var buf = engines.map(function(engine) {
-    if (app.engines[current].async == false && app.engines[engine].async) return '';
+    if (app.engines[current].async === false && app.engines[engine].async) return '';
     else {
       return repl.replace(/%s/g, engine) + '\n';
     }

@@ -50,7 +50,7 @@ vows.describe('lib/application.js').addBatch({
     },
     
     'Initializes application engines': function() {
-      assert.instanceOf(app.engines.myengine, framework.lib.engine);
+      assert.instanceOf(app.engines.eco, framework.lib.engine);
     }
     
   },
@@ -205,7 +205,7 @@ vows.describe('lib/application.js').addBatch({
     },
     
     'Properly registers filters': function(filters) {
-      assert.deepEqual(Object.keys(filters), ['filter']);
+      assert.isArray(filters.filter);
       assert.strictEqual(filters.filter.length, 2);
       assert.isTrue(filters.filter[0].toString().indexOf('/* Filter 1 */') >= 0);
       assert.isTrue(filters.filter[1].toString().indexOf('/* Filter 2 */') >= 0);
