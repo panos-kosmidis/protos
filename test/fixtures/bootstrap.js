@@ -1,9 +1,11 @@
 
 var env, path = require('path'),
+    vows = require('vows'),
     assert = require('assert'),
     rootPath = path.resolve(__dirname, '../../'),
+    testConfig = require(rootPath + '/test/fixtures/dbconfig.json')
     CoreJS = require(rootPath),
-    testConfig = require(rootPath + '/test/fixtures/dbconfig.json');
+    EventEmitter = require('events').EventEmitter;
 
 if (module.parent.id == '.') {
   // Running test directly
@@ -33,7 +35,11 @@ framework.path = CoreJS.path + '/test/fixtures/test-framework';
 var engines = Object.keys(app.engines),
     colorize = framework.util.colorize;
 
-assert.engineCompatibility = function(buffer) {
+/* Test Engine Automation */
+
+// Automate engine compatibility checks
+
+function engineCompatibility(buffer) {
   var pass, checks = [];
   for (var engine,i=0; i < engines.length; i++) {
     engine = engines[i];
@@ -61,5 +67,34 @@ app.__addEnginePartials = function(current, data, repl) {
   return data;
 }
 
+// Automate vows batches for test engines
+
+app.__createEngineBatch = function(className, testUrl, __module__) {
+  
+  vows.describe(className + ' Template Engine').addBatch({
+
+    '': {
+
+      topic: function() {
+        var promise = new EventEmitter();
+        app.clientRequest(testUrl  , function(err, buffer, headers) {
+          promise.emit('success', err || buffer);
+        });
+        return promise;
+      },
+
+      'Returns valid view buffer': function(buffer) {
+        assert.isTrue(buffer.indexOf(className + ' Template Engine') >= 0);
+      },
+
+      'Supports partials from self & other engines': function(buffer) {
+        engineCompatibility(buffer);
+      }
+
+    }
+
+  }).export(__module__);
+  
+}
 
 module.exports = app;
