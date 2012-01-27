@@ -711,8 +711,6 @@ vows.describe('lib/drivers/mysql.js').addBatch({
     },
     
     'Created testing model': function(model) {
-      
-      
       assert.instanceOf(model, TestModel);
     }
     
