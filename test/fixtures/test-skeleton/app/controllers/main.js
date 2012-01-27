@@ -8,7 +8,7 @@ function MainController() {
     res.render('index');
   });
   
-  get('/:engine.:ext', {engine: app.engineRegex, ext: /^[a-z]+$/}, function(req, res) {
+  get('/:engine.:ext', {engine: app.engineRegex, ext: /^[a-z]+(\.[a-z]+)?$/}, function(req, res) {
     var engine = req.__params.engine,
         ext = req.__params.ext;
     var view = 'main/' + engine + '.' + ext;
