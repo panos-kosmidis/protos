@@ -39,8 +39,8 @@ var engines = Object.keys(app.engines),
 
 // Automate engine compatibility checks
 
-function engineCompatibility(buffer) {
-  var pass, checks = [], errors = [];
+function engineCompatibility(buffer, __engine__) {
+  var pass, checks = [], failed = [], notCompatible = [];
   
   // Support for callbacks
   if (buffer.indexOf('hello'.link('google.com')) >= 0) {
@@ -52,15 +52,27 @@ function engineCompatibility(buffer) {
   for (var engine,i=0; i < engines.length; i++) {
     engine = engines[i];
     pass = buffer.indexOf('Rendered Partial: ' + engine.toUpperCase()) >= 0;
+    checks.push(pass);
     if (pass) console.log('    ✓ ' + colorize('Compatible with ' + engine, '0;32'));
     else {
-      errors.push(engine);
+      failed.push(engine);
       console.log('    ✗ ' + colorize('Not Compatible with ' + engine, '0;36'));
     }
   }
-
+  
+  if (app.engines[__engine__].async == false && failed.length > 0) {
+    for (i=0; i < failed.length; i++) {
+      engine = failed[i];
+      if (app.engines[engine].async == true) {
+        // Async engines can't work on sync engines
+        notCompatible.push(engines.indexOf(engine));
+      }
+    }
+  }
+  
   for (i=0; i < engines.length; i++) {
-    assert.isTrue(checks[i]);
+    if (notCompatible.indexOf(i) >= 0) continue;
+    else assert.isTrue(checks[i]);
   }
 }
 
