@@ -40,16 +40,27 @@ var engines = Object.keys(app.engines),
 // Automate engine compatibility checks
 
 function engineCompatibility(buffer) {
-  var pass, checks = [];
+  var pass, checks = [], errors = [];
+  
+  // Support for callbacks
+  if (buffer.indexOf('hello'.link('google.com')) >= 0) {
+    console.log('    ✓ ' + colorize('Supports JavaScript functions', '0;32'));
+  } else {
+    console.log('    ✗ ' + colorize('Does not support JavaScript functions', '0;36'));
+  }
+  
   for (var engine,i=0; i < engines.length; i++) {
     engine = engines[i];
     pass = buffer.indexOf('Rendered Partial: ' + engine.toUpperCase()) >= 0;
-    checks.push(pass);
-    if (pass) console.log('    ✓ ' + colorize('Compatible with ' + engine, '0;33'));
-    else console.log('    ✗ ' + colorize('Not Compatible with ' + engine, '0;36'));
+    if (pass) console.log('    ✓ ' + colorize('Compatible with ' + engine, '0;32'));
+    else {
+      errors.push(engine);
+      console.log('    ✗ ' + colorize('Not Compatible with ' + engine, '0;36'));
+    }
   }
+
   for (i=0; i < engines.length; i++) {
-    return assert.isTrue(checks[i]);
+    assert.isTrue(checks[i]);
   }
 }
 
@@ -72,7 +83,7 @@ app.__addEnginePartials = function(current, data, repl) {
 
 // Automate vows batches for test engines
 
-app.__createEngineBatch = function(className, testUrl, __module__) {
+app.__createEngineBatch = function(className, engine, testUrl, __module__) {
   
   vows.describe(className + ' Template Engine').addBatch({
 
@@ -90,9 +101,9 @@ app.__createEngineBatch = function(className, testUrl, __module__) {
       'Returns valid view buffer': function(buffer) {
         assert.isTrue(buffer.indexOf(className + ' Template Engine') >= 0);
       },
-
+      
       'Supports partials from self & other engines': function(buffer) {
-        engineCompatibility(buffer);
+        engineCompatibility(buffer, engine);
       }
 
     }

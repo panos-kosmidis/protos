@@ -1,10 +1,12 @@
 
 var app = require('../fixtures/bootstrap');
 
-app.addFilter('handlebars_template', function(data) {
-  data = app.__addEnginePartials('handlebars', data, '{{> main_%s}}');
+var engine = 'handlebars';
+
+app.addFilter(engine + '_template', function(data) {
+  data = app.__addEnginePartials(engine, data, '{{> main_%s}}');
   // console.exit(data);
   return data;
 });
 
-app.__createEngineBatch('Handlebars', '/handlebars.hb.html', module);
+app.__createEngineBatch('Handlebars', engine, '/handlebars.hb.html', module);
