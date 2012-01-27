@@ -125,7 +125,7 @@ vows.describe('lib/storages/redis.js').addBatch({
       multi.get('v1_new');
       multi.rename('v1_new', 'v1');
       multi.exec(function(err, results) {
-        res = err || (results[1] === 'Value 1');
+        res = err || (results[1] == 'Value 1');
         promise.emit('success', res);
       });
       return promise;
