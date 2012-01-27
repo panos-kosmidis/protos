@@ -8,7 +8,16 @@ var app = require('../fixtures/bootstrap'),
 var multi = app.createMulti(app);
 
 app.addFilter('eco_template', function(data) {
-  console.exit(99);
+  var key, engine,
+      async = app.engines.eco.async,
+      buf = '\n';
+  for (key in app.engines) {
+    engine = app.engines[key];
+    // Skip async partials on sync engines
+    if (async == false && engine.async == true) continue;
+    buf += util.format('<%- @main_%s(@locals) %>\n', key);
+  }
+  return data + buf;
 });
 
 vows.describe('View Engines').addBatch({
