@@ -3,7 +3,7 @@ var app = require('../fixtures/bootstrap');
 
 var engine = 'whiskers';
 
-app.addFilter(engine + '_template', function(data) {
+app.addFilter(engine + '1_template', function(data) {
   data = app.__addEnginePartials(engine, data, '{> main_%s(locals)}');
   // console.exit(data);
   return data;
