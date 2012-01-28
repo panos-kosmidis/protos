@@ -97,7 +97,7 @@ app.__addEnginePartials = function(current, data, repl) {
 
 app.__createEngineBatch = function(className, engine, testUrl, __module__) {
   
-  vows.describe(className + ' Template Engine').addBatch({
+  vows.describe(className + ' Rendering Engine').addBatch({
 
     '': {
 
@@ -111,6 +111,7 @@ app.__createEngineBatch = function(className, engine, testUrl, __module__) {
       },
 
       'Returns valid view buffer': function(buffer) {
+        // console.exit(buffer);
         assert.isTrue(buffer.indexOf(className + ' Template Engine') >= 0);
       },
       
