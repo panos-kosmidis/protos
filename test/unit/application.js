@@ -279,12 +279,22 @@ vows.describe('lib/application.js').addBatch({
     
     topic: function() {
       
-      console.trace('`make tests breaks when testing app.curl & app.clientRequest`');
-      
-      process.exit();
+      // Handle the upcoming requests manually (prevent conflicts with engine tests)
+      app.on('request', function(req, res) {
+        if (req.url == '/request-test') {
+          req.stopRoute();
+          res.sendHeaders();
+          res.end('SUCCESS');
+        } else if (req.method == 'PUT' && req.url == '/') {
+          req.stopRoute();
+          res.statusCode = 400;
+          res.sendHeaders();
+          res.end('BAD REQUEST');
+        }
+      });
       
       var promise = new EventEmitter();
-      multi.curl('/robots.txt');
+      multi.curl('/request-test');
       multi.curl('-X PUT /');
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
@@ -295,8 +305,8 @@ vows.describe('lib/application.js').addBatch({
     'Returns valid data': function(results) {
       var r1 = results[0],
           r2 = results[1];
-      assert.isTrue(r1.indexOf('www.robotstxt.org') >= 0);
-      assert.isTrue(r2.indexOf('400 Bad Request') >= 0);
+      assert.isTrue(r1 == 'SUCCESS');
+      assert.isTrue(r2 == 'BAD REQUEST');
     }
     
   }
@@ -307,9 +317,10 @@ vows.describe('lib/application.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      multi.clientRequest('/');
+      multi.clientRequest('/request-test');
       multi.clientRequest({path: '/', method: 'PUT'});
       multi.exec(function(err, results) {
+        app.removeAllListeners('request'); // Remove `request` listeners (set on previous test case)
         promise.emit('success', err || results);
       });
       return promise;
@@ -318,13 +329,10 @@ vows.describe('lib/application.js').addBatch({
     'Returns valid data': function(results) {
       var r1 = results[0],
           r2 = results[1];
-      assert.isString(r1[0]);
-      assert.isTrue(r1[0].length > 0);
-      assert.strictEqual(r1[1].status, '200 OK');
-      assert.isString(r2[0]);
-      assert.isTrue(r2[0].length > 0);
-      assert.strictEqual(r2[1].status, '400 Bad Request');
-      
+      assert.equal(r1[0], 'SUCCESS');
+      assert.equal(r1[1].status, '200 OK');
+      assert.equal(r2[0], 'BAD REQUEST');
+      assert.equal(r2[1].status, '400 Bad Request');
     }
     
   }
