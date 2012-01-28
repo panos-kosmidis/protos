@@ -2,7 +2,8 @@
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     util = require('util'),
-    assert = require('assert');
+    assert = require('assert'),
+    OutgoingMessage = require('http').OutgoingMessage;
 
 var enabledBatch = 'When View Caching is enabled',
     disabledBatch = 'When View Caching is disabled',
@@ -13,14 +14,23 @@ batch[disabledBatch] = {};
 
 // ViewCaching enabled
 app.viewCaching = true;
-var counter = 1;
-Object.keys(app.engines).slice(0,1).map(function(eng) {
-  var engine = app.engines[eng];
-  current[util.format('%s successfully caches callbacks', engine.className)] = function() {
-    var func = engine.render('', {}, '/myview');
-    console.exit(func);
+var counter = 0, 
+    results = [],
+    viewCache = app.views.callbacks;
+
+Object.keys(app.engines).map(function(eng) {
+  var engine = app.engines[eng],
+      res = new OutgoingMessage; // Simulate response
+  res.engine = engine;
+  current[util.format('%s engine caches callbacks', engine.className)] = function() {
+    var relPath = '/myview/'+ (++counter);
+        out = engine.render('SUCCESS', {res: res}, relPath);
+    results.push(out);
+    var cb = viewCache[relPath];
+    assert.isFunction(cb);
+    assert.isString(cb.engine);
+    assert.equal(cb.engine, engine.className);
   }
-  counter++;
 });
 
 vows.describe('View Caching').addBatch(batch).export(module);
