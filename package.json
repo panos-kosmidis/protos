@@ -35,7 +35,9 @@
     "whiskers"          : ">= 0.1.2",
     "kernel"            : ">= 0.0.2",
     "handlebars"        : ">= 1.0.2beta",
-    "coffeekup"         : ">= 0.3.1"
+    "coffeekup"         : ">= 0.3.1",
+    "jshtml"            : ">= 0.2.2",
+    "dot"               : ">= 0.1.7"
   },
   "devDependencies"     : {
     "jshint"            : ">= 0.5.6",
