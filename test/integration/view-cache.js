@@ -57,6 +57,4 @@ current['Restored view cache state'] = function() {
   app.views.callbacks = oldViewCache;
 }
 
-// last check
-
 vows.describe('View Caching').addBatch(batch).export(module);
