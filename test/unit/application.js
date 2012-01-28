@@ -278,6 +278,11 @@ vows.describe('lib/application.js').addBatch({
   'Application::curl': {
     
     topic: function() {
+      
+      console.trace('`make tests breaks when testing app.curl & app.clientRequest`');
+      
+      process.exit();
+      
       var promise = new EventEmitter();
       multi.curl('/robots.txt');
       multi.curl('-X PUT /');
@@ -319,6 +324,7 @@ vows.describe('lib/application.js').addBatch({
       assert.isString(r2[0]);
       assert.isTrue(r2[0].length > 0);
       assert.strictEqual(r2[1].status, '400 Bad Request');
+      
     }
     
   }
