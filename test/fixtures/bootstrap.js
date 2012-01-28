@@ -40,13 +40,21 @@ var engines = Object.keys(app.engines),
 // Automate engine compatibility checks
 
 function engineCompatibility(buffer, __engine__) {
-  var pass, checks = [], failed = [], notCompatible = [];
+  var pass, checks = [], failed = [], notCompatible = [],
+      helperPropertyRegex = /<p>99(\s+)?<\/p>/;
   
   // Support for callbacks
   if (buffer.indexOf('hello'.link('google.com')) >= 0) {
     console.log('    ✓ ' + colorize('Supports function calls', '0;32'));
   } else {
     console.log('    ✗ ' + colorize('Does not support function calls', '0;33'));
+  }
+  
+  // Support for helper properties
+  if (helperPropertyRegex.test(buffer)) {
+    console.log('    ✓ ' + colorize('Supports helper properties', '0;32'));
+  } else {
+    console.log('    ✗ ' + colorize('Does not support helper properties', '0;33'));
   }
   
   for (var engine,i=0; i < engines.length; i++) {
@@ -70,10 +78,6 @@ function engineCompatibility(buffer, __engine__) {
     }
   }
   
-  // for (i=0; i < engines.length; i++) {
-  //   if (notCompatible.indexOf(i) >= 0) continue;
-  //   else assert.isTrue(checks[i]);
-  // }
 }
 
 // Automate engine tests
