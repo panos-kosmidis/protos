@@ -27,16 +27,17 @@ CREATE TABLE IF NOT EXISTS %s (\n\
 )', table);
 
 // Cache Events
+var c = '0;36';
 app.on('mysql_cache_store', function(cacheID, cache) {
-  console.log('    ✓ %s', colorize('Stored cache for ' + cacheID, '0;33'));
+  console.log('    ✓ %s', colorize('Stored cache for ' + cacheID, c));
 });
 
 app.on('mysql_cache_use', function(cacheID, cache) {
-  console.log('    ✓ %s', colorize('Using cacheID' + cacheID, '0;33'));
+  console.log('    ✓ %s', colorize('Using cacheID' + cacheID, c));
 });
 
 app.on('mysql_cache_invalidate', function(invalidated) {
-  console.log('    ✓ %s', colorize('Invalidated ' + invalidated.join(', '), '0;33'));
+  console.log('    ✓ %s', colorize('Invalidated ' + invalidated.join(', '), c));
 });
 
 // Test Model

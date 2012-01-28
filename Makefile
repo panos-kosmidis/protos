@@ -28,7 +28,7 @@ default:
 		@echo
 
 deps:
-		@npm install
+		@npm install -d
 		@./tools/remove-sys-notice
 
 testconfig:

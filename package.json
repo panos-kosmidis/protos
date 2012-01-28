@@ -9,9 +9,7 @@
   "main"              : "lib/framework",
   "engines"           : { "node": ">= 0.6.0" },
   "dependencies"      : {
-    "jshint"            : ">= 0.5.6",
     "node-inspector"    : ">= 0.1.10",
-    "vows"              : ">= 0.6.0",
     "multi"             : ">= 0.1.0",
     "file"              : ">= 0.1.1",
     "formidable"        : ">= 1.0.7",
@@ -37,5 +35,9 @@
     "whiskers"          : ">= 0.1.2",
     "kernel"            : ">= 0.0.2",
     "handlebars"        : ">= 1.0.2beta"
+  },
+  "devDependencies"     : {
+    "jshint"            : ">= 0.5.6",
+    "vows"              : ">= 0.6.0"
   }
 }
