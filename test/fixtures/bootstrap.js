@@ -93,6 +93,7 @@ app.__addEnginePartials = function(current, data, repl) {
     }
   });
   data += '\n' + buf.join('');
+  // console.exit(data);
   return data;
 }
 
