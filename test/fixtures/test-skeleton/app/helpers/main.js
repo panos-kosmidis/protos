@@ -11,6 +11,10 @@ function MainHelper(app) {
     callback(title.link(url));
   }
   
+  this.kernel_link = function(title, url, callback) {
+    callback(null, title.link(url));
+  }
+  
 }
 
 module.exports = MainHelper;
