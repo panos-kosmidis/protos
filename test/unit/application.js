@@ -266,9 +266,15 @@ vows.describe('lib/application.js').addBatch({
   'Application::createMulti': {
     
     'Returns a multi object': function() {
-      var ob = {method: function() {}}
+      var ob = {method: function() {}};
       var multi = app.createMulti(ob, {});
       assert.equal(multi.constructor.name, 'Multi');
+      assert.isFunction(multi.method);
+    },
+    
+    "Uses app's context when run without args": function() {
+      var multi = app.createMulti();
+      assert.isFunction(multi.createMulti);
     }
     
   }
