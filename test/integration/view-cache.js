@@ -54,6 +54,7 @@ Object.keys(app.engines).map(function(eng) {
 });
 
 current['Restored view cache state'] = function() {
+  app.viewCaching = true;
   app.views.callbacks = oldViewCache;
 }
 

@@ -71,6 +71,8 @@ vows.describe('View Rendering').addBatch({
       
       topic: function() {
         
+        console.exit(app);
+
         app.on('request', function(req, res) {
           req.stopRoute();
           switch (req.url) {
