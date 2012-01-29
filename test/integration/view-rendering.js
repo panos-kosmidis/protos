@@ -120,24 +120,33 @@ vows.describe('View Rendering').addBatch({
       },
       
       'Application::badRequest works properly': function(results) {
-        var r = results[0];
-        console.exit(results);
+        var res = results[0], buf = res[0], hdr = res[1];
+        assert.equal(buf.trim(), '<p>400 Bad Request</p>');
+        assert.equal(hdr.status, '400 Bad Request');
       },
       
       'Application::notFound works properly': function(results) {
-        var r = results[1];
+        var res = results[1], buf = res[0], hdr = res[1];
+        assert.equal(buf.trim(), '<p>HTTP/404: Page not Found</p>');
+        assert.equal(hdr.status, '404 Not Found');
       },
       
       'Application::serverError works properly': function(results) {
-        var r = results[2];
+        var res = results[2], buf = res[0], hdr = res[1];
+        assert.equal(buf.trim(), '<p>HTTP/500: Internal Server Error</p>');
+        assert.equal(hdr.status, '500 Internal Server Error');
       },
       
       'Application::rawServerError works properly': function(results) {
-        var r = results[3];
+        var res = results[3], buf = res[0], hdr = res[1];
+        assert.equal(buf.trim(), '<p>{HTTP/500 ERROR}</p>');
+        assert.equal(hdr.status, '500 Internal Server Error');
       },
       
       'Application::rawHttpMessage works properly': function(results) {
-        var r = results[4];
+        var res = results[4], buf = res[0], hdr = res[1];
+        assert.equal(buf.trim(), '<p>{RAW MESSAGE}</p>');
+        assert.equal(hdr.status, '200 OK');
       },
       
     }
