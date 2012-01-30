@@ -238,6 +238,8 @@ vows.describe('lib/application.js').addBatch({
         }
       }
 
+      app.resources.my_resource = '{RESOURCE}';
+
       app.getResource('storages/redis', function(storage) {
         promise.emit('success', storage);
       });
@@ -253,6 +255,10 @@ vows.describe('lib/application.js').addBatch({
     'Gets {context}/{group}:{resource}': function() {
       var drv = app.getResource('context/beta:gamma');
       assert.equal(drv.name, 'gamma');
+    },
+    
+    'Gets {resource}': function() {
+      assert.equal(app.getResource('my_resource'), '{RESOURCE}');
     },
     
     'Works asynchronously if callback provided': function(storage) {
