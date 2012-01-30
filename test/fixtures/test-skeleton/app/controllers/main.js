@@ -20,7 +20,7 @@ function MainController() {
   
   /* Response Caching Tests */
   
-  get('/test/response-:cache/:id', {cache: /^(cache|no\-cache)$/, id: 'integer'}, function(req, res) {
+  get('/test/response-:cache/:id', {cache: /^(cache|nocache)$/, id: 'integer'}, function(req, res) {
     if (req.__params.cache == 'cache') res.useCache('test_cache');
     res.render('response-cache');
   });
