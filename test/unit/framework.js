@@ -18,7 +18,7 @@ vows.describe('lib/framework.js').addBatch({
     },
     
     'Sets environment': function() {
-      assert.equal(framework.environment, 'development');
+      assert.isTrue(/^(debug|development|travis)$/.test(framework.environment));
     },
     
     'Sets framework path': function() {
