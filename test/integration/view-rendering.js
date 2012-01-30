@@ -70,8 +70,10 @@ vows.describe('View Rendering').addBatch({
     '» When Raw Views is off': {
       
       topic: function() {
-        
-        console.exit(app);
+
+        // Temporarily disable filters
+        var filtersBackup = app.__filters;
+        app.__filters = {};
 
         app.on('request', function(req, res) {
           req.stopRoute();
@@ -115,6 +117,7 @@ vows.describe('View Rendering').addBatch({
         
         multi.exec(function(err, results) {
           app.removeAllListeners('request');
+          app.__filters = filtersBackup;
           promise.emit('success', err || results);
         });
         
