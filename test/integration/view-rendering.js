@@ -65,15 +65,20 @@ vows.describe('View Rendering').addBatch({
   
 }).addBatch({
   
-  'OutgoingMessage::rawHttpMessage': {
+  'View Messages (raw views enabled)': {
     
-    '» When Raw Views is off': {
-      
       topic: function() {
 
         // Temporarily disable filters
-        var filtersBackup = app.__filters;
+        app.__filtersBackup = app.__filters;
         app.__filters = {};
+        
+        // Set multi flush to false (reuse call stack)
+        multi.__config.flush = false;
+        
+        var promise = new EventEmitter();
+        
+        app.config.rawViews = true;
 
         app.on('request', function(req, res) {
           req.stopRoute();
@@ -105,10 +110,6 @@ vows.describe('View Rendering').addBatch({
           }
         });
         
-        var promise = new EventEmitter();
-        
-        app.config.rawViews = true;
-        
         multi.clientRequest('/bad-request');
         multi.clientRequest('/not-found');
         multi.clientRequest('/server-error');
@@ -116,8 +117,6 @@ vows.describe('View Rendering').addBatch({
         multi.clientRequest('/raw-http-message');
         
         multi.exec(function(err, results) {
-          app.removeAllListeners('request');
-          app.__filters = filtersBackup;
           promise.emit('success', err || results);
         });
         
@@ -125,35 +124,98 @@ vows.describe('View Rendering').addBatch({
       },
       
       'Application::badRequest works properly': function(results) {
-        var res = results[0], buf = res[0], hdr = res[1];
-        assert.equal(buf.trim(), '<p>400 Bad Request</p>');
+        var res = results[0], buf = res[0].trim(), hdr = res[1];
+        assert.isTrue(buf.indexOf('<!DOCTYPE html>') === -1);
+        assert.equal(buf, '<p>400 Bad Request</p>');
         assert.equal(hdr.status, '400 Bad Request');
       },
       
       'Application::notFound works properly': function(results) {
-        var res = results[1], buf = res[0], hdr = res[1];
-        assert.equal(buf.trim(), '<p>HTTP/404: Page not Found</p>');
+        var res = results[1], buf = res[0].trim(), hdr = res[1];
+        assert.isTrue(buf.indexOf('<!DOCTYPE html>') === -1);
+        assert.equal(buf, '<p>HTTP/404: Page not Found</p>');
         assert.equal(hdr.status, '404 Not Found');
       },
       
       'Application::serverError works properly': function(results) {
-        var res = results[2], buf = res[0], hdr = res[1];
-        assert.equal(buf.trim(), '<p>HTTP/500: Internal Server Error</p>');
+        var res = results[2], buf = res[0].trim(), hdr = res[1];
+        assert.isTrue(buf.indexOf('<!DOCTYPE html>') === -1);
+        assert.equal(buf, '<p>HTTP/500: Internal Server Error</p>');
         assert.equal(hdr.status, '500 Internal Server Error');
       },
       
       'Application::rawServerError works properly': function(results) {
-        var res = results[3], buf = res[0], hdr = res[1];
+        var res = results[3], buf = res[0].trim(), hdr = res[1];
+        assert.isTrue(buf.indexOf('<!DOCTYPE html>') === -1);
         assert.equal(buf.trim(), '<p>{HTTP/500 ERROR}</p>');
         assert.equal(hdr.status, '500 Internal Server Error');
       },
       
       'Application::rawHttpMessage works properly': function(results) {
-        var res = results[4], buf = res[0], hdr = res[1];
-        assert.equal(buf.trim(), '<p>{RAW MESSAGE}</p>');
+        var res = results[4], buf = res[0].trim(), hdr = res[1];
+        assert.isTrue(buf.indexOf('<!DOCTYPE html>') === -1);
+        assert.equal(buf, '<p>{RAW MESSAGE}</p>');
         assert.equal(hdr.status, '200 OK');
-      },
+      }
       
+    }
+    
+}).addBatch({
+  
+  'View Messages (raw views disabled)': {
+    
+    topic: function() {
+      
+      app.config.rawViews = false;
+      
+      var promise = new EventEmitter();
+      
+      // Flush call stack upon completion
+      multi.__config.flush = false;
+      
+      // Reuse the call stack
+      multi.exec(function(err, results) {
+        app.removeAllListeners('request'); // Remove `request` events
+        app.__filters = app.__filtersBackup;  // Restore filter state
+        promise.emit('success', err || results);
+      });
+
+      return promise;
+    },
+    
+    'Application::badRequest works properly': function(results) {
+      var res = results[0], buf = res[0].trim(), hdr = res[1];
+      assert.isTrue(buf.indexOf('<!DOCTYPE html>') >= 0);
+      assert.isTrue(buf.indexOf('<p>400 Bad Request</p>') >= 0);
+      assert.equal(hdr.status, '400 Bad Request');
+    },
+    
+    'Application::notFound works properly': function(results) {
+      var res = results[1], buf = res[0].trim(), hdr = res[1];
+      assert.isTrue(buf.indexOf('<!DOCTYPE html>') >= 0);
+      assert.isTrue(buf.indexOf('<p>HTTP/404: Page not Found</p>') >= 0);
+      assert.equal(hdr.status, '404 Not Found');
+    },
+    
+    'Application::serverError works properly': function(results) {
+      // ServerError only includes the #500 template
+      var res = results[2], buf = res[0].trim(), hdr = res[1];
+      assert.equal(buf, '<p>HTTP/500: Internal Server Error</p>');
+      assert.equal(hdr.status, '500 Internal Server Error');
+    },
+    
+    'Application::rawServerError works properly': function(results) {
+      var res = results[3], buf = res[0].trim(), hdr = res[1];
+      assert.isTrue(buf.indexOf('<!DOCTYPE html>') >= 0);
+      assert.isTrue(buf.indexOf('<p>{HTTP/500 ERROR}</p>') >= 0);
+      assert.equal(hdr.status, '500 Internal Server Error');
+    },
+    
+    'Application::rawHttpMessage works properly': function(results) {
+      var res = results[4], buf = res[0].trim(), hdr = res[1];
+      assert.isTrue(buf.indexOf('<!DOCTYPE html>') >= 0);
+      assert.isTrue(buf.indexOf('<p>{RAW MESSAGE}</p>') >= 0);
+      assert.equal(hdr.status, '200 OK');
     }
     
   }
