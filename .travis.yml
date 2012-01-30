@@ -1,0 +1,20 @@
+language: node_js
+
+node_js:
+  - 0.6
+
+mysql:
+  adapter: mysql2
+  database: test_db
+  username: root
+  encoding: utf8
+
+before_script:
+  - "make deps"
+  - "mysql -e 'create database test_db;'"
+
+script:
+  - "NODE_ENV=travis make tests"
+
+notifications:
+  email: false
