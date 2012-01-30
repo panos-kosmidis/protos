@@ -51,8 +51,8 @@ function MainController() {
     res.end('OK');
   });
   
-  get('/removecookies/:names', {names: /^[a-z\|]+$/}, function(req, res, params) {
-    res.removeCookies(params.names.split('|'));
+  get('/removecookies/:names', {names: 'alpha_dashes'}, function(req, res, params) {
+    res.removeCookies(params.names.split('-'));
     res.sendHeaders();
     res.end('OK');
   });

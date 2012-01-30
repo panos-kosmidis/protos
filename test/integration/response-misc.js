@@ -50,7 +50,7 @@ vows.describe('Response Misc').addBatch({
 
       multi.curl('/setcookie/user/ernie'); // setCookie
       multi.curl('/removecookie/user'); // removeCookie
-      multi.curl('/deletecookies/user|email|info'); // removeCookies
+      multi.curl('/removecookies/user-email-info'); // removeCookies
       multi.curl('/hascookie/user'); // hasCookie
       multi.curl('/getcookie/user'); // getCookie
       
