@@ -41,4 +41,30 @@ vows.describe('Response Misc').addBatch({
     
   }
   
+}).addBatch({
+  
+  'Cookie Operations': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+
+      multi.curl('/setcookie/user/ernie'); // setCookie
+      multi.curl('/removecookie/user'); // removeCookie
+      multi.curl('/deletecookies/user|email|info'); // removeCookies
+      multi.curl('/hascookie/user'); // hasCookie
+      multi.curl('/getcookie/user'); // getCookie
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+  
+      return promise;
+    },
+    
+    'Cookies are correctly set': function(results) {
+      console.exit(results);
+    }
+    
+  }
+  
 }).export(module);
