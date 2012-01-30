@@ -16,6 +16,10 @@ vows.describe('Response Caching').addBatch({
       
       app.config.rawViews = true;
       
+      // Backup filters
+      app.__filtersBackup = app.__filters;
+      app.__filters = {};
+      
       // Requests that will be cached
       multi.curl('/test/response-cache/1');
       multi.curl('/test/response-cache/2');
@@ -25,6 +29,7 @@ vows.describe('Response Caching').addBatch({
       multi.curl('/test/response-nocache/4');
 
       multi.exec(function(err, results) {
+        app.__filters = app.__filtersBackup;
         promise.emit('success', err || results);
       });
       
