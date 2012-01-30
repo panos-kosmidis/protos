@@ -33,11 +33,11 @@ vows.describe('Response Caching').addBatch({
         promise.emit('success', err || results);
       });
       
-      // return promise;
+      return promise;
     },
     
     'success': function(results) {
-      // console.exit(results);
+      console.exit(results);
     }
     
   }
