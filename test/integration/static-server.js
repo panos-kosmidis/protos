@@ -31,14 +31,25 @@ vows.describe('Static File Server').addBatch({
       multi.curl('-i /dir/.hidden-file');             // hidden file, level 1
 
       // Partial content
-      multi.curl('-i --range "5-" /ranges.txt');      // partial file request, valid
-      multi.curl('-i --range "5-1" /ranges.txt');     // partial file request, invalid
+      multi.clientRequest({                           // partial file request, valid
+        path: '/ranges.txt',
+        headers: { Range: 'bytes=5-' }
+      });
+      
+      multi.clientRequest({                          // partial file request, invalid
+        path: '/ranges.txt',
+        headers: { Range: 'bytes=5-1' }
+      });
+      
+      multi.curl('-i --range "5-" /ranges.txt');      
+      multi.curl('-i --range "5-1" /ranges.txt');
       
       multi.exec(function(err, results) {
         if (err) throw err;
         app.__filters = app.__filterBackup;
         results = results.map(function(r) {
-          return r.trim().split(/\r\n/);
+          try { return r.trim().split(/\r\n/); }
+          catch(e) { return r; }
         });
         promise.emit('success', err || results);
       });
@@ -101,8 +112,10 @@ vows.describe('Static File Server').addBatch({
     'Responds with valid headers for partial content requests': function(results) {
       var r1 = results[11], // HTTP/1.1 206 Partial Content
           r2 = results[12]; // HTTP/1.1 416 Requested Range Not Satisfiable
-      assert.isTrue(r1.indexOf('HTTP/1.1 206 Partial Content') >= 0);
-      assert.isTrue(r2.indexOf('HTTP/1.1 416 Requested Range Not Satisfiable') >= 0);
+      assert.equal(r1[0], 'fghijklmnopqrstuvwxyzfghij');
+      assert.equal(r1[1].status, '206 Partial Content');
+      assert.equal(r2[0], '');
+      assert.equal(r2[1].status, '416 Requested Range Not Satisfiable');
     }
     
   }
