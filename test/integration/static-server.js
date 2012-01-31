@@ -41,9 +41,6 @@ vows.describe('Static File Server').addBatch({
         headers: { Range: 'bytes=5-1' }
       });
       
-      multi.curl('-i --range "5-" /ranges.txt');      
-      multi.curl('-i --range "5-1" /ranges.txt');
-      
       multi.exec(function(err, results) {
         if (err) throw err;
         app.__filters = app.__filterBackup;
