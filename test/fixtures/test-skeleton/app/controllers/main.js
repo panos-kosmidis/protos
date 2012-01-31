@@ -67,6 +67,22 @@ function MainController() {
     res.end(ans);
   });
   
+  /* Redirection Tests */
+  
+  get('/redirect/:context', {context: /^(test|home|login)$/}, function(req, res, params) {
+    switch (params.context) {
+      case 'test':
+        res.redirect('/test');
+        break;
+      case 'home':
+        app.home(res);
+        break;
+      case 'login':
+        app.login(res);
+        break;
+    }
+  });
+  
 }
 
 module.exports = MainController;

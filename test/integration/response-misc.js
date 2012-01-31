@@ -98,6 +98,44 @@ vows.describe('Response Misc').addBatch({
   
 }).addBatch({
   
+  'Redirection': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      multi.curl('-i /redirect/test');
+      multi.curl('-i /redirect/home');
+      multi.curl('-i /redirect/login');
+      
+      multi.exec(function(err, results) {
+        results = results.map(function(r) {
+          return r.trim().split(/\r\n/);
+        });
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    'OutgoingMessage::redirect works properly': function(results) {
+      var r = results[0];
+      assert.isTrue(r.indexOf('Location: ' + app.url('/test')) >= 0);
+    },
+    
+    'Application::home redirects properly': function(results) {
+      var r = results[1];
+      assert.isTrue(r.indexOf('Location: ' + app.url('/')) >= 0);
+    },
+    
+    'Application::login redirects properly': function(results) {
+      var r = results[2];
+      assert.isTrue(r.indexOf('Location: ' + app.url(app.loginUrl)) >= 0);
+    }
+    
+  }
+  
+}).addBatch({
+  
   
   'Cookie Operations': {
     
