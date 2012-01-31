@@ -2,6 +2,7 @@
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
+    util = require('util'),
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
     
@@ -50,6 +51,47 @@ vows.describe('Response Misc').addBatch({
       assert.isTrue(headers.indexOf('x-custom-header: 1') >= 0);
       assert.isTrue(headers.indexOf('x-another-header: 2') >= 0);
       assert.isTrue(headers.indexOf('x-some-header: 3') >= 0);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Cache Control': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      multi.curl('-i /'); // Dynamic
+      multi.curl('-i /robots.txt'); // Static
+      multi.curl('-i /404'); // Error
+      
+      multi.exec(function(err, results) {
+        results = results.map(function(r) {
+          r = r.trim().split(/\r\n/g);
+          r = r.slice(0, r.indexOf(''))
+          return r;
+        });
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    'Properly set for dynamic resources': function(results) {
+      var r = results[0];
+      assert.isTrue(r.indexOf('Cache-Control: ' + app.config.cacheControl.dynamic) >= 0);
+    },
+    
+    'Properly set for static resources': function(results) {
+      var r = results[1];
+      var cc = app.config.cacheControl;
+      assert.isTrue(r.indexOf(util.format('Cache-Control: %s, max-age=%d', cc.static, cc.maxAge)) >= 0);
+    },
+    
+    'Properly set for error pages': function(results) {
+      var r = results[2];
+      assert.isTrue(r.indexOf('Cache-Control: ' + app.config.cacheControl.error) >= 0);
     }
     
   }
