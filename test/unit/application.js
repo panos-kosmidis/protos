@@ -297,6 +297,10 @@ vows.describe('lib/application.js').addBatch({
           req.stopRoute();
           res.sendHeaders();
           res.end('SUCCESS');
+        } else if (req.url == '/request-headers-test') {
+          req.stopRoute();
+          res.sendHeaders();
+          res.end('x-custom-header' in req.headers ? 'SUCCESS' : 'FAIL');
         } else if (req.method == 'PUT' && req.url == '/') {
           req.stopRoute();
           res.statusCode = 400;
@@ -331,6 +335,11 @@ vows.describe('lib/application.js').addBatch({
       var promise = new EventEmitter();
       multi.clientRequest('/request-test');
       multi.clientRequest({path: '/', method: 'PUT'});
+      multi.clientRequest({
+        path: '/request-headers-test', 
+        method: 'GET', 
+        headers: { 'x-custom-header': 1 }
+      });
       multi.exec(function(err, results) {
         app.removeAllListeners('request'); // Remove `request` listeners (set on previous test case)
         promise.emit('success', err || results);
@@ -338,13 +347,19 @@ vows.describe('lib/application.js').addBatch({
       return promise;
     },
     
-    'Returns valid data': function(results) {
+    'Returns valid responses & data': function(results) {
       var r1 = results[0],
           r2 = results[1];
       assert.equal(r1[0], 'SUCCESS');
       assert.equal(r1[1].status, '200 OK');
       assert.equal(r2[0], 'BAD REQUEST');
       assert.equal(r2[1].status, '400 Bad Request');
+    },
+    
+    'Allows sending custom headers': function(results) {
+      var r = results[2];
+      assert.equal(r[0], 'SUCCESS');
+      assert.equal(r[1].status, '200 OK');
     }
     
   }
