@@ -35,6 +35,7 @@ vows.describe('Static File Server').addBatch({
       multi.curl('-i --range "5-1" /ranges.txt');     // partial file request, invalid
       
       multi.exec(function(err, results) {
+        if (err) throw err;
         app.__filters = app.__filterBackup;
         results = results.map(function(r) {
           return r.trim().split(/\r\n/);
