@@ -19,22 +19,28 @@ vows.describe('Response Misc').addBatch({
       app.__filterBackup = app.__filters;
       app.__filters = {};
       
-      app.clientRequest('/', function(err, res, headers) {
-        app.__filters = app.__filterBackup;
-        promise.emit('success', err || headers);
+      multi.clientRequest('/');
+      multi.curl('/setheader/x-custom-header/1234');
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
       });
       
       return promise;
     },
 
-    'Are properly sent': function(headers) {
+    'Are properly sent': function(results) {
+      var buf = results[0][0],
+          headers = results[0][1];
       var expected = Object.keys(app.config.headers).map(function(elem) {
         return elem.toLowerCase();
       }).concat(['cache-control', 'connection', 'transfer-encoding']).sort();
       assert.deepEqual(Object.keys(headers).sort(), expected);
     },
     
-    'Dynamic headers work properly': function(headers) {
+    'Dynamic headers work properly': function(results) {
+      var buf = results[0][0],
+          headers = results[0][1];
       assert.isFalse(isNaN(Date.parse(headers.date)));
       assert.equal(headers.status, '200 OK');
     },
@@ -43,27 +49,107 @@ vows.describe('Response Misc').addBatch({
   
 }).addBatch({
   
+  
   'Cookie Operations': {
     
     topic: function() {
       var promise = new EventEmitter();
 
-      multi.curl('/setcookie/user/ernie'); // setCookie
-      multi.curl('/removecookie/user'); // removeCookie
-      multi.curl('/removecookies/user-email-info'); // removeCookies
-      multi.curl('/hascookie/user'); // hasCookie
-      multi.curl('/getcookie/user'); // getCookie
+      // OutgoingMessage::setCookie
+      multi.curl('-i /setcookie/user/john');
+      multi.curl('-i -G -d "domain=example.com" /setcookie/user/john');
+      multi.curl('-i -G -d "domain=example.com&path=/test&expires=3600" /setcookie/user/john');
+      multi.curl('-i -G -d "domain=example.com&path=/test&expires=3600&httpOnly=1" /setcookie/user/john');
+      multi.curl('-i -G -d "domain=example.com&path=/test&expires=3600&httpOnly=1&secure=1" /setcookie/user/john');
+      
+      // OutgoingMessage::removeCookie
+      multi.curl('-i /removecookie/user');
+      
+      // OutgoingMessage::removeCookies
+      multi.curl('-i /removecookies/user-email-info');
+      
+      // OutgoingMessage::hasCookie
+      multi.curl('--cookie "user=john" /hascookie/user');
+      
+      // OutgoingMessage::getCookie
+      multi.curl('--cookie "id=24" /getcookie/id');
       
       multi.exec(function(err, results) {
-        promise.emit('success', err || results);
+        app.__filters = app.__filterBackup;
+        promise.emit('success', err || results.map(function(r) {
+          return r.trim().split(/\r\n/);
+        }));
       });
   
       return promise;
     },
     
-    'Cookies are correctly set': function(results) {
-      console.exit(results);
-    }
+    'OutgoingMessage::setCookie works w/o options': function(results) {
+      var r = results[0];
+      assert.isTrue(r.indexOf('Set-Cookie: user=john; path=/') >= 0);
+    },
+    
+    'OutgoingMessage::setCookie works w/domain': function(results) {
+      var r = results[1];
+      assert.isTrue(r.indexOf('Set-Cookie: user=john; domain=example.com; path=/') >= 0)
+    },
+    
+    'OutgoingMessage::setCookie works w/domain + path': function(results) {
+      var r = results[2];
+      assert.isTrue(r.indexOf('Set-Cookie: user=john; domain=example.com; path=/test') >= 0)
+    },
+    
+    'OutgoingMessage::setCookie works w/domain + path + httpOnly': function(results) {
+      var r = results[3];
+      assert.isTrue(r.indexOf('Set-Cookie: user=john; domain=example.com; path=/test; httpOnly') >= 0)
+    },
+    
+    'OutgoingMessage::setCookie works w/domain + path + httpOnly + secure': function(results) {
+      var r = results[4];
+      assert.isTrue(r.indexOf('Set-Cookie: user=john; domain=example.com; path=/test; httpOnly; secure') >= 0)
+    },
+    
+    'OutgoingMessage::removeCookie works properly': function(results) {
+      var res = results[5]; // 'Set-Cookie: user=null; path=/; expires=Tue, 31 Jan 2012 01:41:45 GMT
+      
+      for (var r, i=0; i < res.length; i++) {
+        r = res[i];
+        if (r.indexOf('Set-Cookie: user=null; path=/; expires=') === 0) break;
+      }
+     
+      var date = Date.parse(r.split('=').pop());
+      var expired = date < Date.now();
+      
+      assert.isFalse(isNaN(date));
+      assert.isTrue(expired);
+    },
+    
+    'OutgoingMessage::removeCookies works properly': function(results) {
+      var r = results[6], // 'Set-Cookie: user=null; path=/; expires=Tue, 31 Jan 2012 01:41:45 GMT'
+          cookies = ['user', 'email', 'info'],
+          cRegex = /^Set\-Cookie: (user|email|info)=null; path=\/; expires=/;
+      
+      r.map(function(h) {
+        var match = h.match(cRegex);
+        if (match) {
+          assert.isTrue(cookies.indexOf(match[1]) >= 0);
+          var date = Date.parse(h.split('=').pop());
+          var expired = date < Date.now();
+          assert.isFalse(isNaN(date));
+          assert.isTrue(expired);
+        }
+      });
+    },
+    
+    'OutgoingMessage::hasCookie detects cookie': function(results) {
+      var r = results[7];
+      assert.deepEqual(r, ['YES']);
+    },
+    
+    'OutgoingMessage::getCookie retrieves cookie value': function(results) {
+      var r = results[8];
+      assert.deepEqual(r, ['24'])
+    },
     
   }
   

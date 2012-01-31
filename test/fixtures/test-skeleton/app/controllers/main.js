@@ -34,27 +34,27 @@ function MainController() {
     headers[params.name] = params.value;
     res.setHeaders(headers);
     res.sendHeaders();
-    res.end('OK');
+    res.end('');
   });
 
   /* Cookie Tests */
   
   get('/setcookie/:name/:value', {name: 'alpha', value: 'alnum_dashes'}, function(req, res, params) {
-    res.setCookie(params.name, params.value);
+    res.setCookie(params.name, params.value, req.__queryData);
     res.sendHeaders();
-    res.end('OK');
+    res.end('');
   });
   
   get('/removecookie/:name', {name: 'alpha'}, function(req, res, params) {
     res.removeCookie(params.name);
     res.sendHeaders();
-    res.end('OK');
+    res.end('');
   });
   
   get('/removecookies/:names', {names: 'alpha_dashes'}, function(req, res, params) {
     res.removeCookies(params.names.split('-'));
     res.sendHeaders();
-    res.end('OK');
+    res.end('');
   });
   
   get('/hascookie/:name', {name: 'alpha'}, function(req, res, params) {
