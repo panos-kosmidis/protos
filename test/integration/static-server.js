@@ -36,7 +36,7 @@ vows.describe('Static File Server').addBatch({
         headers: { Range: 'bytes=5-' }
       });
       
-      multi.clientRequest({                          // partial file request, invalid
+      multi.clientRequest({                           // partial file request, invalid
         path: '/ranges.txt',
         headers: { Range: 'bytes=5-1' }
       });
