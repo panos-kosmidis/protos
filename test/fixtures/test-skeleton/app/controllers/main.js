@@ -29,10 +29,8 @@ function MainController() {
   
   /* Header Tests */
   
-  get('/setheader/:name/:value', {name: 'alpha', value: 'alnum_dashes'}, function(req, res, params) {
-    var headers = {};
-    headers[params.name] = params.value;
-    res.setHeaders(headers);
+  get('/setheaders', function(req, res, params) {
+    res.setHeaders(req.__queryData);
     res.sendHeaders();
     res.end('');
   });

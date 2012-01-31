@@ -9,7 +9,7 @@ var multi = new Multi(app);
     
 vows.describe('Response Misc').addBatch({
   
-  'Headers': {
+  'Sending Headers': {
     
     topic: function() {
       
@@ -20,7 +20,7 @@ vows.describe('Response Misc').addBatch({
       app.__filters = {};
       
       multi.clientRequest('/');
-      multi.curl('/setheader/x-custom-header/1234');
+      multi.curl('-i -G -d "x-custom-header=1&x-another-header=2&x-some-header=3" /setheaders');
       
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
@@ -29,7 +29,7 @@ vows.describe('Response Misc').addBatch({
       return promise;
     },
 
-    'Are properly sent': function(results) {
+    'Headers are properly sent in the response': function(results) {
       var buf = results[0][0],
           headers = results[0][1];
       var expected = Object.keys(app.config.headers).map(function(elem) {
@@ -38,12 +38,19 @@ vows.describe('Response Misc').addBatch({
       assert.deepEqual(Object.keys(headers).sort(), expected);
     },
     
-    'Dynamic headers work properly': function(results) {
+    'Dynamic headers work according to function': function(results) {
       var buf = results[0][0],
           headers = results[0][1];
       assert.isFalse(isNaN(Date.parse(headers.date)));
       assert.equal(headers.status, '200 OK');
     },
+    
+    'OutgoingMessage::setHeaders works properly': function(results) {
+      var headers = results[1].trim().split(/\r\n/);
+      assert.isTrue(headers.indexOf('x-custom-header: 1') >= 0);
+      assert.isTrue(headers.indexOf('x-another-header: 2') >= 0);
+      assert.isTrue(headers.indexOf('x-some-header: 3') >= 0);
+    }
     
   }
   
@@ -148,7 +155,7 @@ vows.describe('Response Misc').addBatch({
     
     'OutgoingMessage::getCookie retrieves cookie value': function(results) {
       var r = results[8];
-      assert.deepEqual(r, ['24'])
+      assert.deepEqual(r, ['24']);
     },
     
   }
