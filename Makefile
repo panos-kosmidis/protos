@@ -17,6 +17,7 @@ integration = ./test/integration/*.js
 default:
 		@echo "\n\033[1;30m♢ Project Tasks\033[0m\n"
 		@echo "\033[1;31mmake deps\033[0m             Install Dependencies & Cleanup"
+		@echo "\033[1;31mmake lint\033[0m             Run Code Analysis tool (scans entire project)"
 		@echo "\033[1;31mmake testconfig\033[0m       Test Configuration Tool"
 		@echo "\n\033[1;30m♢ Test Suites\033[0m\n"
 		@echo "\033[1;31mmake tests\033[0m            Run All tests"
@@ -26,6 +27,9 @@ default:
 		@echo "\033[1;31mmake test-eng\033[0m         Run View Engine tests"
 		@echo "\033[1;31mmake test-int\033[0m         Run integration tests"
 		@echo
+
+lint:
+		@./tools/lint --all
 
 deps:
 		@npm install -d
