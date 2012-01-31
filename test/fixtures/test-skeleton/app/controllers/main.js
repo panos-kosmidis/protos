@@ -1,6 +1,6 @@
 /*jshint undef: false */
 
-function MainController() {
+function MainController(app) {
   
   var util = require('util');
   
