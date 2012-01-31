@@ -35,6 +35,11 @@ deps:
 		@npm install -d
 		@./tools/remove-sys-notice
 
+deps-travis:
+		@echo "\nInitializing..."
+		@npm install -d &> /dev/null
+		@./tools/remove-sys-notice &> /dev/null
+ 
 testconfig:
 		@./tools/testconfig
 
