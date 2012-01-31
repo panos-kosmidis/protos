@@ -159,7 +159,7 @@ vows.describe('Response Misc').addBatch({
     },
     
     'OutgoingMessage::removeCookie works properly': function(results) {
-      var res = results[5]; // 'Set-Cookie: user=null; path=/; expires=Tue, 31 Jan 2012 01:41:45 GMT
+      var res = results[5];
       
       for (var r, i=0; i < res.length; i++) {
         r = res[i];
@@ -174,7 +174,7 @@ vows.describe('Response Misc').addBatch({
     },
     
     'OutgoingMessage::removeCookies works properly': function(results) {
-      var r = results[6], // 'Set-Cookie: user=null; path=/; expires=Tue, 31 Jan 2012 01:41:45 GMT'
+      var r = results[6],
           cookies = ['user', 'email', 'info'],
           cRegex = /^Set\-Cookie: (user|email|info)=null; path=\/; expires=/;
       
