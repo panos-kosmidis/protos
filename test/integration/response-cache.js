@@ -24,12 +24,12 @@ vows.describe('Response Caching').addBatch({
       app.__filters = {};
       
       // Requests that will be cached
-      multi.curl('/test/response-cache/1');
-      multi.curl('/test/response-cache/2');
+      multi.curl('/response-cache/1');
+      multi.curl('/response-cache/2');
       
       // Requests that won't be cached
-      multi.curl('/test/response-nocache/3');
-      multi.curl('/test/response-nocache/4');
+      multi.curl('/response-nocache/3');
+      multi.curl('/response-nocache/4');
 
       multi.exec(function(err, results) {
         // Cache will be deleted on next `exec`
