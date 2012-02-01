@@ -20,8 +20,7 @@ vows.describe('Response Caching').addBatch({
       var cacheStore = app.getResource('response_cache');
       
       // Backup filters
-      app.__filtersBackup = app.__filters;
-      app.__filters = {};
+      app.backupFilters();
       
       // Requests that will be cached
       multi.curl('/response-cache/1');
@@ -73,7 +72,7 @@ vows.describe('Response Caching').addBatch({
           if (e) throw e;
           else {
             app.rawViews = false;
-            app.__filters = app.__filtersBackup;
+            app.restoreFilters();
             promise.emit('success', err || results);
           }
         });        

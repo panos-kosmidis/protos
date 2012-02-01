@@ -70,8 +70,7 @@ vows.describe('View Rendering').addBatch({
       topic: function() {
 
         // Temporarily disable filters
-        app.__filtersBackup = app.__filters;
-        app.__filters = {};
+        app.backupFilters();
         
         // Set multi flush to false (reuse call stack)
         multi.__config.flush = false;
@@ -176,7 +175,7 @@ vows.describe('View Rendering').addBatch({
       // Reuse the call stack
       multi.exec(function(err, results) {
         app.removeAllListeners('request'); // Remove `request` events
-        app.__filters = app.__filtersBackup;  // Restore filter state
+        app.restoreFilters(); // Restore filters state
         promise.emit('success', err || results);
       });
 

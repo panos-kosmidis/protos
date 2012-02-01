@@ -35,6 +35,23 @@ framework.path = CoreJS.path + '/test/fixtures/test-framework';
 var engines = Object.keys(app.engines),
     colorize = framework.util.colorize;
 
+/* Prevent conflicts with template engine test filters */
+
+var filterBackup;
+
+app.backupFilters = function() {
+  filterBackup = app.__filters;
+  app.__filters = {};
+}
+
+app.restoreFilters = function() {
+  app.__filters = filterBackup;
+}
+
+// Backup Filters
+
+// Restore Filters
+
 /* Test Engine Automation */
 
 // Automate engine compatibility checks
@@ -84,7 +101,7 @@ function engineCompatibility(buffer, __engine__) {
 
 // engines = ['swig'];
 
-app.__addEnginePartials = function(current, data, repl) {
+app.addEnginePartials = function(current, data, repl) {
   app.logging = true;
   var buf = engines.map(function(engine) {
     if (app.engines[current].async === false && app.engines[engine].async) return '';
@@ -98,7 +115,7 @@ app.__addEnginePartials = function(current, data, repl) {
 
 // Automate vows batches for test engines
 
-app.__createEngineBatch = function(className, engine, testUrl, __module__) {
+app.createEngineBatch = function(className, engine, testUrl, __module__) {
   
   vows.describe(className + ' Rendering Engine').addBatch({
 

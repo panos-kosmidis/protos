@@ -17,8 +17,7 @@ vows.describe('Response Misc').addBatch({
       var promise = new EventEmitter();
       
       app.config.rawViews = false;
-      app.__filterBackup = app.__filters;
-      app.__filters = {};
+      app.backupFilters();
       
       multi.clientRequest('/');
       multi.curl('-i -G -d "x-custom-header=1&x-another-header=2&x-some-header=3" /setheaders');
@@ -162,7 +161,7 @@ vows.describe('Response Misc').addBatch({
       multi.curl('--cookie "id=24" /getcookie/id');
       
       multi.exec(function(err, results) {
-        app.__filters = app.__filterBackup;
+        app.restoreFilters();
         promise.emit('success', err || results.map(function(r) {
           return r.trim().split(/\r\n/);
         }));

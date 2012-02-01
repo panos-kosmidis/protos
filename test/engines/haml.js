@@ -4,9 +4,9 @@ var app = require('../fixtures/bootstrap');
 var engine = 'haml';
 
 app.addFilter(engine + '_template', function(data) {
-  data = app.__addEnginePartials(engine, data, '!= main_%s(locals)');
+  data = app.addEnginePartials(engine, data, '!= main_%s(locals)');
   // console.exit(data);
   return data;
 });
 
-app.__createEngineBatch('Haml', engine, '/haml.haml', module);
+app.createEngineBatch('Haml', engine, '/haml.haml', module);

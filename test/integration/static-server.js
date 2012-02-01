@@ -15,8 +15,7 @@ vows.describe('Static File Server').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      app.__filterBackup = app.__filters;
-      app.__filters = {};
+     app.backupFilters();
       
       multi.curl('-i /hello.txt');                    // file in root level
       multi.curl('-i /dir/file.txt');                 // file in subdir, level 1
@@ -43,7 +42,7 @@ vows.describe('Static File Server').addBatch({
       
       multi.exec(function(err, results) {
         if (err) throw err;
-        app.__filters = app.__filterBackup;
+        app.restoreFilters();
         results = results.map(function(r) {
           try { return r.trim().split(/\r\n/); }
           catch(e) { return r; }

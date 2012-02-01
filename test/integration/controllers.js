@@ -157,11 +157,10 @@ var currentBatch = batch['Route Functions (sessions not enabled)'] = {
     
     var promise = new EventEmitter();
     
-    app.__filterBackup = app.__filters;
-    app.__filters = {};
+    app.backupFilters();
     
     multi.exec(function(err, results) {
-      app.__filters = app.__filterBackup;
+      app.restoreFilters();
       promise.emit('success', err || results);
     });
     
