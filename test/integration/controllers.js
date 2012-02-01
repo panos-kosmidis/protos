@@ -175,6 +175,92 @@ automateVowsBatches(); // Creates the nifty automated tests
 
 vows.describe('Application Controllers').addBatch(batch).addBatch({
   
-  
+  'Controller Validation: GET': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      app.backupFilters();
+      
+      // Parameter validation: valid 
+      multi.curl('-i /test/qstring/abcde');
+      
+      // Parameter validation: invalid
+      multi.curl('-i /test/qstring/12346');
+      
+      // Query String values + no param validation
+      multi.curl('-i -G -d "alpha=1&bravo=2&charlie=3" /test/qstring');
+      
+      // Query String values + param validation
+      multi.curl('-i -G -d "alpha=4&bravo=5&charlie=6" /test/qstring/abc/123');
+      
+      // Query String validation + no param validation 
+      multi.curl('-i -G -d "name=john&id=1&trigger=abc" /test/qstring/novalidate-param');
+      
+      // Query String validation + param validation
+      multi.curl('-i -G -d "name=charlie&id=123" /test/qstring/validate/abc/jkl');
+      
+      // Validation Messages: strings
+      multi.curl('-i -G -d "word=123&num=123" /test/qstring/messages');
+      
+      // Validation Messages: functions
+      multi.curl('-i -G -d "word=cinnamon&num=toast" /test/qstring/messages');
+      
+      multi.exec(function(err, results) {
+        app.restoreFilters();
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    'Responds w/200 on valid parameters': function(results) {
+      var r = results[0];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r.indexOf("{ rule1: 'abcde' }") >= 0);
+    },
+    
+    'Responds w/404 on invalid parameters': function(results) {
+      var r = results[1];
+      assert.isTrue(r.indexOf('HTTP/1.1 404 Not Found') >= 0);
+    },
+    
+    'Detects Query String values when not validating parameters': function(results) {
+      var r = results[2];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r.indexOf("{ alpha: '1', bravo: '2', charlie: '3' }") >= 0);
+    },
+    
+    'Detects Query String values when validating parameters': function(results) {
+      var r = results[3];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r.indexOf("{ rule1: 'abc', rule2: '123' } { alpha: '4', bravo: '5', charlie: '6' }") >= 0);
+    },
+    
+    'Validates query strings when not validating parameters': function(results) {
+      var r = results[4];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r.indexOf("{ name: 'john', id: 1, trigger: 'abc' }") >= 0);
+    },
+    
+    'Validates query strings when validating parameters': function(results) {
+      var r = results[5];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r.indexOf("{ rule1: 'abc', rule2: 'jkl' } { name: 'charlie', id: 123 }") >= 0);
+    },
+    
+    'Responds w/400 + returns valid error messages': function(results) {
+      var r = results[6];
+      assert.isTrue(r.indexOf('HTTP/1.1 400 Bad Request') >= 0);
+      assert.isTrue(r.indexOf("<p>Oops! Invalid word...</p>") >= 0);
+    },
+    
+    'Responds w/400 + returns dynamic error messages': function(results) {
+      var r = results[7];
+      assert.isTrue(r.indexOf('HTTP/1.1 400 Bad Request') >= 0);
+      assert.isTrue(r.indexOf("<p>Invalid number: toast</p>") >= 0);
+    }
+    
+  }
   
 }).export(module);
