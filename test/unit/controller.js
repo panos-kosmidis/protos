@@ -20,9 +20,12 @@ vows.describe('lib/controller.js').addBatch({
   'Controller::getControllerByAlias': {
     
     'Returns the correct controler': function() {
-      app.controllers.blog = new framework.lib.controller;
-      var controller = app.controller.getControllerByAlias('blog');
-      assert.instanceOf(controller, framework.lib.controller);
+      var c1 = app.controller.getControllerByAlias('main'),
+          c2 = app.controller.getControllerByAlias('test'),
+          c3 = app.controller.getControllerByAlias('/test/hello');
+      assert.instanceOf(c1, app.controller.constructor);
+      assert.instanceOf(c2, app.controllers.test.constructor);
+      assert.instanceOf(c3, app.controllers.test.constructor);
     },
     
     'Accepts start/end slashes in alias': function() {
