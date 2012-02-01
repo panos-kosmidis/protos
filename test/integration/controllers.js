@@ -173,4 +173,8 @@ automateVowsBatches(); // Creates the nifty automated tests
 
 // console.exit(batch);
 
-vows.describe('Application Controllers').addBatch(batch).export(module);
+vows.describe('Application Controllers').addBatch(batch).addBatch({
+  
+  
+  
+}).export(module);
