@@ -11,7 +11,7 @@ vows.describe('lib/controller.js').addBatch({
   'Integrity Checks': {
     
     'Routing functions are set': function() {
-      var routeGet = app.controller.constructor.routingFunctions.get;
+      var routeGet = app.controller.constructor.get;
       assert.isFunction(routeGet);
     }
     
