@@ -18,6 +18,10 @@ vows.describe('lib/storages/redis.js').addBatch({
       app.getResource('storages/redis', function(storage) {
         redis = storage;
         multi = redis.multi();
+        
+        multi.on('pre_exec', app.backupFilters);
+        multi.on('post_exec', app.restoreFilters);
+        
         promise.emit('success');
       });
       return promise;

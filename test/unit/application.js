@@ -3,11 +3,15 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
     util = require('util'),
+    Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
 
 app.logging = false;
 
-var multi = app.createMulti(app);
+var multi = new Multi(app);
+
+multi.on('pre_exec', app.backupFilters);
+multi.on('post_exec', app.restoreFilters);
 
 vows.describe('lib/application.js').addBatch({
   
@@ -263,24 +267,6 @@ vows.describe('lib/application.js').addBatch({
     
     'Works asynchronously if callback provided': function(storage) {
       assert.instanceOf(storage, framework.storages.redis);
-    }
-    
-  }
-  
-}).addBatch({
-  
-  'Application::createMulti': {
-    
-    'Returns a multi object': function() {
-      var ob = {method: function() {}};
-      var multi = app.createMulti(ob, {});
-      assert.equal(multi.constructor.name, 'Multi');
-      assert.isFunction(multi.method);
-    },
-    
-    "Uses app's context when run without args": function() {
-      var multi = app.createMulti();
-      assert.isFunction(multi.createMulti);
     }
     
   }

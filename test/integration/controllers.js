@@ -9,7 +9,10 @@ var app = require('../fixtures/bootstrap'),
 var multi = new Multi(app),
     controllerCtor = app.controller.constructor,
     restMethods = app.otherMethods;
-    
+
+multi.on('pre_exec', app.backupFilters);
+multi.on('post_exec', app.restoreFilters);
+
 // Automatically add requets url in headers (for debugging purposes)
 app.config.headers['X-Request-Url'] = function(req, res) {
   return req.url;
@@ -157,10 +160,7 @@ var currentBatch = batch['Route Functions (sessions not enabled)'] = {
     
     var promise = new EventEmitter();
     
-    app.backupFilters();
-    
     multi.exec(function(err, results) {
-      app.restoreFilters();
       promise.emit('success', err || results);
     });
     
@@ -179,8 +179,6 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      
-      app.backupFilters();
       
       // Parameter validation: valid 
       multi.curl('-i /test/qstring/abcde');
@@ -207,7 +205,6 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
       multi.curl('-i -G -d "word=cinnamon&num=toast" /test/qstring/messages');
       
       multi.exec(function(err, results) {
-        app.restoreFilters();
         promise.emit('success', err || results);
       });
       
@@ -270,8 +267,6 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      app.backupFilters();
-      
       // PostData validation + no param validation
       multi.curl('-i -X POST -d "user=nobody&pass=1234" /test/postdata');
       
@@ -295,7 +290,6 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
       multi.curl('-X POST -d "ajax=1" /test/postdata/messages');
 
       multi.exec(function(err, results) {
-        app.restoreFilters();
         promise.emit('success', err || results);
       });
       

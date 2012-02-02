@@ -4,7 +4,8 @@ var app = require('../fixtures/bootstrap'),
     util = require('util'),
     assert = require('assert'),
     colorize = framework.util.colorize,
-    createClient = require('mysql').createClient;
+    Multi = require('multi'),
+    createClient = require('mysql').createClient,
     EventEmitter = require('events').EventEmitter;
 
 app.logging = true;
@@ -13,7 +14,7 @@ var mysql, multi, model, storageMulti;
 
 var config = app.config.database.mysql,
     client = createClient(config),
-    mclient = app.createMulti(client);
+    mclient = new Multi(client);
 
 var table = app.config.database.mysql.table;
 
@@ -64,6 +65,10 @@ vows.describe('lib/drivers/mysql.js').addBatch({
       app.getResource('drivers/mysql', function(driver) {
         mysql = driver;
         multi = mysql.multi();
+        
+        multi.on('pre_exec', app.backupFilters);
+        multi.on('post_exec', app.restoreFilters);
+        
         promise.emit('success');
       });
       return promise;

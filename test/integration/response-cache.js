@@ -3,9 +3,13 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     util = require('util'),
     assert = require('assert'),
+    Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
 
-var multi = app.createMulti(app, {flush: false});
+var multi = new Multi(app, {flush: false});
+
+multi.on('pre_exec', app.backupFilters);
+multi.on('post_exec', app.restoreFilters);
 
 vows.describe('Response Caching').addBatch({
   
@@ -18,9 +22,6 @@ vows.describe('Response Caching').addBatch({
       app.config.rawViews = true;
       
       var cacheStore = app.getResource('response_cache');
-      
-      // Backup filters
-      app.backupFilters();
       
       // Requests that will be cached
       multi.curl('/response-cache/1');

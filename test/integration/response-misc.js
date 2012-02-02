@@ -7,7 +7,10 @@ var app = require('../fixtures/bootstrap'),
     EventEmitter = require('events').EventEmitter;
     
 var multi = new Multi(app);
-    
+
+multi.on('pre_exec', app.backupFilters);
+multi.on('post_exec', app.restoreFilters);
+
 vows.describe('Response Misc').addBatch({
   
   'Sending Headers': {
@@ -17,7 +20,6 @@ vows.describe('Response Misc').addBatch({
       var promise = new EventEmitter();
       
       app.config.rawViews = false;
-      app.backupFilters();
       
       multi.clientRequest('/');
       multi.curl('-i -G -d "x-custom-header=1&x-another-header=2&x-some-header=3" /setheaders');

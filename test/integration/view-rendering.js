@@ -3,6 +3,7 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     util = require('util'),
     assert = require('assert'),
+    Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
 
 var OutgoingMessage = require('http').OutgoingMessage;
@@ -21,7 +22,10 @@ function vPath(p) {
   return app.fullPath('app/views/' + p);
 }
 
-var multi = app.createMulti();
+var multi = new Multi(app);
+
+multi.on('pre_exec', app.backupFilters);
+multi.on('post_exec', app.restoreFilters);
 
 vows.describe('View Rendering').addBatch({
   
@@ -69,9 +73,6 @@ vows.describe('View Rendering').addBatch({
     
       topic: function() {
 
-        // Temporarily disable filters
-        app.backupFilters();
-        
         // Set multi flush to false (reuse call stack)
         multi.__config.flush = false;
         

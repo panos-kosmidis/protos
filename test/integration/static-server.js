@@ -8,14 +8,15 @@ var app = require('../fixtures/bootstrap'),
     
 var multi = new Multi(app);
 
+multi.on('pre_exec', app.backupFilters);
+multi.on('post_exec', app.restoreFilters);
+
 vows.describe('Static File Server').addBatch({
   
   '': {
     
     topic: function() {
       var promise = new EventEmitter();
-      
-     app.backupFilters();
       
       multi.curl('-i /hello.txt');                    // file in root level
       multi.curl('-i /dir/file.txt');                 // file in subdir, level 1
@@ -42,7 +43,6 @@ vows.describe('Static File Server').addBatch({
       
       multi.exec(function(err, results) {
         if (err) throw err;
-        app.restoreFilters();
         results = results.map(function(r) {
           try { return r.trim().split(/\r\n/); }
           catch(e) { return r; }
