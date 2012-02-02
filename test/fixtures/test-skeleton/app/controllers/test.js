@@ -1,3 +1,4 @@
+/*jshint immed: false */
 
 var inspect = require('util').inspect;
 

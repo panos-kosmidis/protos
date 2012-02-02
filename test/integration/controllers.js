@@ -23,7 +23,7 @@ app.config.headers['X-Request-Method'] = function(req, res) {
 // TEST AUTOMATION [START] --
 
 function automateVowsBatches() {
-  var total = 0;
+  var total = 0,
       postRegex = /post/i,
       getRegex = /get/i;
   
@@ -101,7 +101,7 @@ function automateVowsBatches() {
         })(m, total++);
         
         // Other methods (400)
-        for (var i=0; i < restMethods.length; i++) {
+        for (i=0; i < restMethods.length; i++) {
           multi.curl(util.format('-i -X %s /test/%s', restMethods[i], m));
           (function(k, t, rm) {
             currentBatch[util.format('[%d] Controller::%s responds w/400 for %s requests', t, k, rm)] = function(results) {
@@ -133,7 +133,7 @@ function automateVowsBatches() {
         })(m, total++);
         
         // Other methods (400)
-        for (var i=0; i < restMethods.length; i++) {
+        for (i=0; i < restMethods.length; i++) {
           multi.curl(util.format('-i -X %s /test/%s', restMethods[i], m));
           (function(k, t, rm) {
             currentBatch[util.format('[%d] Controller::%s responds w/400 for %s requests', t, k, rm)] = function(results) {
