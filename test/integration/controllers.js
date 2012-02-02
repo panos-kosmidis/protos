@@ -6,7 +6,7 @@ var app = require('../fixtures/bootstrap'),
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
     
-var multi = new Multi(app, {throwErrors: true}),
+var multi = new Multi(app),
     controllerCtor = app.controller.constructor,
     restMethods = app.otherMethods;
     
