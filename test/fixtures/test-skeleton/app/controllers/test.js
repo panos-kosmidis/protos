@@ -18,6 +18,8 @@ function TestController(app) {
     }
   }
   
+  /* GET */
+  
   // Parameter validation: valid
   // Parameter validation: invalid
   
@@ -59,7 +61,6 @@ function TestController(app) {
     });
   });
   
-  
   // Validation Messages: strings
   // Validation Messages: functions
   get('/qstring/messages', {
@@ -74,13 +75,44 @@ function TestController(app) {
     });
   });
   
-  // PostData validation (POST)
+  /* POST */
   
-  // Validation Messages: AJAX
+  // PostData validation + no param validation
+  post('/postdata', {user: 'alpha', pass: 'integer'}, function(req, res) {
+    this.getPostData(req, function(fields) {
+      res.end(inspect(fields));
+    });
+  });
   
-  // Validation Messages: strings
+  // PostData validation + param validation
+  post('/postdata/:account', {account: 'integer', user: 'alpha', pass: 'integer'}, function(req, res) {
+    this.getPostData(req, function(fields) {
+      res.end(inspect(fields));
+    });
+  });
   
-  // Validation Messages: functions
+  // PostData Validation Messages: strings
+  // PostData Validation Messages: functions
+  // PostData Validation Messages when ajax=1
+  post('/postdata/messages', {
+    user: 'alpha', 
+    pass: 'integer'
+  }, {
+    user: 'Invalid username!',
+    pass: function(p) { return "Oops! That's an invalid password: " + p; }
+  },function(req, res) {
+    this.getPostData(req, function(fields) {
+      res.end(inspect(fields));
+    });
+  });
+  
+  /* UPLOADS */
+  
+  // File Uploads
+  
+  // Uploads Cleanup
+  
+  // Upload Limits & Messages
   
 }
 
