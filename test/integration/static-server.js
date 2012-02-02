@@ -53,7 +53,7 @@ vows.describe('Static File Server').addBatch({
       return promise;
     },
     
-    'Get files in public/ » root level': function(results) {
+    'Gets files in public/ » root level': function(results) {
       var r = results[0];
       assert.isTrue(r.indexOf('Status: 200 OK') >= 0);
       assert.isTrue(r.indexOf('Content-Length: 11') >= 0);
@@ -77,7 +77,7 @@ vows.describe('Static File Server').addBatch({
       assert.equal(r.pop(), '{dir/subdir/sub.txt}');
     },
     
-    'Do not conflict with controllers': function(results) {
+    'Does not conflict with controllers': function(results) {
       var r = results[3];
       assert.isTrue(r.indexOf('Status: 200 OK') >= 0);
       assert.isTrue(r.indexOf('Content-Length: 15') >= 0);
@@ -94,7 +94,7 @@ vows.describe('Static File Server').addBatch({
       assert.equal(r3[0], 'HTTP/1.1 404 Not Found');
     },
     
-    'Access to hidden files is denied': function(results) {
+    'Denies access to hidden files': function(results) {
       var r1 = results[7],
           r2 = results[8],
           r3 = results[9],
