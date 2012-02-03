@@ -109,10 +109,17 @@ function TestController(app) {
   /* UPLOADS */
   
   // File Uploads
-  
-  // Uploads Cleanup
-  
   // Upload Limits & Messages
+  post('/upload', function(req, res) {
+    this.getPostData(req, function(fields, files) {
+      if ( files.expect('**file') ) { // File should be present, and not empty
+        var f = files.get('file');
+        res.sendHeaders();
+        res.end(inspect(f));
+        files.removeAll();
+      } else app.badRequest(res);
+     });
+  });
   
 }
 
