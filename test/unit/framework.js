@@ -61,14 +61,27 @@ vows.describe('lib/framework.js').addBatch({
   'CoreJS::require': {
     
     'Returns the required module': function() {
-      var module = framework.require('node_modules/multi');
-      assert.isFunction(module);
+      var module1 = framework.require('node_modules/multi'),
+          module2 = framework.require('multi');
+      assert.isFunction(module1);
+      assert.isFunction(module2);
+    },
+    
+    'Can require/reload modules without using module cache': function() {
+      var h1 = framework.require('handlebars', true);
+      var h2 = framework.require('handlebars', true);
+      
+      h1.a = 99;
+      h2.a = 55;
+
+      assert.equal(h1.a, 99);
+      assert.equal(h2.a, 55);
     },
     
     'Accepts relative/absolute paths': function() {
       assert.isFunction(framework.require('./node_modules/multi'));
       assert.isFunction(framework.require('/node_modules/multi'));
-    }
+    },
     
   }
   
