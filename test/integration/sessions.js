@@ -19,6 +19,72 @@ app.on('session_load', function(sid, session) {
   else if (session.guest) guestSessId = sid;
 });
 
+// Avoid innecessary duplication of code. Keep the testing environment DRY.
+
+function createUserSessionBatch(persistent) {
+  
+  return {
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // Request to create a permanent session
+      multi.curl('-i -G -d "persistent='+ persistent +'" /session/create/ernie');
+      
+      multi.exec(function(err, results) {
+        // Verify that session is indeed stored
+        storage.getHash(sessId, function(err, data) {
+          results.push(err || data);
+          promise.emit('success', err || results);
+        });
+      });
+      
+      return promise;
+    },
+    
+    'Verified cookies & session data (in storage)': function(results) {
+      var r = results[0],
+          session = results[1] || {};
+      
+      // Make sure session.pers is an integer, for util.inspect
+      if (typeof session == 'object' && session.pers == persistent.toString()) session.pers = persistent;
+      
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r.indexOf(util.format('Set-Cookie: %s=%s;', sess, sessId)) >= 0);         // Session ID
+      assert.isTrue(r.indexOf(util.format('Set-Cookie: %s=%s;', shash, session.fpr)) >= 0);   // Session Hash
+      assert.isTrue(r.indexOf(util.inspect(session)) >= 0);
+    },
+    
+    'Cookie expiration dates are accurate': function(results) {
+      var r = results[0],
+          session = results[1];
+      
+      // Check expiration date
+      var hashExpire, sessExpire;
+      r.split(/\r\n/).forEach(function(line) {
+        var expires, hashExpire, sessExpire, shouldExpire;
+        if (line.indexOf('=' + session.fpr) >= 0) {
+          expires = line.slice(line.lastIndexOf('=')+1);
+          hashExpire = new Date(expires);
+          shouldExpire = new Date(Date.now() + app.session.config.regenInterval*1000);
+          assert.equal(hashExpire.toString(), shouldExpire.toString());   // Check if Expiration matches config
+        } else if (line.indexOf('=' + sessId) >= 0) {
+          expires = line.slice(line.lastIndexOf('=')+1);
+          sessExpire = new Date(expires);
+          
+          if (persistent == 1) {
+            shouldExpire = new Date(Date.now() + app.session.config.permanentExpires*1000);
+          } else {
+            shouldExpire = new Date(Date.now() + app.session.config.temporaryExpires*1000);
+          }
+          
+          assert.equal(sessExpire.toString(), shouldExpire.toString());  // Check if Expiration matches config
+        }
+      });
+    }
+  }
+  
+}
+
 vows.describe('Sessions').addBatch({
   
   'Guest Sessions disabled': {
@@ -48,7 +114,7 @@ vows.describe('Sessions').addBatch({
   
 }).addBatch({
   
-  'Guest Sessions enabled (persistent)': {
+  'Guest Sessions enabled': {
     
     topic: function() {
       var promise = new EventEmitter(),
@@ -117,60 +183,11 @@ vows.describe('Sessions').addBatch({
   
 }).addBatch({
   
-  'Session Creation (persistent)': {
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      multi.curl('-i -G -d "permanent=1" /session/create/ernie');
-      
-      multi.exec(function(err, results) {
-        // promise.emit('success', err || results);
-        
-        // Verify that session is indeed stored
-        storage.getHash(sessId, function(err, data) {
-          results.push(err || data);
-          promise.emit('success', err || results);
-        });
-      });
-      
-      return promise;
-    },
-    
-    'Verified cookies & session data (in storage)': function(results) {
-      var r = results[0],
-          session = results[1] || {};
-      
-      // Make sure session.pers is an integer, for util.inspect
-      if (typeof session == 'object' && session.pers == '1') session.pers = 1;
-      
-      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
-      assert.isTrue(r.indexOf(util.format('Set-Cookie: %s=%s;', sess, sessId)) >= 0);         // Session ID
-      assert.isTrue(r.indexOf(util.format('Set-Cookie: %s=%s;', shash, session.fpr)) >= 0);   // Session Hash
-      assert.isTrue(r.indexOf(util.inspect(session)) >= 0);
-    },
-    
-    'Cookie expiration dates are accurate': function(results) {
-      var r = results[0],
-          session = results[1];
-      
-      // Check expiration date
-      var hashExpire, sessExpire;
-      r.split(/\r\n/).forEach(function(line) {
-        var expires, hashExpire, sessExpire, shouldExpire;
-        if (line.indexOf('=' + session.fpr) >= 0) {
-          expires = line.slice(line.lastIndexOf('=')+1);
-          hashExpire = new Date(expires);
-          shouldExpire = new Date(Date.now() + app.session.config.regenInterval*1000);
-          assert.equal(hashExpire.toString(), shouldExpire.toString());   // Check if Expiration matches config
-        } else if (line.indexOf('=' + sessId) >= 0) {
-          expires = line.slice(line.lastIndexOf('=')+1);
-          sessExpire = new Date(expires);
-          shouldExpire = new Date(Date.now() + app.session.config.permanentExpires*1000);
-          assert.equal(sessExpire.toString(), shouldExpire.toString());  // Check if Expiration matches config
-        }
-      });
-    }
-  }
+  'Session Creation (persistent)': createUserSessionBatch(1) // Avoid unnecessary repetition
+  
+}).addBatch({
+  
+  'Session Creation (temporary)': createUserSessionBatch(0) // Avoid unnecessary repetition
   
 }).addBatch({
   
