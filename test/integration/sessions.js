@@ -6,7 +6,7 @@ var app = require('../fixtures/bootstrap'),
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
 
-var sess, shash, storage, sessId, guestSessId;
+var sess, shash, storage, sessId, sessHash, guestSessId;
 
 var multi = new Multi(app);
 
@@ -15,9 +15,19 @@ multi.on('post_exec', app.restoreFilters);
 
 app.on('session_load', function(sid, session) {
   // Update sessId every time a new user session is created
-  if (session.user) sessId = sid;
-  else if (session.guest) guestSessId = sid;
+  if (session.user) { 
+    sessId = sid; 
+    sessHash = session.fpr; 
+  } else if (session.guest) { 
+    guestSessId = sid; 
+  }
 });
+
+// app.on('request', function(req, res) {
+//   if (req.url == '/session/set/counter/0') {
+//     console.exit(req.headers);
+//   }
+// });
 
 // Avoid innecessary duplication of code. Keep the testing environment DRY.
 
@@ -50,7 +60,7 @@ function createUserSessionBatch(persistent) {
       
       assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
       assert.isTrue(r.indexOf(util.format('Set-Cookie: %s=%s;', sess, sessId)) >= 0);         // Session ID
-      assert.isTrue(r.indexOf(util.format('Set-Cookie: %s=%s;', shash, session.fpr)) >= 0);   // Session Hash
+      assert.isTrue(r.indexOf(util.format('Set-Cookie: %s=%s;', shash, sessHash)) >= 0);   // Session Hash
       assert.isTrue(r.indexOf(util.inspect(session)) >= 0);
     },
     
@@ -62,7 +72,7 @@ function createUserSessionBatch(persistent) {
       var hashExpire, sessExpire;
       r.split(/\r\n/).forEach(function(line) {
         var expires, hashExpire, sessExpire, shouldExpire;
-        if (line.indexOf('=' + session.fpr) >= 0) {
+        if (line.indexOf('=' + sessHash) >= 0) {
           expires = line.slice(line.lastIndexOf('=')+1);
           hashExpire = new Date(expires);
           shouldExpire = new Date(Date.now() + app.session.config.regenInterval*1000);
@@ -191,7 +201,78 @@ vows.describe('Sessions').addBatch({
   
 }).addBatch({
   
-  'Session Usage': {
+  'Session Operations & Usage': {
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      app.session.config.guestSessions = false;
+      
+      var sessCmd = util.format('-i --cookie "%s=%s; %s=%s" ', sess, sessId, shash, sessHash);
+      
+      // Session store
+      multi.curl(sessCmd + '/session/set/counter/0');
+      
+      // Session retrieval
+      multi.curl(sessCmd + '/session/get/counter');
+      
+      // Session update
+      multi.curl(sessCmd + '/session/incr/counter');    // update
+      multi.curl(sessCmd + '/session/get/counter');     // verify
+      
+      // Session delete
+      multi.curl(sessCmd + '/session/delete/counter');  // delete
+      multi.curl(sessCmd + '/session/get/counter');     // verify
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    'Can store session data': function(results) {
+      var r = results[0];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.equal(r.indexOf('Set-Cookie: '), -1);
+      assert.isTrue(r.indexOf('{OK}') >= 0);
+    },
+    
+    'Can retrieve session data': function(results) {
+      var r = results[1];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.equal(r.indexOf('Set-Cookie: '), -1);
+      assert.isTrue(r.indexOf('{0}') >= 0);
+    },
+    
+    'Can update session data': function(results) {
+      var r1 = results[2],
+          r2 = results[3];
+      
+      // Update request
+      assert.isTrue(r1.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.equal(r1.indexOf('Set-Cookie: '), -1);
+      assert.isTrue(r1.indexOf('{SUCCESS}') >= 0);
+      
+      // Verify request
+      assert.isTrue(r2.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.equal(r2.indexOf('Set-Cookie: '), -1);
+      assert.isTrue(r2.indexOf('{1}') >= 0);
+    },
+    
+    'Can delete session data': function(results) {
+      var r1 = results[4],
+          r2 = results[5];
+      
+      // Delete request
+      assert.isTrue(r1.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.equal(r1.indexOf('Set-Cookie: '), -1);
+      assert.isTrue(r1.indexOf('{OK}') >= 0);
+      
+      // Verify request
+      assert.isTrue(r2.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.equal(r2.indexOf('Set-Cookie: '), -1);
+      assert.isTrue(r2.indexOf('{}') >= 0);
+    }
     
   }
   
