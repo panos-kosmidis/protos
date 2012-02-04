@@ -1,4 +1,7 @@
 
+// Sample test case:
+// https://gist.github.com/1738905
+
 var env, path = require('path'),
     vows = require('vows'),
     assert = require('assert'),
