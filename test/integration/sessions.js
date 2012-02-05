@@ -279,7 +279,72 @@ vows.describe('Sessions').addBatch({
 }).addBatch({
   
   'Session Regenerate': {
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      var sessCmd = util.format('-i --cookie "%s=%s; %s=%s" ', sess, sessId, shash, sessHash);
+      var noSessHash = util.format('-i --cookie "%s=%s" ', sess, sessId);
+      
+      // Set verify token in session
+      multi.curl(sessCmd + '/session/set/token/abc123');
+      
+      // Access session without a session hash (will force session regeneration)
+      multi.curl(noSessHash + '/session');
+      
+      multi.exec(function(err, results) {
+        if (err) promise.emit('success', err);
+        else {
+          // Detect new Session ID
+          var matches;
+          results[1].split(/\r\n/).forEach(function(line) {
+            var re = new RegExp(util.format('Set\-Cookie: %s=([a-f0-9]{32});', sess));
+            matches = line.match(re);
+            if (matches) {
+              var sid = matches[1];
+              results.push(sid);
+              
+              var expireDate = line.slice(line.lastIndexOf('=') + 1);
+              expireDate = new Date(expireDate);
+              results.push(expireDate);
+              
+              storage.getHash(sid, function(err, data) {
+                results.push(err || data.token);
+                promise.emit('success', results);
+              });
+            }
+          });
+        }
+      });
+      
+      return promise;
+    },
     
+    'Session is regenerated properly when conditions are met': function(results) {
+      var r1 = results[0],
+          r2 = results[1],
+          sid = results[2],
+          expireDate = results[3],
+          token = results[4];
+
+      // Since we're reusing the previous test case session (in which we created a temporary 
+      // session) we need to compare against the temporaryExpires value instead of permanentExpires.
+
+      var shouldExpire = new Date(Date.now() + app.session.config.temporaryExpires*1000);
+      
+      // Store request
+      assert.isTrue(r1.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r1.indexOf('{OK}') >= 0);
+
+      // Regenerate request
+      assert.isTrue(r2.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r2.indexOf('{SESSION CONTROLLER}') >= 0);
+      
+      // Verify that regenerated session expires correctly
+      assert.equal(expireDate.toString(), shouldExpire.toString());
+      
+      // Verify that the token is on the new session
+      assert.equal(token, 'abc123');
+    }
   }
   
 }).addBatch({
