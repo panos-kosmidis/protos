@@ -160,6 +160,10 @@ var currentBatch = batch['Route Functions (sessions not enabled)'] = {
     
     var promise = new EventEmitter();
     
+    // Disable sessions
+    app.supports.session = false;
+    delete app.session;
+    
     multi.exec(function(err, results) {
       promise.emit('success', err || results);
     });
