@@ -23,12 +23,6 @@ app.on('session_load', function(sid, session) {
   }
 });
 
-// app.on('request', function(req, res) {
-//   if (req.url == '/session/set/counter/0') {
-//     console.exit(req.headers);
-//   }
-// });
-
 // Avoid innecessary duplication of code. Keep the testing environment DRY.
 
 function createUserSessionBatch(persistent) {
@@ -300,7 +294,7 @@ vows.describe('Sessions').addBatch({
             var re = new RegExp(util.format('Set\-Cookie: %s=([a-f0-9]{32});', sess));
             matches = line.match(re);
             if (matches) {
-              var sid = matches[1];
+              var sid = sessId = matches[1];
               results.push(sid);
               
               var expireDate = line.slice(line.lastIndexOf('=') + 1);
@@ -319,7 +313,7 @@ vows.describe('Sessions').addBatch({
       return promise;
     },
     
-    'Session is regenerated properly when conditions are met': function(results) {
+    'Session regenerates successfully': function(results) {
       var r1 = results[0],
           r2 = results[1],
           sid = results[2],
@@ -350,7 +344,62 @@ vows.describe('Sessions').addBatch({
 }).addBatch({
   
   'Session Destroy': {
-    
+    topic: function() {
+      var promise = new EventEmitter();
+
+      var sessCmd = util.format('-i --cookie "%s=%s; %s=%s" ', sess, sessId, shash, sessHash);
+
+      // Verify token presence
+      multi.curl(sessCmd + '/session/get/token');
+      
+      // Destroy the session
+      multi.curl(sessCmd + '/session/destroy/' + sessId);
+      
+      // Verify session removal
+      multi.curl(sessCmd + '/session/get/token');
+      
+      multi.exec(function(err, results) {
+        // Verify that session data has been removed from storage
+        storage.getHash(sessId, function(err, data) {
+          
+          // Append session data
+          results.push(err || data);
+          
+          // Return promise
+          promise.emit('success', err || results);
+        });
+      });
+
+      return promise;
+    },
+
+    'Session destroys successfully': function(results) {
+      var r1 = results[0],
+          r2 = results[1],
+          r3 = results[2],
+          sessData = results[3];
+      
+      // Assert that session token is present
+      assert.isTrue(r1.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.equal(r1.indexOf('Set-Cookie: '), -1);
+      assert.isTrue(r1.indexOf('{abc123}') >= 0);
+      
+      // Assert that session is destroyed
+      assert.isTrue(r2.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r2.indexOf(util.format('Set-Cookie: %s=null; ', sess)) >= 0);
+      assert.isTrue(r2.indexOf(util.format('Set-Cookie: %s=null; ', shash)) >= 0);
+      assert.isTrue(r2.indexOf('{SUCCESS}') >= 0);
+      
+      // Assert that proper response is sent
+      assert.isTrue(r3.indexOf('HTTP/1.1 200 OK') >= 0);
+      
+      // Assert that session not present in storage
+      assert.isTrue(r3.indexOf('{}') >= 0);
+      
+      // Assert that invalid session cookies are removed
+      assert.isTrue(r3.indexOf(util.format('Set-Cookie: %s=null; ', sess)) >= 0);
+      assert.isTrue(r3.indexOf(util.format('Set-Cookie: %s=null; ', shash)) >= 0);
+    }
   }
   
 }).export(module);

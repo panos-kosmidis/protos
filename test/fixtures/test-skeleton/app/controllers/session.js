@@ -17,6 +17,13 @@ function SessionController(app) {
     });
   });
   
+  get('/destroy/:sid', {sid: 'md5_hash'}, function(req, res, params) {
+    app.session.destroy(req, res, function() {
+      res.sendHeaders();
+      res.end('{SUCCESS}');
+    });
+  });
+  
   get('/set/:varname/:value', {varname: 'alpha_dashes', value: 'alnum'}, function(req, res, params) {
     app.session.config.typecastVars.push(params.value); // automatically typecast
     req.__session[params.varname] = params.value;
