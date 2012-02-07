@@ -4,11 +4,10 @@ var inspect = require('util').inspect;
 
 function TestController(app) {
 
-  /* Dynamic routes to test controllers */
+  /* Dynamic routes, covering all route methods */
   
   for (var key in this) {
-    if (key != 'super_' && this.hasOwnProperty(key)) {
-      // Dynamically define route
+    if (key != 'super_' && this.hasOwnProperty(key) && this[key] instanceof Function) {
       (function(k) {
         this[k]('/'+ k, function(req, res) {
           res.sendHeaders();

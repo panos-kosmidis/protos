@@ -146,6 +146,8 @@ function automateVowsBatches() {
           })(m, total++, restMethods[i]);
         }
         
+      } else {
+        throw new Error("Untested method: " + m);
       }
     }
   });
