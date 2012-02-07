@@ -41,7 +41,7 @@ function testRouteMethod(tmethod, rfunc) {
     expRes = (method == tmethod) ? 200 : 400;
     multi.curl(util.format('-i -X %s /test/%s', method, rfunc));
     (function(k, t, cm, rm, er) { // k => key, t => total, cm => current method,   rm => route method, n => numeric response
-      currentBatch[util.format('[%d] Controller::%s responds w/%d for %s requests', t, k, er, cm)] = function(results) {
+      currentBatch[util.format('Controller::%s responds w/%d for %s requests', k, er, cm)] = function(results) {
         var r = results[t];
         switch(er) {
           case 200: assert200(r, k, t); break;
