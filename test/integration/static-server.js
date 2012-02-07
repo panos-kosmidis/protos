@@ -85,7 +85,7 @@ vows.describe('Static File Server').addBatch({
       assert.equal(r.pop(), '{blog/post.txt}');
     },
     
-    'Properly reports HTTP/404 for missing files': function(results) {
+    'Responds with 404 for files not found': function(results) {
       var r1 = results[4],
           r2 = results[5],
           r3 = results[6];
@@ -105,7 +105,7 @@ vows.describe('Static File Server').addBatch({
       assert.equal(r4[0], 'HTTP/1.1 404 Not Found');
     },
     
-    'Responds with valid headers for partial content requests': function(results) {
+    'Responds with 206 for Partial Content requests': function(results) {
       var r1 = results[11], // HTTP/1.1 206 Partial Content
           r2 = results[12]; // HTTP/1.1 416 Requested Range Not Satisfiable
       assert.equal(r1[0], 'fghijklmnopqrstuvwxyzfghij');
