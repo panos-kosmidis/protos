@@ -39,9 +39,9 @@ function testRouteMethod(tmethod, rfunc) {
   for (var expRes, method, i=0; i < httpMethods.length; i++) {
     method = httpMethods[i];
     expRes = (method == tmethod) ? 200 : 400;
-    multi.curl(util.format('-i -X %s /test/%s', tmethod, rfunc));
+    multi.curl(util.format('-i -X %s /test/%s', method, rfunc));
     (function(k, t, cm, rm, er) { // k => key, t => total, cm => current method,   rm => route method, n => numeric response
-      currentBatch[util.format('[%d] Controller::%s responds w/%d for %s requests', t, k, er, rm)] = function(results) {
+      currentBatch[util.format('[%d] Controller::%s responds w/%d for %s requests', t, k, er, cm)] = function(results) {
         var r = results[t];
         switch(er) {
           case 200: assert200(r, k, t); break;
@@ -62,7 +62,8 @@ function automateVowsBatches() {
   Object.keys(controllerCtor).map(function(m) {
     var method;
     if (m != 'super_' && controllerCtor.hasOwnProperty(m) && (method=controllerCtor[m]) instanceof Function ) {
-      console.exit(method);
+      var hm = m.slice(m.lastIndexOf('_') + 1).toUpperCase();
+      testRouteMethod(hm, m);
     }
   });
 }
