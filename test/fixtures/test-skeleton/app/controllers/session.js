@@ -10,9 +10,12 @@ function SessionController(app) {
   
   get('/create/:user', {user: 'alpha'}, function(req, res, params) {
     var pers = req.__queryData.persistent == '1';
-    app.session.create(req, res, {user: params.user}, pers, function(session) {
+    app.session.create(req, res, {user: params.user}, pers, function(session, hashes, expires) {
       app.globals.userSession = session;
-      res.sendHeaders();
+      res.sendHeaders({
+        'X-Session-Id': hashes.sessId,
+        'X-Session-Expires': (new Date(Date.now() + expires*1000)).toUTCString()
+      });
       res.end(util.inspect(session));
     });
   });
