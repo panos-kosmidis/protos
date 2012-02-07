@@ -8,7 +8,9 @@ var app = require('../fixtures/bootstrap'),
     
 var multi = new Multi(app),
     controllerCtor = app.controller.constructor,
-    restMethods = app.otherMethods;
+    httpMethods = app.httpMethods;
+
+var total = 0; // counter for controller tests
 
 multi.on('pre_exec', app.backupFilters);
 multi.on('post_exec', app.restoreFilters);
@@ -23,132 +25,44 @@ app.config.headers['X-Request-Method'] = function(req, res) {
   return req.method;
 }
 
+function assert200(r, k, t) {
+  assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+  assert.isTrue(r.indexOf(util.format('{%s}', k)) >= 0);
+}
+
+function assert400(r, k, t) {
+  assert.isTrue(r.indexOf('HTTP/1.1 400 Bad Request') >= 0);
+  assert.isFalse(r.indexOf(util.format('{%s}', k)) >= 0);
+}
+
+function testRouteMethod(tmethod, rfunc) {
+  for (var expRes, method, i=0; i < httpMethods.length; i++) {
+    method = httpMethods[i];
+    expRes = (method == tmethod) ? 200 : 400;
+    multi.curl(util.format('-i -X %s /test/%s', tmethod, rfunc));
+    (function(k, t, cm, rm, er) { // k => key, t => total, cm => current method,   rm => route method, n => numeric response
+      currentBatch[util.format('[%d] Controller::%s responds w/%d for %s requests', t, k, er, rm)] = function(results) {
+        var r = results[t];
+        switch(er) {
+          case 200: assert200(r, k, t); break;
+          case 400: assert400(r, k, t); break;
+          default:
+            throw new Error("Response not expected: " + er);
+            break;
+        }
+      }
+    })(rfunc, total++, method, tmethod, expRes);
+  }
+}
+
 // TEST AUTOMATION [START] --
 
 function automateVowsBatches() {
-  var total = 0,
-      postRegex = /post/i,
-      getRegex = /get/i;
-  
-  var assert200 = function(r, k, t) {
-    assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
-    assert.isTrue(r.indexOf(util.format('{%s}', k)) >= 0);
-  }
-
-  var assert400 = function(r, k, t) {
-    assert.isTrue(r.indexOf('HTTP/1.1 400 Bad Request') >= 0);
-    assert.isFalse(r.indexOf(util.format('{%s}', k)) >= 0);
-  }
-  
-  var assert404 = function(r, k, t) {
-    assert.isTrue(r.indexOf('HTTP/1.1 404 Not Found') >= 0);
-    assert.isFalse(r.indexOf(util.format('{%s}', k)) >= 0);
-  }
   
   Object.keys(controllerCtor).map(function(m) {
-    if (m != 'super_' && controllerCtor.hasOwnProperty(m)) {
-      var isGet = getRegex.test(m),
-          isPost = postRegex.test(m);
-
-      // GET + POST Routes
-      if (isGet && isPost) {
-        
-        // get (200)
-        multi.curl('-i /test/'+ m);
-        (function(k, t) {
-          currentBatch[util.format('[%d] Controller::%s responds w/200 for GET requests', t, k)] = function(results) {
-            var r = results[t];
-            assert200(r, k, t);
-          }
-        })(m, total++);
-        
-        // post (200)
-        multi.curl('-i -X POST /test/'+ m);
-        (function(k, t) {
-          currentBatch[util.format('[%d] Controller::%s responds w/200 for POST requests', t, k)] = function(results) {
-            var r = results[t];
-            assert200(r, k, t);
-          }
-        })(m, total++);
-        
-        // Other methods (400)
-        for (var i=0; i < restMethods.length; i++) {
-          multi.curl(util.format('-i -X %s /test/%s', restMethods[i], m));
-          (function(k, t, rm) {
-            currentBatch[util.format('[%d] Controller::%s responds w/400 for %s requests', t, k, rm)] = function(results) {
-              var r = results[t];
-              assert400(r, k, t);
-            }
-          })(m, total++, restMethods[i]);
-        }
-        
-      // GET Routes
-      } else if (isGet) {
-        
-        // get (200)
-        multi.curl('-i /test/'+ m);
-        (function(k, t) {
-          currentBatch[util.format('[%d] Controller::%s responds w/200 for GET requests', t, k)] = function(results) {
-            var r = results[t];
-            assert200(r, k, t);
-          }
-        })(m, total++);
-
-        // post (404)
-        multi.curl('-i -X POST /test/'+ m);
-        (function(k, t) {
-          currentBatch[util.format('[%d] Controller::%s responds w/404 for POST requests', t, k)] = function(results) {
-            var r = results[t];
-            assert404(r, k, t);
-          }
-        })(m, total++);
-        
-        // Other methods (400)
-        for (i=0; i < restMethods.length; i++) {
-          multi.curl(util.format('-i -X %s /test/%s', restMethods[i], m));
-          (function(k, t, rm) {
-            currentBatch[util.format('[%d] Controller::%s responds w/400 for %s requests', t, k, rm)] = function(results) {
-              var r = results[t];
-              assert400(r, k, t);
-            }
-          })(m, total++, restMethods[i]);
-        }
-      
-      // POST Routes
-      } else if (isPost) {
-        
-        // get (404)
-        multi.curl('-i /test/' + m);
-        (function(k, t) {
-          currentBatch[util.format('[%d] Controller::%s responds w/404 for GET requests', t, k)] = function(results) {
-            var r = results[t];
-            assert404(r, k, t);
-          }
-        })(m, total++);
-         
-        // post (200)
-        multi.curl('-i -X POST /test/'+ m);
-        (function(k, t) {
-          currentBatch[util.format('[%d] Controller::%s responds w/200 for POST requests', t, k)] = function(results) {
-            var r = results[t];
-            assert200(r, k, t);
-          }
-        })(m, total++);
-        
-        // Other methods (400)
-        for (i=0; i < restMethods.length; i++) {
-          multi.curl(util.format('-i -X %s /test/%s', restMethods[i], m));
-          (function(k, t, rm) {
-            currentBatch[util.format('[%d] Controller::%s responds w/400 for %s requests', t, k, rm)] = function(results) {
-              var r = results[t];
-              assert400(r, k, t);
-            }
-          })(m, total++, restMethods[i]);
-        }
-        
-      } else {
-        throw new Error("Untested method: " + m);
-      }
+    var method;
+    if (m != 'super_' && controllerCtor.hasOwnProperty(m) && (method=controllerCtor[m]) instanceof Function ) {
+      console.exit(method);
     }
   });
 }
