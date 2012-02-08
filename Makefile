@@ -28,12 +28,17 @@ default:
 		@echo "\033[1;31mmake test-int\033[0m         Run integration tests"
 		@echo
 
-lint:
-		@./tools/lint --all
-
 deps:
 		@npm install -d
 		@./tools/remove-sys-notice
+
+lint:
+		@./tools/lint --all
+
+clean:
+		@git reset HEAD
+		@git checkout -- .
+		@git clean -f
 
 testconfig:
 		@./tools/testconfig
