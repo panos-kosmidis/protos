@@ -206,9 +206,9 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
       // PostData missing required fields
       multi.curl('-i -X POST -d "" /test/postdata/messages');
       
-      // PostData when ajax=1
-      multi.curl('-i -X POST -d "ajax=1" /test/postdata/messages');
-      multi.curl('-X POST -d "ajax=1" /test/postdata/messages');
+      // PostData on AJAX Requests
+      multi.curl('-i -X POST -H "X-Requested-With: XMLHttpRequest" /test/postdata/messages');
+      multi.curl('-X POST -H "X-Requested-With: XMLHttpRequest" /test/postdata/messages');
 
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
@@ -252,7 +252,7 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
       assert.isTrue(r.indexOf("<p>Missing required fields</p>") >= 0);
     },
     
-    'Responds with raw data when ajax=1': function(results) {
+    'Responds with raw data on AJAX Requests': function(results) {
       var r1 = results[6],
           r2 = results[7];
       assert.isTrue(r1.indexOf('HTTP/1.1 400 Bad Request') >= 0);
