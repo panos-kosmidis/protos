@@ -18,7 +18,7 @@ app.customCurl = function(url, callback) {
 
 var multi = new Multi(app),
     controllerCtor = app.controller.constructor,
-    httpMethods = app.httpMethods;
+    httpMethods = app.controller.httpMethods;
 
 var total = 0; // counter for controller tests
 
