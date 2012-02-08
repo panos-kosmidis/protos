@@ -29,7 +29,7 @@ function SessionController(app) {
   
   get('/set/:varname/:value', {varname: 'alpha_dashes', value: 'alnum'}, function(req, res, params) {
     app.session.config.typecastVars.push(params.value); // automatically typecast
-    req.__session[params.varname] = params.value;
+    req.session[params.varname] = params.value;
     res.sendHeaders();
     res.rawHttpMessage({
       message: '{OK}',
@@ -40,13 +40,13 @@ function SessionController(app) {
   get('/:action/:varname', {action: /^(get|delete)$/, varname: 'alpha_dashes'}, function(req, res, params) {
     switch(params.action) {
       case 'get':
-        var ans = util.format('{%s}', req.__session[params.varname] || '');
+        var ans = util.format('{%s}', req.session[params.varname] || '');
         res.sendHeaders();
         res.end(ans);
         break;
         
       case 'delete':
-        delete req.__session[params.varname];
+        delete req.session[params.varname];
         res.sendHeaders();
         res.end('{OK}');
         break;
@@ -55,8 +55,8 @@ function SessionController(app) {
   
   get('/incr/:varname', {varname: 'alpha_dashes'}, function(req, res, params) {
     res.sendHeaders();
-    if (req.__session[params.varname] != null) {
-      req.__session[params.varname]++;
+    if (req.session[params.varname] != null) {
+      req.session[params.varname]++;
       res.end('{SUCCESS}');
     }
     else res.end('{FAIL}');

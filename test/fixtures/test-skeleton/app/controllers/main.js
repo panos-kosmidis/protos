@@ -13,8 +13,8 @@ function MainController(app) {
   /* View Engine Tests */
   
   get('/:engine.:ext', {engine: app.engineRegex, ext: /^[a-z]+(\.[a-z]+)?$/}, function(req, res) {
-    var engine = req.__params.engine,
-        ext = req.__params.ext;
+    var engine = req.params.engine,
+        ext = req.params.ext;
     var view = 'main/' + engine + '.' + ext;
     // console.exit(view);
     res.render(view, {prefix: 'Rendered Partial:'}, true);
@@ -23,7 +23,7 @@ function MainController(app) {
   /* Response Caching Tests */
   
   get('/response-:cache/:id', {cache: /^(cache|nocache)$/, id: 'integer'}, function(req, res) {
-    if (req.__params.cache == 'cache') res.useCache('test_cache');
+    if (req.params.cache == 'cache') res.useCache('test_cache');
     res.render('response-cache');
   });
   
