@@ -4,7 +4,7 @@
   "version"           : "0.0.0",
   "homepage"          : "http://corejs.org",
   "repository"        : "https://github.com/corejs/corejs",
-  "author"            : "Ernesto Mendez <der@der-design.com>",
+  "author"            : "Ernesto Méndez <der@der-design.com>",
   "license"           : "MIT",
   "main"              : "lib/framework",
   "engines"           : { "node": ">= 0.6.0" },
