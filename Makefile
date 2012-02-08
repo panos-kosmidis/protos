@@ -18,6 +18,7 @@ default:
 		@echo "\n\033[1;30m♢ Project Tasks\033[0m\n"
 		@echo "\033[1;31mmake deps\033[0m             Install Dependencies & Cleanup"
 		@echo "\033[1;31mmake lint\033[0m             Run Code Analysis tool (scans entire project)"
+		@echo "\033[1;31mmake clean\033[0m            Restores the repository to the last commit"
 		@echo "\033[1;31mmake testconfig\033[0m       Test Configuration Tool"
 		@echo "\n\033[1;30m♢ Test Suites\033[0m\n"
 		@echo "\033[1;31mmake tests\033[0m            Run All tests"
