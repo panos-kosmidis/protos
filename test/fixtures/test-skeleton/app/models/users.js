@@ -1,18 +1,20 @@
 
 function UsersModel(app) {
   
-  this.properties = {
-    id    : {type: 'integer'},
-    user  : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},
-    pass  : {type: 'string', required: true, validates: 'password'},
-    date  : {type: 'timestamp', validates: 'timestamp'}
-  }
-
-  this.relationships = {
-    hasOne  : ['job', 'car', 'dog'],
-    hasMany : ['friends', 'colleagues']
+  this.validation = {
+    'status': function(data) {
+      return /^(enabled|disabled|onhold)$/.test(data);
+    }
   }
   
+  this.properties = {
+    id      : {type: 'integer'},
+    user    : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},
+    pass    : {type: 'string', required: true, validates: 'password'},
+    status  : {type: 'string', required: true, validates: 'status'},
+    date    : {type: 'timestamp', validates: 'timestamp'}
+  }
+
 }
 
 module.exports = UsersModel;
