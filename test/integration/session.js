@@ -122,7 +122,7 @@ vows.describe('Sessions').addBatch({
     
     topic: function() {
       var promise = new EventEmitter(),
-          md5re = /=([a-f0-9]{32});/;
+          md5re = /\=([a-f0-9]{32});/;
       
       app.session.config.guestSessions = true;
       storage = app.session.storage;
@@ -291,17 +291,17 @@ vows.describe('Sessions').addBatch({
           // Detect new Session ID
           var matches;
           results[1].split(/\r\n/).forEach(function(line) {
-            var re = new RegExp(util.format('Set\-Cookie: %s=([a-f0-9]{32});', sess));
+            var re = new RegExp(util.format('Set-Cookie: %s=([a-f0-9]{32});', sess));
             matches = line.match(re);
             if (matches) {
-              var sid = sessId = matches[1];
-              results.push(sid);
+              sessId = matches[1];
+              results.push(sessId);
               
               var expireDate = line.slice(line.lastIndexOf('=') + 1);
               expireDate = new Date(expireDate);
               results.push(expireDate);
               
-              storage.getHash(sid, function(err, data) {
+              storage.getHash(sessId, function(err, data) {
                 results.push(err || data.token);
                 promise.emit('success', results);
               });

@@ -85,7 +85,7 @@ function testRouteMethod(tmethod, rfunc) {
           case 400: assert400(r, k, t); break;
           default:
             throw new Error("Response not expected: " + er);
-            break;
+            // break;
         }
       }
     })(rfunc, total++, method, tmethod, expRes);

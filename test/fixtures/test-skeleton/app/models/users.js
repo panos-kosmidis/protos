@@ -3,7 +3,7 @@ function UsersModel(app) {
   
   this.validation = {
     'status': function(data) {
-      return /^(enabled|disabled|onhold)$/.test(data);
+      return (/^(enabled|disabled|onhold)$/).test(data);
     }
   }
   
