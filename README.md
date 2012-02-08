@@ -1,4 +1,4 @@
-# CoreJS [![Build Status](https://secure.travis-ci.org/core/corejs.png)](http://travis-ci.org/core/corejs)
+# CoreJS [![Build Status](https://secure.travis-ci.org/corejs/corejs.png)](http://travis-ci.org/corejs/corejs)
 
 This project is currently under development.
 
