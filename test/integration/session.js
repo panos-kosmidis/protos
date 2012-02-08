@@ -13,7 +13,7 @@ var multi = new Multi(app);
 multi.on('pre_exec', app.backupFilters);
 multi.on('post_exec', app.restoreFilters);
 
-app.on('session_load', function(sid, session) {
+app.on('load_session', function(sid, session) {
   // Update sessId every time a new user session is created
   if (session.user) { 
     sessId = sid; 
