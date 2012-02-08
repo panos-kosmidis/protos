@@ -51,10 +51,6 @@ app.restoreFilters = function() {
   app.__filters = filterBackup;
 }
 
-// Backup Filters
-
-// Restore Filters
-
 /* Test Engine Automation */
 
 // Automate engine compatibility checks
