@@ -298,6 +298,7 @@ vows.describe('lib/application.js').addBatch({
       var promise = new EventEmitter();
       multi.curl('/request-test');
       multi.curl('-X PUT /');
+      multi.curl('-i http://google.com');
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
       });
@@ -309,6 +310,12 @@ vows.describe('lib/application.js').addBatch({
           r2 = results[1];
       assert.isTrue(r1 == 'SUCCESS');
       assert.isTrue(r2 == 'BAD REQUEST');
+    },
+    
+    'Can access external URLs': function(results) {
+      var r = results[2];
+      assert.isTrue(r.indexOf("HTTP/1.1 301 Moved Permanently") >= 0);
+      assert.isTrue(r.indexOf("Location: http://www.google.com/") >= 0);
     }
     
   }
