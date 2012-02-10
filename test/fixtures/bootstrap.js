@@ -27,7 +27,7 @@ CoreJS.on('app_init', function(app) {
 
 var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
     framework = CoreJS.bootstrap(testSkeleton, {}),
-    app = framework.defaultApp;
+    app = framework.app;
     
 app.logging = false;
 
