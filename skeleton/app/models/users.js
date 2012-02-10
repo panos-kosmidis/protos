@@ -7,11 +7,6 @@ function UsersModel(app) {
     pass  : {type: 'string', required: true, validates: 'password'},
     date  : {type: 'timestamp', validates: 'timestamp'}
   }
-
-  this.relationships = {
-    hasOne  : ['job', 'car', 'dog'],
-    hasMany : ['friends', 'colleagues']
-  }
   
 }
 
