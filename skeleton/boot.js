@@ -6,5 +6,7 @@ CoreJS.bootstrap(__dirname, {
   port: 8080,
   environment: 'development',
   multiProcess: false,
-  stayUp: false
+  stayUp: false,
+  redirect: false,
+  events: {}
 });

@@ -20,13 +20,20 @@ if (module.parent.id == '.') {
 
 CoreJS.configure('autoCurl', false);
 
-CoreJS.on('app_init', function(app) {
+CoreJS.on('pre_init', function(app) {
   app.config.database.mysql = testConfig.mysql;
   app.config.storage.redis = testConfig.redis;
 });
 
 var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
-    framework = CoreJS.bootstrap(testSkeleton, {}),
+    framework = CoreJS.bootstrap(testSkeleton, {
+      redirect: 'http://corejs.org',
+      events: {
+        init: function(app) {
+          app.__initBootstrapEvent = true;
+        }
+      }
+    }),
     app = framework.app;
     
 app.logging = false;
