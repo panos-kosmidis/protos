@@ -3,8 +3,8 @@
 
 function Development(app) {
   
-  app.on('init', function() {
-    // Runs on application init
+  app.once('init', function() {
+    
   });
   
 }
