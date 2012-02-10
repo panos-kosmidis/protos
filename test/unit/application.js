@@ -25,10 +25,6 @@ vows.describe('lib/application.js').addBatch({
       assert.equal(app.path, framework.constructor.path + '/test/fixtures/test-skeleton');
     },
     
-    'Detects library overrides': function() {
-      assert.isFunction(app.lib.controller);
-    },
-    
     'Sets default controller': function() {
       assert.instanceOf(app.controller, framework.lib.controller);
     },
