@@ -12,11 +12,6 @@ vows.describe('lib/framework.js').addBatch({
   
   'Integrity Checks': {
     
-    'Sets Version': function() {
-      var vRegex = /^\d+\.\d+\.\d+$/;
-      assert.isTrue(vRegex.test(framework.version));
-    },
-    
     'Sets environment': function() {
       assert.isTrue(/^(debug|development|travis)$/.test(framework.environment));
     },
