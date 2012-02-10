@@ -23,20 +23,20 @@ To start with the debug environment + node inspector: `NODE_ENV=debug node skele
 
 ## Running Tests
 
-Before running the entire test suite, make sure to run `make testconfig`, and enter the database information
+Before running _all_ tests, make sure to run `make testconfig`, and enter the database information
 for your testing environment.
 
-Run _all tests_ with `make tests`
+Run **all** tests_ with `make tests`
 
-Run _unit tests_ with `make test-unit`
+Run **unit tests** with `make test-unit`
 
-Run _storage tests_ with `make test-sto`
+Run **storage tests** with `make test-sto`
 
-Run _driver tests_ with `make test-drv`
+Run **driver tests** with `make test-drv`
 
-Run _engine tests_ with `make test-eng`
+Run **engine tests** with `make test-eng`
 
-Run _integration tests_ with `make test-int`
+Run **integration tests** with `make test-int`
 
 ## License
 
