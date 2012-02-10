@@ -8,6 +8,24 @@ var app = require('../fixtures/bootstrap'),
 
 var mysql, model, table, user;
 
+var eventObjects = {
+  save: null,
+  create: null,
+  delete: null
+}
+
+app.usersModel.on('create', function(err, mod) {
+  eventObjects.create = mod;
+});
+
+app.usersModel.on('save', function(err, mod) {
+  eventObjects.save = mod;
+});
+
+app.usersModel.on('delete', function(err, mod) {
+  eventObjects.delete = mod;
+});
+
 vows.describe('Models').addBatch({
 
   'Preliminaries': {
@@ -33,6 +51,11 @@ vows.describe('Models').addBatch({
       assert.equal(model.className, 'UsersModel');
       assert.isTrue(model.driver instanceof framework.lib.driver)
       assert.equal(model.driver.className, 'MySQL');
+    },
+    
+    'Alternative shortcut set (app.xxxModel)': function() {
+      assert.equal(app.usersModel.className, 'UsersModel');
+      assert.isTrue(app.usersModel instanceof framework.lib.model);
     }
 
   }
@@ -252,6 +275,33 @@ vows.describe('Models').addBatch({
     }
 
   }  
+  
+}).addBatch({
+  
+  'Model EventEmitter': {
+    
+    "Emits the 'create' event": function() {
+      var mod = eventObjects.create;
+      assert.isNotNull(mod);
+      assert.equal(mod.constructor.name, 'ModelObject');
+      assert.equal(mod.user, 'node');
+    },
+    
+    "Emits the 'save' event": function() {
+      var mod = eventObjects.save;
+      assert.isNotNull(mod);
+      assert.equal(mod.constructor.name, 'ModelObject');
+      assert.equal(mod.user, 'node');
+    },
+    
+    "Emits the 'delete' event": function() {
+      var mod = eventObjects.delete;
+      assert.isNotNull(mod);
+      assert.equal(mod.constructor.name, 'ModelObject');
+      assert.equal(mod.user, 'node');
+    },
+    
+  }
   
 }).addBatch({
   
