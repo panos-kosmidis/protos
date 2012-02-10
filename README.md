@@ -21,7 +21,7 @@ Run the Application server with `node skeleton/`
 
 To start with the debug environment + node inspector: `NODE_ENV=debug node skeleton/`
 
-## Running Tests
+## Tests
 
 Before running _all_ tests, make sure to run `make testconfig`, and enter the database information
 for your testing environment.
