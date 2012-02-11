@@ -42,7 +42,14 @@ vows.describe('lib/filemgr.js').addBatch({
       // Returns true + removes files not expected for optional files
       createFiles();
       fm = new FileManager(app, files);
-      fm.__expectResult = fm.expect('**fileA', '*fileB', 'fileC', 'fileX');
+      fm.__expectResult = fm.expect('fileC', 'fileX', {
+        name: 'fileA', 
+        required: true, 
+        notEmpty: true
+      },{
+        name: 'fileB',
+        required: true
+      });
       
       setTimeout(function() {
         fm.__existChecks = [
