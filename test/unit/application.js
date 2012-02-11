@@ -59,28 +59,7 @@ vows.describe('lib/application.js').addBatch({
   
   'Application Bootstrap': {
     
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      multi.curl('-i /');
-      
-      multi.exec(function(err, results) {
-        framework.config.redirect = null; // Disable bootstrap redirect
-        delete app._events.request; // Detach redirection event
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Performs automatic bootstrap redirect': function(results) {
-      var r = results[0];
-      assert.isTrue(r.indexOf('HTTP/1.1 302 Moved Temporarily') >= 0);
-      assert.isTrue(r.indexOf('Location: http://corejs.org') >= 0);
-      assert.isTrue(r.indexOf('Connection: close') >= 0);
-    },
-    
-    'Successfully emits bootstrap events': function() {
+   'Successfully emits bootstrap events': function() {
       assert.isTrue(app.__initBootstrapEvent);
     }
     

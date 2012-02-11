@@ -27,7 +27,7 @@ CoreJS.on('pre_init', function(app) {
 
 var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
     framework = CoreJS.bootstrap(testSkeleton, {
-      redirect: 'http://corejs.org',
+      // redirect: 'http://corejs.org',
       events: {
         init: function(app) {
           app.__initBootstrapEvent = true;
@@ -35,7 +35,7 @@ var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
       }
     }),
     app = framework.app;
-    
+
 app.logging = false;
 
 framework.path = CoreJS.path + '/test/fixtures/test-framework';

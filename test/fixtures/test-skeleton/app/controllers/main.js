@@ -50,7 +50,7 @@ function MainController(app) {
   });
   
   get('/removecookies/:names', {names: 'alpha_dashes'}, function(req, res, params) {
-    res.removeCookies(params.names.split('-'));
+    res.removeCookies.apply(res, params.names.split('-'));
     res.sendHeaders();
     res.end('');
   });
