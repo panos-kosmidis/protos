@@ -25,8 +25,6 @@ var cmd = path.resolve(rootPath, '../node_modules/jshint/bin/hint'),
 var colorRegex = /(\n)?(.*?): line (\d+), (.*?), (.*?)(\n)/g
 
 // Functions
-var fistNl = false;
-
 function logger(data) {
   data = data.toString('utf-8');
   if (data.indexOf('Usage: jshint path path2 [options]') >= 0) {
