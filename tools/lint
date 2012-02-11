@@ -4,6 +4,8 @@
  * Linting tool, using jshint with options from ../jshint.json
  */
  
+require('../lib/extensions.js');
+ 
 var path = require('path'),
     util = require('util'),
     fs = require('fs'),
@@ -23,11 +25,17 @@ var cmd = path.resolve(rootPath, '../node_modules/jshint/bin/hint'),
 var colorRegex = /(\n)?(.*?): line (\d+), (.*?), (.*?)(\n)/g
 
 // Functions
+var fistNl = false;
+
 function logger(data) {
   data = data.toString('utf-8');
   if (data.indexOf('Usage: jshint path path2 [options]') >= 0) {
-    console.log(util.format("Usage: %s [ --all | file1 file2 ]\n", path.basename(process.argv[1])));
+    console.log(util.format("\nUsage: %s path path2\n", path.basename(process.argv[1])));
   } else {
+    if (process.env.NODE_ENV == 'lintall') {
+      console.log(util.format('\n♢ \u001b[1;30m%s\u001b[0m', process.argv[2]));
+      data = '\n' + data.trim();
+    } else data = '\n' + data;
     console.log(colorize(data));
   }
 }
@@ -37,28 +45,11 @@ function colorize(data) {
 }
 
 // Detect scan
-var p = path.resolve(rootPath, '../'),
-    scan = args.indexOf('--all'),
-    scanIgnore = ['node_modules'],
-    scanDirs = [];
+var p = path.resolve(rootPath, '../');
 
 process.chdir(p);
 
-if (scan >= 0) {
-  args.shift();
-  var i,dir,stat,files = fs.readdirSync(p);
-  for (i=0; i < files.length; i++) {
-    dir = files[i];
-    if (scanIgnore.indexOf(dir) >= 0 || dir.charAt(0) == '.' || fs.lstatSync(dir).isFile())  continue;
-    else {
-      scanDirs.push(dir + '/');
-    }
-  }
-  args = scanDirs.concat(args);
-}
-
 // Run command w/args
-console.log('');
 var jshint = cp.spawn(cmd, args);
 
 jshint.stdout

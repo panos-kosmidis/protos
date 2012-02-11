@@ -33,7 +33,8 @@ deps:
 		@./tools/remove-sys-notice
 
 lint:
-		@./tools/lint --all
+		@ls -F | egrep / | egrep -v node_modules | NODE_ENV=lintall xargs -n 1 ./tools/lint
+		@echo
 
 testconfig:
 		@./tools/testconfig
