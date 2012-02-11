@@ -6,7 +6,7 @@
   "repository"        : "https://github.com/corejs/corejs",
   "author"            : "Ernesto Méndez <der@der-design.com>",
   "license"           : "MIT",
-  "main"              : "lib/framework",
+  "main"              : "lib/corejs",
   "engines"           : { "node": ">= 0.6.0" },
   "dependencies"      : {
     "node-inspector"    : ">= 0.1.10",

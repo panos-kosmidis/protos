@@ -8,39 +8,39 @@ var app = require('../fixtures/bootstrap'),
 
 app.logging = false;
 
-vows.describe('lib/framework.js').addBatch({
+vows.describe('lib/corejs.js').addBatch({
   
   'Integrity Checks': {
     
     'Sets environment': function() {
-      assert.isTrue(/^(debug|development|travis)$/.test(framework.environment));
+      assert.isTrue(/^(debug|development|travis)$/.test(corejs.environment));
     },
     
     'Sets application': function() {
-      assert.instanceOf(framework.app, framework.lib.application);
+      assert.instanceOf(corejs.app, corejs.lib.application);
     },
     
-    'Sets framework path': function() {
+    'Sets corejs path': function() {
       var path = pathModule.resolve(__dirname, '../../');
-      assert.equal(framework.path, framework.constructor.path + '/test/fixtures/test-framework');
+      assert.equal(corejs.path, corejs.constructor.path + '/test/fixtures/test-corejs');
     },
     
     'Inherits from EventEmitter': function() {
       // Framework inherits from EventEmitter indirectly
-      assert.isFunction(framework.on);
-      assert.isFunction(framework.emit);
+      assert.isFunction(corejs.on);
+      assert.isFunction(corejs.emit);
     },
     
     'Detects drivers': function() {
-      assert.isFunction(framework.drivers.mysql);
+      assert.isFunction(corejs.drivers.mysql);
     },
     
     'Detects storages': function() {
-      assert.isFunction(framework.storages.redis);
+      assert.isFunction(corejs.storages.redis);
     },
     
     'Detects view engines': function() {
-      assert.isFunction(framework.engines.eco);
+      assert.isFunction(corejs.engines.eco);
     }
     
   },
@@ -48,15 +48,15 @@ vows.describe('lib/framework.js').addBatch({
   'CoreJS::require': {
     
     'Returns the required module': function() {
-      var module1 = framework.require('node_modules/multi'),
-          module2 = framework.require('multi');
+      var module1 = corejs.require('node_modules/multi'),
+          module2 = corejs.require('multi');
       assert.isFunction(module1);
       assert.isFunction(module2);
     },
     
     'Can require/reload modules without using module cache': function() {
-      var h1 = framework.require('handlebars', true);
-      var h2 = framework.require('handlebars', true);
+      var h1 = corejs.require('handlebars', true);
+      var h2 = corejs.require('handlebars', true);
       
       h1.a = 99;
       h2.a = 55;
@@ -66,8 +66,8 @@ vows.describe('lib/framework.js').addBatch({
     },
     
     'Accepts relative/absolute paths': function() {
-      assert.isFunction(framework.require('./node_modules/multi'));
-      assert.isFunction(framework.require('/node_modules/multi'));
+      assert.isFunction(corejs.require('./node_modules/multi'));
+      assert.isFunction(corejs.require('/node_modules/multi'));
     },
     
   }

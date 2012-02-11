@@ -3,7 +3,7 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     util = require('util'),
     assert = require('assert'),
-    colorize = framework.util.colorize,
+    colorize = corejs.util.colorize,
     Multi = require('multi'),
     createClient = require('mysql').createClient,
     EventEmitter = require('events').EventEmitter;
@@ -54,7 +54,7 @@ function TestModel(app) {
 
 }
 
-util.inherits(TestModel, framework.lib.model);
+util.inherits(TestModel, corejs.lib.model);
 
 vows.describe('lib/drivers/mysql.js').addBatch({
   

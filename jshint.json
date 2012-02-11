@@ -2,7 +2,7 @@
   
   // jshint.com/options/
   
-  "predef": ["framework", "app"],
+  "predef": ["corejs", "app"],
   
   // Enforcing
   

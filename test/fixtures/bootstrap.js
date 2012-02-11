@@ -26,7 +26,7 @@ CoreJS.on('pre_init', function(app) {
 });
 
 var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
-    framework = CoreJS.bootstrap(testSkeleton, {
+    corejs = CoreJS.bootstrap(testSkeleton, {
       // redirect: 'http://corejs.org',
       events: {
         init: function(app) {
@@ -34,16 +34,16 @@ var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
         }
       }
     }),
-    app = framework.app;
+    app = corejs.app;
 
 app.logging = false;
 
-framework.path = CoreJS.path + '/test/fixtures/test-framework';
+corejs.path = CoreJS.path + '/test/fixtures/test-corejs';
 
 // Extend assert to check view engine compatibility
 
 var engines = Object.keys(app.engines),
-    colorize = framework.util.colorize;
+    colorize = corejs.util.colorize;
 
 /* Prevent conflicts with template engine test filters */
 

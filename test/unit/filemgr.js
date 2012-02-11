@@ -4,7 +4,7 @@ var app = require('../fixtures/bootstrap'),
     fs = require('fs'),
     path = require('path'),
     assert = require('assert'),
-    FileManager = framework.lib.filemgr,
+    FileManager = corejs.lib.filemgr,
     EventEmitter = require('events').EventEmitter;
 
 var t = 100; // Time to wait for Disk I/O to complete

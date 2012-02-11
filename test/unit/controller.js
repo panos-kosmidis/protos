@@ -29,7 +29,7 @@ vows.describe('lib/controller.js').addBatch({
     },
     
     'Accepts start/end slashes in alias': function() {
-      var ctor = framework.lib.controller;
+      var ctor = corejs.lib.controller;
       assert.instanceOf(app.controller.getControllerByAlias('/blog'), ctor);
       assert.instanceOf(app.controller.getControllerByAlias('blog/'), ctor);
       assert.instanceOf(app.controller.getControllerByAlias('/blog/'), ctor);
@@ -56,7 +56,7 @@ vows.describe('lib/controller.js').addBatch({
     
     'Returns the helper associated with controller': function() {
       var helper = app.controller.getHelper();
-      assert.instanceOf(helper, framework.lib.helper);
+      assert.instanceOf(helper, corejs.lib.helper);
     }
     
   }
