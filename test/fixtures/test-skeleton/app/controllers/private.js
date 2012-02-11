@@ -1,3 +1,4 @@
+/*jshint immed: false */
 
 function PrivateController() {
   

@@ -1,3 +1,4 @@
+/*jshint undef: false */
 
 function BlogController(app) {
   
