@@ -10,7 +10,9 @@ unit = ./test/unit/*.js
 storages = ./test/storages/*.js
 drivers = ./test/drivers/*.js
 engines = ./test/engines/*.js
+middleware = ./test/middleware/*.js
 integration = ./test/integration/*.js
+
 
 # Make commands
 
@@ -25,7 +27,8 @@ default:
 		@echo "\033[1;31mmake test-sto\033[0m         Run Storage tests (testconfig required)"
 		@echo "\033[1;31mmake test-drv\033[0m         Run Driver tests (testconfig required)"
 		@echo "\033[1;31mmake test-eng\033[0m         Run View Engine tests"
-		@echo "\033[1;31mmake test-int\033[0m         Run integration tests"
+		@echo "\033[1;31mmake test-int\033[0m         Run Integration tests"
+		@echo "\033[1;31mmake test-mid\033[0m         Run Middleware tests"
 		@echo
 
 deps:
@@ -40,10 +43,10 @@ testconfig:
 		@./tools/testconfig
 
 test:
-		@echo "\n\033[1;30mAvailable Test Commands\033[0m: tests  test-unit  test-sto test-drv test-eng test-int\n"
+		@echo "\n\033[1;30mAvailable Test Commands\033[0m: tests  test-unit  test-sto test-drv test-eng test-int test-mid\n"
 
 tests:
-		@${vows} ${vowsOpts} ${unit} ${storages} ${drivers} ${engines} ${integration}
+		@${vows} ${vowsOpts} ${unit} ${storages} ${drivers} ${engines} ${integration} ${middleware}
 
 test-unit:
 		@${vows} ${vowsOpts} ${unit}
@@ -59,5 +62,8 @@ test-eng:
 
 test-int:
 		@${vows} ${vowsOpts} ${integration}
+
+test-mid:
+		@${vows} ${vowsOpts} ${middleware}
 
 .PHONY: test

@@ -34,7 +34,7 @@
   "laxbreak": true,
   "expr": true,
   "loopfunc": true,
-  "proto": false,
+  "proto": true,
   
   // Environments
   

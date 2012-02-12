@@ -89,7 +89,7 @@ function createUserSessionBatch(persistent) {
   
 }
 
-vows.describe('Sessions').addBatch({
+vows.describe('Session (middleware)').addBatch({
   
   'Guest Sessions disabled': {
     

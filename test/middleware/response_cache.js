@@ -11,7 +11,7 @@ var multi = new Multi(app, {flush: false});
 multi.on('pre_exec', app.backupFilters);
 multi.on('post_exec', app.restoreFilters);
 
-vows.describe('Response Caching').addBatch({
+vows.describe('Response Cache (middleware)').addBatch({
   
   'When Caching enabled': {
     
