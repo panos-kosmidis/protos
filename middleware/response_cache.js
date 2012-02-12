@@ -13,9 +13,6 @@ function ResponseCache(config) {
   
   var sto;
   
-  // Don't attach this middleware into app singleton
-  this.__noAttach = true;
-
   if (!config.storage) {
     throw new Error('A storage is required.');
   } else if (typeof config.storage == 'string') {

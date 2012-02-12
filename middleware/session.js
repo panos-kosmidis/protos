@@ -15,9 +15,9 @@ var _ = require('underscore'),
   
 var _end = OutgoingMessage.prototype.end;
 
-function Session(config) {
+function Session(config, middleware) {
 
-  config = config || {};
+  app[middleware] = this; // Attach to application singleton
 
   // Middleware configuration defaults
   this.config = _.extend({
