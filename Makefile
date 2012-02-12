@@ -10,9 +10,8 @@ unit = ./test/unit/*.js
 storages = ./test/storages/*.js
 drivers = ./test/drivers/*.js
 engines = ./test/engines/*.js
-middleware = ./test/middleware/*.js
 integration = ./test/integration/*.js
-
+middleware = ./test/middleware/*.js
 
 # Make commands
 
