@@ -56,7 +56,7 @@ function TestModel(app) {
 
 util.inherits(TestModel, corejs.lib.model);
 
-vows.describe('lib/drivers/mysql.js').addBatch({
+vows.describe('drivers/mysql.js').addBatch({
   
   'Integrity Checks': {
     

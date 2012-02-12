@@ -9,7 +9,7 @@ var redis, multi;
 
 app.logging = true;
 
-vows.describe('lib/storages/redis.js').addBatch({
+vows.describe('storages/redis.js').addBatch({
   
   'Integrity Checks': {
     
