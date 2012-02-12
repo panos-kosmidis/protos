@@ -70,7 +70,7 @@ util.inherits(MySQL, corejs.lib.driver);
 
   Provides [err, results, fields]
 
-  Cache: Store / {cacheId, timeout, param}
+  Cache: Store / {cacheID, cacheTimeout}
   
   @example
   
@@ -107,7 +107,7 @@ MySQL.prototype.query = function(o, callback) {
 
   Provides: [err, info]
 
-  Cache: Invalidate / {invalidate, param}
+  Cache: Invalidate / {cacheInvalidate}
   
   @example
 
@@ -145,7 +145,7 @@ MySQL.prototype.exec = function(o, callback) {
 
   Provides: [err, results, fields]
 
-  Cache: Store / {cacheId, timeout, param}
+  Cache: Store / {cacheID, cacheTimeout}
 
   @example
 
@@ -191,7 +191,7 @@ MySQL.prototype.queryWhere = function(o, callback) {
 
   Provides: [err, results, fields]
 
-  Cache: Store / {cacheId, timeout, param}
+  Cache: Store / {cacheID, cacheTimeout}
 
   @example
 
@@ -230,7 +230,7 @@ MySQL.prototype.queryAll = function(o, callback) {
 
   Provides: [err, results, fields]
 
-  Cache: Store / {cacheId, timeout, param}
+  Cache: Store / {cacheID, cacheTimeout}
   
   @example
 
@@ -273,7 +273,7 @@ MySQL.prototype.queryById = function(o, callback) {
 
   Provides:  [err, info]
 
-  Cache: Invalidate / {invalidate, param}
+  Cache: Invalidate / {cacheInvalidate}
   
   @example
 
@@ -324,7 +324,7 @@ MySQL.prototype.insertInto = function(o, callback) {
 
   Provides: [err, info]
 
-  Cache: Invalidate / {invalidate, param}
+  Cache: Invalidate / {cacheInvalidate}
   
   @example
 
@@ -365,7 +365,7 @@ MySQL.prototype.deleteById = function(o, callback) {
   
   Provides: [err, info]
 
-  Cache: Invalidate / {invalidate, param}
+  Cache: Invalidate / {cacheInvalidate}
   
   @example
 
@@ -408,7 +408,7 @@ MySQL.prototype.deleteWhere = function(o, callback) {
 
   Provides: [err, info]
 
-  Cache: Invalidate / {invalidate, param}
+  Cache: Invalidate / {cacheInvalidate}
   
   @example
 
@@ -452,7 +452,7 @@ MySQL.prototype.updateById = function(o, callback) {
   
   Provides: [err, info]
 
-  Cache: Invalidate / {invalidate, param}
+  Cache: Invalidate / {cacheInvalidate}
   
   @example
 
@@ -506,7 +506,7 @@ MySQL.prototype.updateWhere = function(o, callback) {
 
   Provides: [err, count]
 
-  Cache: Store / {cacheId, timeout, param}
+  Cache: Store / {cacheID, cacheTimeout}
   
   @example
 
@@ -539,7 +539,7 @@ MySQL.prototype.countRows = function(o, callback) {
 
   Provides: [err, results]
 
-  Cache: Store / {cacheId, timeout, param}
+  Cache: Store / {cacheID, cacheTimeout}
   
   @example
 
@@ -600,7 +600,7 @@ MySQL.prototype.idExists = function(o, callback) {
 
   Provides: [err, exists, found]
 
-  Cache: Store / {cacheId, timeout, param}
+  Cache: Store / {cacheID, cacheTimeout}
   
   @example
 
