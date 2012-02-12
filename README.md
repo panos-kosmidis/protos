@@ -36,9 +36,9 @@ Run **driver tests** with `make test-drv`
 
 Run **engine tests** with `make test-eng`
 
-Run **middleware tests** with `make test-mid`
-
 Run **integration tests** with `make test-int`
+
+Run **middleware tests** with `make test-mid`
 
 ## License
 
