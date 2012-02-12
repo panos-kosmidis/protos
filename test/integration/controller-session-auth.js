@@ -115,7 +115,7 @@ var currentBatch = batch['Route Functions (auth + sessions + authentication)'] =
 
     var promise = new EventEmitter();
 
-    app.enable('session', {storage: 'redis', guestSessions: false});
+    app.use('session', {storage: 'redis', guestSessions: false});
 
     multi.exec(function(err, results) {
       promise.emit('success', err || results);

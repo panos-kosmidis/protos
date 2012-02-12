@@ -67,47 +67,10 @@ vows.describe('lib/application.js').addBatch({
   
 }).addBatch({
   
-  'Application::registerEnable': {
-    
-    topic: function() {
-      app.registerEnable('myFeature', function(config) {
-        this.__ValidContext = true;
-        this.__PassedConfig = config;
-      });
-      return app;
-    },
-    
-    'Properly registers feature': function(topic) {
-      assert.isFunction(app.__enableFeatures.myFeature);
-    }
-    
-  },
-  
-  'Application::enable': {
-    
-    topic: function() {
-      app.enable('myFeature', {testVar: 99});
-      return app;
-    },
-    
-    'Registers feature in app.supports': function() {
-      assert.isTrue(app.supports.myFeature);
-    },
-    
-    'Calls registered function correctly within app context': function() {
-      assert.isTrue(app.__ValidContext);
-    },
-    
-    'Passes config to registered function': function() {
-      assert.equal(app.__PassedConfig.testVar, 99);
-    }
-
-  },
-  
   'Application::use': {
     
     'Loads application middleware': function() {
-      app.use('application-middleware', {testVal: 99});
+      app.use('application_middleware', {testVal: 99});
       assert.isTrue(app.__LoadedApplicationMiddleware);
     },
 
@@ -116,12 +79,25 @@ vows.describe('lib/application.js').addBatch({
     },
     
     'Loads corejs middleware': function() {
-      app.use('corejs-middleware', {testVal: 99});
+      app.use('corejs_middleware', {testVal: 99});
       assert.isTrue(app.__LoadedFrameworkMiddleware);
     },
     
     'Provides correct arguments to corejs middleware': function() {
       assert.equal(app.__FrameworkMiddlewareConfig.testVal, 99);
+    },
+    
+    'Returns middleware instance': function() {
+      var mw = app.use('application_middleware', {testVal: 99});
+      assert.equal(mw.constructor.name, 'ApplicationMiddleware');
+    },
+    
+    'Attaches to the application singleton': function() {
+      assert.equal(app.application_middleware.constructor.name, 'ApplicationMiddleware');
+    },
+    
+    'Does not attach when instance.__noAttach is set to false': function() {
+      assert.isUndefined(app.corejs_middleware);
     },
     
     'Throws an error if middleware not found': function() {

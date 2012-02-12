@@ -18,7 +18,7 @@ vows.describe('Response Caching').addBatch({
     topic: function() {
       var promise = new EventEmitter();
 
-      app.enable('response_cache', 'redis');
+      app.use('response_cache', {storage: 'redis'});
       app.config.rawViews = true;
       
       var cacheStore = app.getResource('response_cache');

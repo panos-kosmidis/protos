@@ -96,7 +96,7 @@ vows.describe('Sessions').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      app.enable('session', {storage: 'redis', guestSessions: false});
+      app.use('session', {storage: 'redis', guestSessions: false});
       
       // Response should not contain any session cookies
       multi.curl('-i /session');

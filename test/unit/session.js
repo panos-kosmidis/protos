@@ -6,7 +6,7 @@ var app = require('../fixtures/bootstrap'),
 app.logging = false;
 
 // Enable session
-app.enable('session', {storage: 'redis'});
+app.use('session', {storage: 'redis'});
 
 // Detach session, use session standalone
 var session = app.session;

@@ -1,5 +1,9 @@
 
-/* Session */
+/* 
+  Session
+ */
+
+var app = corejs.app
 
 var _ = require('underscore'),
   util = require('util'),
@@ -8,14 +12,15 @@ var _ = require('underscore'),
   slice = Array.prototype.slice,
   IncomingMessage = require('http').IncomingMessage,
   OutgoingMessage = require('http').OutgoingMessage;
-
+  
 var _end = OutgoingMessage.prototype.end;
 
-function Session(app, config) {
+function Session(config) {
 
   config = config || {};
   this.app = app;
 
+  // Middleware configuration defaults
   this.config = _.extend({
     guestSessions: false,                 // Guest sessions support
     regenInterval: 5 * 60,                // Interval to regenerate the sessionId
