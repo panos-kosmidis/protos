@@ -106,26 +106,26 @@ vows.describe('lib/application.js').addBatch({
   
   'Application::use': {
     
-    'Loads application addons': function() {
-      app.use('application-addon', {testVal: 99});
-      assert.isTrue(app.__LoadedApplicationAddon);
+    'Loads application middleware': function() {
+      app.use('application-middleware', {testVal: 99});
+      assert.isTrue(app.__LoadedApplicationMiddleware);
     },
 
-    'Provides correct arguments to app addons': function() {
-      assert.equal(app.__ApplicationAddonConfig.testVal, 99);
+    'Provides correct arguments to app middleware': function() {
+      assert.equal(app.__ApplicationMiddlewareConfig.testVal, 99);
     },
     
-    'Loads corejs addons': function() {
-      app.use('corejs-addon', {testVal: 99});
-      assert.isTrue(app.__LoadedFrameworkAddon);
+    'Loads corejs middleware': function() {
+      app.use('corejs-middleware', {testVal: 99});
+      assert.isTrue(app.__LoadedFrameworkMiddleware);
     },
     
-    'Provides correct arguments to corejs addons': function() {
-      assert.equal(app.__FrameworkAddonConfig.testVal, 99);
+    'Provides correct arguments to corejs middleware': function() {
+      assert.equal(app.__FrameworkMiddlewareConfig.testVal, 99);
     },
     
-    'Throws an error if addon not found': function() {
-      try { app.use('unknown-addon'); } 
+    'Throws an error if middleware not found': function() {
+      try { app.use('unknown-middleware'); } 
       catch(e) { assert.instanceOf(e, Error); }
     }
     
