@@ -3,7 +3,7 @@
   Session
  */
 
-var app = corejs.app
+var app = corejs.app;
 
 var _ = require('underscore'),
   util = require('util'),
@@ -18,7 +18,6 @@ var _end = OutgoingMessage.prototype.end;
 function Session(config) {
 
   config = config || {};
-  this.app = app;
 
   // Middleware configuration defaults
   this.config = _.extend({
@@ -66,7 +65,7 @@ Session.prototype.create = function(req, res, data, persistent, callback) {
     guest = true;
     persistent = true;
   }
-  this.app.debug( guest ? 'Creating guest session' : 'Creating session' );
+  app.debug( guest ? 'Creating guest session' : 'Creating session' );
   userAgent = req.headers['user-agent'] || this.config.defaultUserAgent;
   userAgentMd5 = this.md5(userAgent);
   hashes = this.createHash(userAgent, guest);
@@ -114,7 +113,7 @@ Session.prototype.create = function(req, res, data, persistent, callback) {
       req.session = data;
       req.__origSessionState = _.extend({}, data);
       req.__jsonSession = JSON.stringify(data);
-      self.app.emit('load_session', hashes.sessId, req.session);
+      app.emit('load_session', hashes.sessId, req.session);
       callback.call(self, req.session, hashes, expires);
     }
   });
@@ -131,7 +130,7 @@ Session.prototype.create = function(req, res, data, persistent, callback) {
 
 Session.prototype.destroy = function(req, res, callback) {
   var fingerprint, sessId, self = this;
-  this.app.debug('Destroying session');
+  app.debug('Destroying session');
   if (req.hasCookie(this.config.sessCookie) && req.session) {
     sessId = req.getCookie(this.config.sessCookie);
     fingerprint = this.getFingerprint(req, sessId);
@@ -146,10 +145,10 @@ Session.prototype.destroy = function(req, res, callback) {
       });
     } else {
       res.removeCookies(this.config.sessCookie, this.config.hashCookie);
-      this.app.login(res);
+      app.login(res);
     }
   } else {
-    this.app.login(res);
+    app.login(res);
   }
 }
 
@@ -163,7 +162,7 @@ Session.prototype.destroy = function(req, res, callback) {
 */
 
 Session.prototype.loadSession = function(req, res, callback) {
-  var fingerprint, sessHash, sessId, self, app;
+  var fingerprint, sessHash, sessId, self;
 
   if (req.__loadedSession === true) {
     callback.call(this);
@@ -173,7 +172,6 @@ Session.prototype.loadSession = function(req, res, callback) {
   }
 
   self = this;
-  app = this.app;
 
   sessId = req.getCookie(this.config.sessCookie);
   sessHash = req.getCookie(this.config.hashCookie);
@@ -429,8 +427,7 @@ IncomingMessage prototype augmentation
 
 IncomingMessage.prototype.saveSessionState = function(callback) {
 
-  var expires,
-  app = this.app;
+  var expires;
 
   if (! app.supports.session) {
     callback.call(app);
@@ -473,9 +470,9 @@ IncomingMessage.prototype.saveSessionState = function(callback) {
 */
 
 IncomingMessage.prototype.sessionChanged = function() {
-  if (!this.app.supports.session) return false;
+  if (!app.supports.session) return false;
   var curSessionJson = JSON.stringify(this.session);
-  return (this.hasCookie(this.app.session.config.sessCookie)
+  return (this.hasCookie(app.session.config.sessCookie)
   && curSessionJson !== this.__jsonSession
   && curSessionJson !== '{}');
 }
@@ -496,10 +493,9 @@ OutgoingMessage prototype augmentation
 OutgoingMessage.prototype.end = function() {
   var args = slice.call(arguments, 0),
   self = this,
-  req = this.request,
-  app = this.app;
+  req = this.request;
 
-  if (typeof app == 'object' && app.supports.session && req.sessionChanged()) {
+  if (app.supports.session && req.sessionChanged()) {
     req.saveSessionState(function() {
       _end.apply(self, args);
     });
