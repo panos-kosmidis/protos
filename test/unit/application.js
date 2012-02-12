@@ -67,46 +67,6 @@ vows.describe('lib/application.js').addBatch({
   
 }).addBatch({
   
-  'Application::use': {
-    
-    'Loads application middleware': function() {
-      app.use('application_middleware', {testVal: 99});
-      assert.isTrue(app.__LoadedApplicationMiddleware);
-    },
-
-    'Provides correct arguments to app middleware': function() {
-      assert.equal(app.__ApplicationMiddlewareConfig.testVal, 99);
-    },
-    
-    'Loads corejs middleware': function() {
-      app.use('corejs_middleware', {testVal: 99});
-      assert.isTrue(app.__LoadedFrameworkMiddleware);
-    },
-    
-    'Provides correct arguments to corejs middleware': function() {
-      assert.equal(app.__FrameworkMiddlewareConfig.testVal, 99);
-    },
-    
-    'Returns middleware instance': function() {
-      var mw = app.use('application_middleware', {testVal: 99});
-      assert.equal(mw.constructor.name, 'ApplicationMiddleware');
-    },
-    
-    'Attaches to the application singleton': function() {
-      assert.equal(app.application_middleware.constructor.name, 'ApplicationMiddleware');
-    },
-    
-    'Does not attach when instance.__noAttach is set to false': function() {
-      assert.isUndefined(app.corejs_middleware);
-    },
-    
-    'Throws an error if middleware not found': function() {
-      try { app.use('unknown-middleware'); } 
-      catch(e) { assert.instanceOf(e, Error); }
-    }
-    
-  },
-  
   'Application::url': {
     
     'Returns proper url when no args provided': function() {

@@ -6,16 +6,17 @@
 var app = corejs.app;
 
 var _ = require('underscore'),
-  util = require('util'),
-  crypto = require('crypto'),
-  node_uuid = require('node-uuid'),
-  slice = Array.prototype.slice,
-  IncomingMessage = require('http').IncomingMessage,
-  OutgoingMessage = require('http').OutgoingMessage;
-  
-var _end = OutgoingMessage.prototype.end;
+    util = require('util'),
+    crypto = require('crypto'),
+    node_uuid = require('node-uuid'),
+    slice = Array.prototype.slice;
 
+require('./request.js');
+require('./response.js');
+  
 function Session(config, middleware) {
+
+  if (!app.supports.cookie_parser) throw new Error("Enable the 'cookie_parser' middleware to use sessions.");
 
   app[middleware] = this; // Attach to application singleton
 
@@ -27,6 +28,7 @@ function Session(config, middleware) {
     temporaryExpires: 24 * 3600,          // Temporary (browser) sessions timeout
     guestExpires: 7 * 24 * 3600,          // Guest sessions timeout
     typecastVars: [],                     // Session variables to automatically typecast
+    autoTypecast: true,                   // Automatically coerce values
     sessCookie: "_sess",                  // Session Cookie
     hashCookie: "_shash",                 // Session hash
     defaultUserAgent: "Mozilla",          // Default User Agent
@@ -409,99 +411,6 @@ Session.prototype.typecast = function(data) {
     if (data[key] != null) data[key] = corejs.util.typecast(data[key]);
   }
   return data;
-}
-
-
-/*
---------------------------------------
-IncomingMessage prototype augmentation
---------------------------------------
-*/
-
-/**
-  Saves the session if it has changed
-
-  @param {function} callback
-  @private
-*/
-
-IncomingMessage.prototype.saveSessionState = function(callback) {
-
-  var expires;
-
-  if (! app.supports.session) {
-    callback.call(app);
-    return;
-  }
-
-  var self = this,
-  session = this.session,
-  multi = app.session.storage.multi(),
-  sessId = this.getCookie(app.session.config.sessCookie);
-
-  if (session.user != null) {
-    expires = (session.pers ? app.session.config.permanentExpires : app.session.config.temporaryExpires);
-  } else {
-    expires = app.session.config.guestExpires;
-  }
-  
-  multi.setHash(sessId, session);
-  
-  for (var key in this.__origSessionState) {
-    if (session[key] == null) multi.deleteFromHash(sessId, key);
-  }
-  
-  multi.expire(sessId, expires);
-  
-  multi.exec(function(err, replies) {
-    if (err) {
-      app.serverError(self.response, util.format("Unable to save session state: %s" + err.toString()));
-    } else {
-      callback.call(self, app);
-    }
-  });
-}
-
-/**
-  Checks if the session has changed
-
-  @returns {boolean}
-  @private
-*/
-
-IncomingMessage.prototype.sessionChanged = function() {
-  if (!app.supports.session) return false;
-  var curSessionJson = JSON.stringify(this.session);
-  return (this.hasCookie(app.session.config.sessCookie)
-  && curSessionJson !== this.__jsonSession
-  && curSessionJson !== '{}');
-}
-
-
-/*
---------------------------------------
-OutgoingMessage prototype augmentation
---------------------------------------
-*/
-
-/**
-  Replaces the default end method, providing support for
-
-  @params {*mixed}
-*/
-
-OutgoingMessage.prototype.end = function() {
-  var args = slice.call(arguments, 0),
-  self = this,
-  req = this.request;
-
-  if (app.supports.session && req.sessionChanged()) {
-    req.saveSessionState(function() {
-      _end.apply(self, args);
-    });
-  } else {
-    _end.apply(this, args);
-  }
 }
 
 module.exports = Session;
