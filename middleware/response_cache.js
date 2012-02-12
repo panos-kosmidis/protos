@@ -3,12 +3,15 @@
   Response Caching
  */
 
+var app = corejs.app;
+
 function ResponseCache(config) {
-  var sto, app = corejs.app;
 
   /* config = {
     storage: 'redis'
   } */
+  
+  var sto;
   
   // Don't attach this middleware into app singleton
   this.__noAttach = true;
