@@ -78,14 +78,14 @@ function TestController(app) {
   
   // PostData validation + no param validation
   post('/postdata', {user: 'alpha', pass: 'integer'}, function(req, res) {
-    this.getPostData(req, function(fields) {
+    this.parseBodyData(req, function(fields) {
       res.end(inspect(fields));
     });
   });
   
   // PostData validation + param validation
   post('/postdata/:account', {account: 'integer', user: 'alpha', pass: 'integer'}, function(req, res) {
-    this.getPostData(req, function(fields) {
+    this.parseBodyData(req, function(fields) {
       res.end(inspect(fields));
     });
   });
@@ -100,7 +100,7 @@ function TestController(app) {
     user: 'Invalid username!',
     pass: function(p) { return "Oops! That's an invalid password: " + p; }
   },function(req, res) {
-    this.getPostData(req, function(fields) {
+    this.parseBodyData(req, function(fields) {
       res.end(inspect(fields));
     });
   });
@@ -110,7 +110,7 @@ function TestController(app) {
   // File Uploads
   // Upload Limits & Messages
   post('/upload', function(req, res) {
-    this.getPostData(req, function(fields, files) {
+    this.parseBodyData(req, function(fields, files) {
       if ( files.expect('**file') ) { // File should be present, and not empty
         var f = files.get('file');
         res.sendHeaders();

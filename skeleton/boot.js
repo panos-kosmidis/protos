@@ -7,13 +7,12 @@ CoreJS.bootstrap(__dirname, {
   port: 8080,
   multiProcess: false,
   stayUp: false,
-  redirect: 'http://google.com',
+  redirect: false,
   
   environment: {
     default: 'development',
     production: function(app) {
-      // Use port 80 on production
-      app.use('production_port');
+      app.use('production_port'); // Use port 80 on production
     }
   },
   

@@ -17,9 +17,6 @@ module.exports = {
   
   server: {
     strictRouting: true,
-    maxFieldSize: 2 * 1024 * 1024,
-    maxUploadSize: 2 * 1024 * 1024,
-    keepUploadExtensions: true
   },
   
   cacheControl: {

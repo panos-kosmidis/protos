@@ -268,8 +268,8 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      app.config.server.maxFieldSize = 64 * 1024; // 64kb
-      app.config.server.maxUploadSize = 128 * 1024; // 128kb
+      app.config.uploads.maxFieldSize = 64 * 1024; // 64kb
+      app.config.uploads.maxUploadSize = 128 * 1024; // 128kb
       
       // Successful file upload
       multi.curl('-i -X POST -F "file=@test/fixtures/file-64.junk" /test/upload');
