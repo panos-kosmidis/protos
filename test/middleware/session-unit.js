@@ -5,22 +5,20 @@ var app = require('../fixtures/bootstrap'),
 
 app.logging = false;
 
-// Enable session
-app.use('session', {storage: 'redis'});
-
-// Detach session, use session standalone
-var session = app.session;
-app.session = null;
-delete app.supports.session;
-
 vows.describe('lib/session.js').addBatch({
   
   'Session::md5': {
+    
+    topic: function() {
+      // Enable session
+      app.use('session', {storage: 'redis'});
+      return true;
+    },
 
     'Returns valid md5 hashes': function() {
       // MD5 ("hello") = 5d41402abc4b2a76b9719d911017c592
       var hash = '5d41402abc4b2a76b9719d911017c592';
-      assert.equal(session.md5('hello'), hash);
+      assert.equal(app.session.md5('hello'), hash);
     }
 
   },
@@ -29,7 +27,7 @@ vows.describe('lib/session.js').addBatch({
     
     'Returns valid {sessId} for guest sessions': function() {
       var ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.75',
-          hash = session.createHash(ua, true),
+          hash = app.session.createHash(ua, true),
           md5Regex = corejs.regex.md5_hash;
       var props = Object.getOwnPropertyNames(hash);
       assert.isTrue(props.length === 1 && props[0] == 'sessId' && md5Regex.test(hash.sessId));
@@ -40,8 +38,8 @@ vows.describe('lib/session.js').addBatch({
   'Session::typecast': {
     
     topic: function() {
-      session.config.typecastVars = ['vInt', 'vFloat', 'vNull', 'vBool']
-      return session.typecast({
+      app.session.config.typecastVars = ['vInt', 'vFloat', 'vNull', 'vBool']
+      return app.session.typecast({
         vInt: '5',
         noConv: '5',
         vFloat: '2.3',

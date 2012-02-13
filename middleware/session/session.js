@@ -16,7 +16,8 @@ require('./response.js');
   
 function Session(config, middleware) {
 
-  if (!app.supports.cookie_parser) throw new Error("Enable the 'cookie_parser' middleware to use sessions.");
+  // Automatically load cookie_parser module dependency
+  if (!app.supports.cookie_parser) app.use('cookie_parser');
 
   app[middleware] = this; // Attach to application singleton
 

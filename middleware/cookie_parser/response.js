@@ -3,6 +3,7 @@
 
 var app = corejs.app,
     http = require('http'),
+    slice = Array.prototype.slice,
     OutgoingMessage = http.OutgoingMessage;
 
 /**
@@ -16,7 +17,6 @@ var app = corejs.app,
 
 OutgoingMessage.prototype.setCookie = function(name, val, opts) {
   var pairs, removeCookie,
-      app = this.app,
       request = this.request;
 
   app.loadCookies(request);
@@ -50,7 +50,7 @@ OutgoingMessage.prototype.setCookie = function(name, val, opts) {
  */
 
 OutgoingMessage.prototype.removeCookie = function(name) {
-  if (this.request.__cookies == null) this.app.loadCookies(this.request);
+  if (this.request.__cookies == null) app.loadCookies(this.request);
   this.setCookie(name, null, {expires: -3600});
   delete this.request.__cookies[name.toLowerCase()];
 }
