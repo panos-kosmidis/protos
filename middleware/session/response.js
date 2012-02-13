@@ -19,7 +19,7 @@ OutgoingMessage.prototype.end = function() {
   self = this,
   req = this.request;
 
-  if (app.supports.session && req.sessionChanged()) {
+  if ( app.supports.session && req.sessionChanged() ) {
     req.saveSessionState(function() {
       _end.apply(self, args);
     });

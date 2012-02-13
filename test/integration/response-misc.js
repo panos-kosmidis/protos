@@ -84,12 +84,6 @@ vows.describe('Response Misc').addBatch({
       assert.isTrue(r.indexOf('Cache-Control: ' + app.config.cacheControl.dynamic) >= 0);
     },
     
-    'Properly set for static resources': function(results) {
-      var r = results[1];
-      var cc = app.config.cacheControl;
-      assert.isTrue(r.indexOf(util.format('Cache-Control: %s, max-age=%d', cc.static, cc.maxAge)) >= 0);
-    },
-    
     'Properly set for error pages': function(results) {
       var r = results[2];
       assert.isTrue(r.indexOf('Cache-Control: ' + app.config.cacheControl.error) >= 0);

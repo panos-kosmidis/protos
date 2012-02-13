@@ -17,15 +17,9 @@ module.exports = {
   
   server: {
     strictRouting: true,
-    headRedirect: false,
     maxFieldSize: 2 * 1024 * 1024,
     maxUploadSize: 2 * 1024 * 1024,
     keepUploadExtensions: true
-  },
-  
-  staticServer: {
-    eTags: true,
-    acceptRanges: true
   },
   
   cacheControl: {

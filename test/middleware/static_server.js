@@ -5,17 +5,25 @@ var app = require('../fixtures/bootstrap'),
     util = require('util'),
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
-    
+
+var sessionState;
+
 var multi = new Multi(app);
 
 multi.on('pre_exec', app.backupFilters);
 multi.on('post_exec', app.restoreFilters);
 
-vows.describe('Static File Server').addBatch({
+vows.describe('Static File Server (middleware)').addBatch({
   
   '': {
     
     topic: function() {
+      
+      // Load static server middleware
+      sessionState = app.supports.session;
+      app.supports.session = false;
+      app.use('static_server');
+      
       var promise = new EventEmitter();
       
       multi.curl('-i /hello.txt');                    // file in root level
@@ -42,6 +50,7 @@ vows.describe('Static File Server').addBatch({
       });
       
       multi.exec(function(err, results) {
+        app.supports.session = sessionState;
         if (err) throw err;
         results = results.map(function(r) {
           try { return r.trim().split(/\r\n/); }
@@ -51,6 +60,12 @@ vows.describe('Static File Server').addBatch({
       });
       
       return promise;
+    },
+    
+    'Properly sets cache control headers': function(results) {
+      var r = results[0];
+      var cc = app.config.cacheControl;
+      assert.isTrue(r.indexOf(util.format('Cache-Control: %s, max-age=%d', cc.static, cc.maxAge)) >= 0);
     },
     
     'Gets files in public/ » root level': function(results) {
