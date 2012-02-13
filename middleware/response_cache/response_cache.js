@@ -1,9 +1,9 @@
 
-/*
-  Response Caching
- */
+/* Response Cache */
 
 var app = corejs.app;
+
+require('./response.js');
 
 function ResponseCache(config) {
 

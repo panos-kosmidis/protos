@@ -5,7 +5,7 @@ var app = require('../fixtures/bootstrap'),
 
 app.logging = false;
 
-vows.describe('lib/session.js').addBatch({
+vows.describe('Session (middleware) » Unit Tests').addBatch({
   
   'Session::md5': {
     

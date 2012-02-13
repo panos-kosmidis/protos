@@ -16,6 +16,8 @@ vows.describe('Cookie Parser (middleware)').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
+      
+      app.use('cookie_parser');
 
       // OutgoingMessage::setCookie
       multi.curl('-i /setcookie/user/john');

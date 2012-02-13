@@ -1,0 +1,1 @@
+module.exports = require('./response_cache.js');
