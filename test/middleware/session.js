@@ -68,20 +68,24 @@ function createUserSessionBatch(persistent) {
         var expires, hashExpire, sessExpire, shouldExpire;
         if (line.indexOf('=' + sessHash) >= 0) {
           expires = line.slice(line.lastIndexOf('=')+1);
-          hashExpire = new Date(expires);
-          shouldExpire = new Date(Date.now() + app.session.config.regenInterval*1000);
-          assert.equal(hashExpire.toString(), shouldExpire.toString());   // Check if Expiration matches config
+          hashExpire = new Date(expires).toString();
+          hashExpire = hashExpire.slice(0, hashExpire.lastIndexOf(':')); // Second precision
+          shouldExpire = new Date(Date.now() + app.session.config.regenInterval*1000).toString();
+          shouldExpire = shouldExpire.slice(0, shouldExpire.lastIndexOf(':')); // Second precision
+          assert.equal(hashExpire, shouldExpire);   // Check if Expiration matches config
         } else if (line.indexOf('=' + sessId) >= 0) {
           expires = line.slice(line.lastIndexOf('=')+1);
-          sessExpire = new Date(expires);
+          sessExpire = new Date(expires).toString();
+          sessExpire = sessExpire.slice(0, sessExpire.lastIndexOf(':')); // Second precision
           
           if (persistent == 1) {
-            shouldExpire = new Date(Date.now() + app.session.config.permanentExpires*1000);
+            shouldExpire = new Date(Date.now() + app.session.config.permanentExpires*1000).toString();
           } else {
-            shouldExpire = new Date(Date.now() + app.session.config.temporaryExpires*1000);
+            shouldExpire = new Date(Date.now() + app.session.config.temporaryExpires*1000).toString();;
           }
           
-          assert.equal(sessExpire.toString(), shouldExpire.toString());  // Check if Expiration matches config
+          shouldExpire = shouldExpire.slice(0, shouldExpire.lastIndexOf(':')); // Second precision
+          assert.equal(sessExpire, shouldExpire);  // Check if Expiration matches config
         }
       });
     }
@@ -171,14 +175,18 @@ vows.describe('Session (middleware)').addBatch({
         var expires, hashExpire, sessExpire, shouldExpire;
         if (line.indexOf(util.format('%s=null;', shash)) >= 0) {
           expires = line.slice(line.lastIndexOf('=')+1);
-          hashExpire = new Date(expires);
-          shouldExpire = new Date(Date.now() - 3600*1000);
-          assert.equal(hashExpire.toString(), shouldExpire.toString());  // Cookie should have expired
+          hashExpire = new Date(expires).toString();
+          hashExpire = hashExpire.slice(0, hashExpire.lastIndexOf(':')); // Second precision
+          shouldExpire = new Date(Date.now() - 3600*1000).toString();
+          shouldExpire = shouldExpire.slice(0, shouldExpire.lastIndexOf(':')); // Second precision
+          assert.equal(hashExpire, shouldExpire);  // Cookie should have expired
         } else if (line.indexOf('=' + guestSessId) >= 0) {
           expires = line.slice(line.lastIndexOf('=')+1);
-          sessExpire = new Date(expires);
-          shouldExpire = new Date(Date.now() + app.session.config.guestExpires*1000);
-          assert.equal(sessExpire.toString(), shouldExpire.toString());  // Check if Expiration matches config
+          sessExpire = new Date(expires).toString();
+          sessExpire = sessExpire.slice(0, sessExpire.lastIndexOf(':')); // Second precision
+          shouldExpire = new Date(Date.now() + app.session.config.guestExpires*1000).toString();
+          shouldExpire = shouldExpire.slice(0, shouldExpire.lastIndexOf(':')); // Second precision
+          assert.equal(sessExpire, shouldExpire);  // Check if Expiration matches config
         }
       });
     }
