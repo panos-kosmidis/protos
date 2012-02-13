@@ -2,6 +2,7 @@
 /* Session Request methods */
 
 var app = corejs.app,
+    util = require('util'),
     http = require('http'),
     IncomingMessage = http.IncomingMessage;
 

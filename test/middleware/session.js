@@ -81,7 +81,7 @@ function createUserSessionBatch(persistent) {
           if (persistent == 1) {
             shouldExpire = new Date(Date.now() + app.session.config.permanentExpires*1000).toString();
           } else {
-            shouldExpire = new Date(Date.now() + app.session.config.temporaryExpires*1000).toString();;
+            shouldExpire = new Date(Date.now() + app.session.config.temporaryExpires*1000).toString();
           }
           
           shouldExpire = shouldExpire.slice(0, shouldExpire.lastIndexOf(':')); // Second precision
