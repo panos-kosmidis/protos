@@ -109,7 +109,7 @@ function automateVowsBatches() {
 
 var batchQueue = [];
 var batch = {};
-var currentBatch = batch['Route Functions (auth + sessions + authentication)'] = {
+var currentBatch = batch['Controllers » auth/sessions + authentication'] = {
 
   topic: function() {
 
@@ -130,4 +130,4 @@ automateVowsBatches();
 
 // console.exit(batch);
 
-vows.describe('Application Controllers + Sessions + Authentication').addBatch(batch).export(module);
+vows.describe('Session (middleware)').addBatch(batch).export(module);

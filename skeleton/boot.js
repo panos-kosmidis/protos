@@ -7,7 +7,7 @@ CoreJS.bootstrap(__dirname, {
   port: 8080,
   multiProcess: false,
   stayUp: false,
-  redirect: false,
+  redirect: 'http://google.com',
   
   environment: {
     default: 'development',

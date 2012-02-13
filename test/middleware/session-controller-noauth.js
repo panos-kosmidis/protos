@@ -87,7 +87,7 @@ function automateVowsBatches() {
 // TEST AUTOMATION [END] --
 
 var batch = {};
-var currentBatch = batch['Route Functions (auth/sessions enabled, no authentication)'] = {
+var currentBatch = batch['Controllers » auth/sessions + no authentication'] = {
   
   topic: function() {
     
@@ -108,4 +108,4 @@ automateVowsBatches(); // Creates the nifty automated tests
 
 // console.exit(batch);
 
-vows.describe('Application Controllers + Sessions').addBatch(batch).export(module);
+vows.describe('Session (middleware)').addBatch(batch).export(module);
