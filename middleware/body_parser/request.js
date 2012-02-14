@@ -1,8 +1,13 @@
 
 /* Body Parser » Request ennhancements */
 
-var formidable = require('formidable'),
-    IncomingForm = formidable.IncomingForm;
+var app = corejs.app,
+    http = require('http'),
+    formidable = require('formidable'),
+    IncomingForm = formidable.IncomingForm,
+    IncomingMessage = http.IncomingMessage;
+
+var FileManager = require('./file_manager.js');
 
 /**
   Gets POST data & files
@@ -12,26 +17,21 @@ var formidable = require('formidable'),
  */
 
 IncomingMessage.prototype.parseBodyData = function(callback) {
-  var req = this,
-      res = this.response,
-      app = this.app,
-      form;
+  var form, req = this,
+      res = this.response;
 
   if (req.headers['content-type'] != null) {
     form = req.__incomingForm = new IncomingForm();
-    form.uploadDir = (app.path + '/') + app.paths.upload.replace(app.regex.startOrEndSlash, '') + "/";
+    form.uploadDir = app.path + '/' + app.paths.upload.replace(app.regex.startOrEndSlash, '') + '/';
     form.maxFieldsSize = app.config.uploads.maxFieldSize;
     form.encoding = 'utf-8';
     form.keepExtensions = app.config.uploads.keepUploadExtensions;
     form.parse(req, function(err, fields, files) {
-      if (err) {
-        app.serverError(res, err);
-      } else {
-        callback.call(req, fields, new FileManager(app, files));
-      }
+      if (err) app.serverError(res, err);
+      else callback.call(req, fields, new FileManager(files));
     });
   } else {
-    callback.call(req, {}, {});
+    callback.call(req, {}, new FileManager({}));
   }
 }
 
@@ -43,8 +43,7 @@ IncomingMessage.prototype.parseBodyData = function(callback) {
  */
 
 IncomingMessage.prototype.exceededUploadLimit = function() {
-  var app = this.app,
-      res = this.response;
+  var res = this.response;
   if (this.headers['content-length'] != null) {
     var bytesExpected = parseInt(this.headers['content-length'], 10),
       uploadSize = app.config.uploads.maxUploadSize;

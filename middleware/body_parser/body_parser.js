@@ -1,7 +1,10 @@
 
+/* Body Parser */
+
 var app = corejs.app;
 
 require('./request.js');
+require('./controller.js');
 
 function BodyParser(config, middleware) {
   

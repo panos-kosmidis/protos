@@ -1,7 +1,7 @@
 
 /* Static Server » Dependencies */
 
-var app = corejs.app
+var app = corejs.app,
     fs = require('fs');
 
 require('./application.js');
@@ -36,8 +36,7 @@ function createStaticFileRegex() {
   var files = getStaticDirs.call(this);
 
   // Iterate over files and append to regex
-  var dir, re;
-  for (i=0; i < files.length; i++) {
+  for (var path, dir, re, i=0; i < files.length; i++) {
     dir = files[i];
     path = dir.replace(this.regex.startOrEndSlash, '').replace(this.regex.regExpChars, '\\$1');
     if (i > 0) path = "|" + path;

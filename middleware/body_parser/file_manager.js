@@ -1,11 +1,11 @@
 
 /* File Manager */
 
-var _ = require('underscore'),
+var app = corejs.app,
     fs = require('fs'),
     slice = Array.prototype.slice;
 
-function FileManager(app, files) {
+function FileManager(files) {
   
   this.__defineGetter__('length', function() {
     return this.fileKeys.length;
@@ -15,17 +15,9 @@ function FileManager(app, files) {
     return Object.keys(this.files);
   });
   
-  // Application
-  Object.defineProperty(this, 'app', {
-    value: app,
-    writable: true,
-    enumerable: false,
-    configurable: true
-  });
-  
   // Instance files
   Object.defineProperty(this, 'files', {
-    value: _.extend({}, files),
+    value: corejs.extend({}, files),
     writable: true,
     enumerable: false,
     configurable: true
