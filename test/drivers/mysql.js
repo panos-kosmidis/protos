@@ -709,7 +709,7 @@ vows.describe('drivers/mysql.js').addBatch({
         model.context = table; // Override context
         multi = model.multi(); // Override multi
         mysql.storage = app.getResource('storages/redis'); // Manually set cache storage
-        mysql.setCacheFunc(mysql.client, 'query'); // Manually set cache function
+        mysql.cacheClientMethods('query'); // Manually set cache function
         storageMulti = mysql.storage.multi();
         promise.emit('success', err || model);
       });

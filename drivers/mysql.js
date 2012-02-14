@@ -52,7 +52,7 @@ function MySQL(app, config) {
       self.db = config.database;
       
       // Set caching function
-      if (self.storage != null) self.setCacheFunc(self.client, 'query');
+      if (self.storage != null) self.cacheClientMethods('query');
       
     }
     
