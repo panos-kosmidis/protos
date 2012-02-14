@@ -42,9 +42,9 @@ function Session(config, middleware) {
 
     this.className = this.constructor.name;
 
-    app.debug('Session enabled');
-
     corejs.util.onlySetEnumerable(this, ['className', 'storage']);
+    
+    app.debug('Session enabled');
   }
 
   Session.prototype.storage = null;

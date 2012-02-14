@@ -5,7 +5,7 @@ var app = corejs.app;
 
 require('./response.js');
 
-function ResponseCache(config) {
+function ResponseCache(config, middleware) {
 
   /* config = {
     storage: 'redis'
@@ -21,7 +21,9 @@ function ResponseCache(config) {
     sto = config.storage;
   }
   
-  app.resources.response_cache = sto;
+  app.resources[middleware] = {
+    storage: sto
+  };
   
   app.debug('Response Cache enabled');
   

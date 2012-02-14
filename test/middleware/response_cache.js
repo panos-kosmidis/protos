@@ -63,7 +63,7 @@ vows.describe('Response Cache (middleware)').addBatch({
       var promise = new EventEmitter();
       
       // Disable response caching
-      var cacheStore = (app.supports.response_cache && app.resources.response_cache);
+      var cacheStore = (app.supports.response_cache && app.resources.response_cache.storage);
       delete app.supports.response_cache;
       delete app.resources.response_cache;
       

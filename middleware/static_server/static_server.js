@@ -19,6 +19,7 @@ function StaticServer(config, middleware) {
   // Attach configuration to app
   app.config.staticServer = config;
   
+  app.debug('Static Server enabled');
 }
 
 /**
