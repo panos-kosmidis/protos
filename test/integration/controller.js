@@ -183,34 +183,42 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
   
 }).addBatch({
   
-  'Controller Validation: POST': {
+  'Controller Validation: POST/PUT': {
     
     topic: function() {
+      
+      // The Body Parse middleware is required to parse POST/PUT Data
+      app.use('body_parser');
+      
       var promise = new EventEmitter();
+      
+      // Note: Using POST/PUT interchangeably within the next tests
+      // This will ensure that validation works for both POST/PUT methods
       
       // PostData validation + no param validation
       multi.curl('-i -X POST -d "user=nobody&pass=1234" /test/postdata');
       
       // PostData validation + param validation (valid)
-      multi.curl('-i -X POST -d "user=somebody&pass=5678" /test/postdata/5678');
+      multi.curl('-i -X PUT -d "user=somebody&pass=5678" /test/postdata/5678');
 
       // PostData validation + param validation (invalid)
       multi.curl('-i -X POST -d "user=somebody&pass=5678" /test/postdata/5678xxx');
 
       // PostData Validation Messages: strings
-      multi.curl('-i -X POST -d "user=nobody9012&pass=3456" /test/postdata/messages');
+      multi.curl('-i -X PUT -d "user=nobody9012&pass=3456" /test/postdata/messages');
       
       // PostData Validation Messages: functions
       multi.curl('-i -X POST -d "user=nobody&pass=notvalid" /test/postdata/messages');
       
       // PostData missing required fields
-      multi.curl('-i -X POST -d "" /test/postdata/messages');
+      multi.curl('-i -X PUT -d "" /test/postdata/messages');
       
       // PostData on AJAX Requests
       multi.curl('-i -X POST -H "X-Requested-With: XMLHttpRequest" /test/postdata/messages');
-      multi.curl('-X POST -H "X-Requested-With: XMLHttpRequest" /test/postdata/messages');
+      multi.curl('-X PUT -H "X-Requested-With: XMLHttpRequest" /test/postdata/messages');
 
       multi.exec(function(err, results) {
+        delete app.supports.body_parser; // Remove support for body_parser after tests complete
         promise.emit('success', err || results);
       });
       

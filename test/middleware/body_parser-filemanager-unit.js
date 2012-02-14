@@ -4,8 +4,9 @@ var app = require('../fixtures/bootstrap'),
     fs = require('fs'),
     path = require('path'),
     assert = require('assert'),
-    FileManager = corejs.lib.filemgr,
     EventEmitter = require('events').EventEmitter;
+
+var FileManager;
 
 var t = 100; // Time to wait for Disk I/O to complete
 
@@ -24,11 +25,15 @@ function createFiles() {
 
 var loggingStatus;
 
-vows.describe('lib/filemgr.js').addBatch({
+vows.describe('Body Parser (middleware) » FileManager').addBatch({
   
   'FileManager::expect': {
     
     topic: function() {
+
+      app.use('body_parser');
+      
+      FileManager = app.resources.body_parser.file_manager;
       
       loggingStatus = app.logging;
       
@@ -41,7 +46,7 @@ vows.describe('lib/filemgr.js').addBatch({
       
       // Returns true + removes files not expected for optional files
       createFiles();
-      fm = new FileManager(app, files);
+      fm = new FileManager(files);
       fm.__expectResult = fm.expect('fileC', 'fileX', {
         name: 'fileA', 
         required: true, 
@@ -60,7 +65,7 @@ vows.describe('lib/filemgr.js').addBatch({
         
         // Returns false + removes all files when required file not present
         createFiles();
-        fm = new FileManager(app, files);
+        fm = new FileManager(files);
         fm.__expectResult = fm.expect('*fileX', 'fileA', 'fileB');
         
         setTimeout(function() {
@@ -72,7 +77,7 @@ vows.describe('lib/filemgr.js').addBatch({
           
           // Returns false + removes all files when required file empty
           createFiles();
-          fm = new FileManager(app, files);
+          fm = new FileManager(files);
           fm.__expectResult = fm.expect('*fileA', '**fileB');
 
           setTimeout(function() {
@@ -126,7 +131,7 @@ vows.describe('lib/filemgr.js').addBatch({
       var promise = new EventEmitter();
       
       createFiles();
-      var fm = new FileManager(app, files);
+      var fm = new FileManager(files);
       fm.removeEmpty();
       
       setTimeout(function() {
@@ -154,7 +159,7 @@ vows.describe('lib/filemgr.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
 
-      var fm = new FileManager(app, files);
+      var fm = new FileManager(files);
       fm.removeAll();
 
       setTimeout(function() {
@@ -181,7 +186,7 @@ vows.describe('lib/filemgr.js').addBatch({
     
     topic: function() {
       var results = [];
-      var fm = new FileManager(app, files);
+      var fm = new FileManager(files);
       results.push(fm.get('fileA'));
       results.push(fm.get('fileX'));
       return results;
@@ -208,7 +213,7 @@ vows.describe('lib/filemgr.js').addBatch({
       app.logging = loggingStatus;
       
       var results = [];
-      var fm = new FileManager(app, files);
+      var fm = new FileManager(files);
       fm.forEach(function(file) {
         results.push(file);
       });

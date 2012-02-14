@@ -74,21 +74,22 @@ function TestController(app) {
     });
   });
   
-  /* POST */
+  
+  /* BODY PARSER */  
   
   // PostData validation + no param validation
   post('/postdata', {user: 'alpha', pass: 'integer'}, function(req, res) {
     this.getRequestData(req, function(fields) {
       res.end(inspect(fields));
     });
-  });
+  }, 'put'); // Also register for PUT requests
   
   // PostData validation + param validation
   post('/postdata/:account', {account: 'integer', user: 'alpha', pass: 'integer'}, function(req, res) {
     this.getRequestData(req, function(fields) {
       res.end(inspect(fields));
     });
-  });
+  }, 'put'); // Also register for PUT requests
   
   // PostData Validation Messages: strings
   // PostData Validation Messages: functions
@@ -103,11 +104,10 @@ function TestController(app) {
     this.getRequestData(req, function(fields) {
       res.end(inspect(fields));
     });
-  });
+  }, 'put'); // Also register for PUT requests
   
-  /* UPLOADS */
+  /* FILE UPLOADS */
   
-  // File Uploads
   // Upload Limits & Messages
   var uploadCb;
   post('/upload', uploadCb = function(req, res) {
@@ -119,7 +119,7 @@ function TestController(app) {
         files.removeAll();
       } else app.badRequest(res);
      });
-  }, 'put');
+  }, 'put'); // Also register for PUT requests
 }
 
 module.exports = TestController;

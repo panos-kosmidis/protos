@@ -15,7 +15,13 @@ function BodyParser(config, middleware) {
     keepUploadExtensions: true
   }, config);
   
+  // Attach config to application
   app.config.uploads = config;
+  
+  // Register middleware resources
+  app.resources[middleware] = {
+    file_manager: require('./file_manager.js')
+  }
   
 }
 

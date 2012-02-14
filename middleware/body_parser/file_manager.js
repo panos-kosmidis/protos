@@ -4,7 +4,7 @@
 var app = corejs.app,
     fs = require('fs'),
     slice = Array.prototype.slice;
-
+    
 function FileManager(files) {
   
   this.__defineGetter__('length', function() {
@@ -63,7 +63,6 @@ FileManager.prototype.expect = function() {
   if (expected.length === 0) return true;
   
   var files = this.files,
-      app = this.app,
       emptyCheck = {},
       skip = [];
       
@@ -145,8 +144,7 @@ FileManager.prototype.get = function(file) {
  */
 
 FileManager.prototype.removeEmpty = function() {
-  var files = this.files,
-      app = this.app;
+  var files = this.files;
   
   var log = function(err) {
     if (err) app.log(err);
@@ -169,8 +167,7 @@ FileManager.prototype.removeEmpty = function() {
  */
 
 FileManager.prototype.removeAll = function() {
-  var files = this.files,
-      app = this.app;
+  var files = this.files;
   
   var log = function(err) {
     if (err) app.log(err);
