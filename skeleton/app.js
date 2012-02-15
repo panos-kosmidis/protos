@@ -1,6 +1,4 @@
 
-function Application() {
- 
-}
+var Application = corejs.lib.application;
 
-module.exports = Application;
+// Extend the Application prototype here
