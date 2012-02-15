@@ -1,4 +1,4 @@
 
 # Application Uploads
 
-Directory that handles the file uploads.
+Directory used to store uploaded files.

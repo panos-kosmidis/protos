@@ -1,5 +1,4 @@
 
 ## Application Middleware
 
-Contains _application-specific_ middleware. These will override
-middlewares provided by corejs.
+Any middlewares contained here will override the ones provided by corejs.

@@ -1,4 +1,4 @@
 
 ## Application Tests
 
-Contains the application tests.
+The application's test suites go here.
