@@ -37,7 +37,7 @@ OutgoingMessage.prototype.setCookie = function(name, val, opts) {
   if (opts.expires != null) pairs.push("expires=" + (opts.expires.toUTCString()));
   if (opts.httpOnly != null) pairs.push('httpOnly');
   if (opts.secure != null) pairs.push('secure');
-  if (!removeCookie) request.__cookies[name.toLowerCase()] = val;
+  if (!removeCookie) request.cookies[name.toLowerCase()] = val;
 
   return this.__setCookie.push(pairs.join('; '));
 }
@@ -50,9 +50,9 @@ OutgoingMessage.prototype.setCookie = function(name, val, opts) {
  */
 
 OutgoingMessage.prototype.removeCookie = function(name) {
-  if (this.request.__cookies == null) app.loadCookies(this.request);
+  if (this.request.cookies == null) app.loadCookies(this.request);
   this.setCookie(name, null, {expires: -3600});
-  delete this.request.__cookies[name.toLowerCase()];
+  delete this.request.cookies[name.toLowerCase()];
 }
 
 /**

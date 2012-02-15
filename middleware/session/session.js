@@ -171,6 +171,7 @@ Session.prototype.loadSession = function(req, res, callback) {
     callback.call(this);
     return;
   } else {
+    req.session = {};
     req.__loadedSession = true;
   }
 
@@ -293,8 +294,8 @@ Request Headers: \n%s\n", req.socket.remoteAddress, sessId, sessHash, req.method
                   res.setCookie(self.config.hashCookie, newHash, {
                     expires: self.config.regenInterval
                   });
-                  req.__cookies[self.config.sessCookie.toLowerCase()] = newSess;
-                  data.fpr = req.__cookies[self.config.hashCookie.toLowerCase()] = newHash;
+                  req.cookies[self.config.sessCookie.toLowerCase()] = newSess;
+                  data.fpr = req.cookies[self.config.hashCookie.toLowerCase()] = newHash;
                   req.session = data;
                   req.__origSessionState = _.extend({}, data);
                   req.__jsonSession = JSON.stringify(data);

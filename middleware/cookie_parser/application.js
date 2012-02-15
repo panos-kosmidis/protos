@@ -13,8 +13,8 @@ var app = corejs.app,
  */
 
 Application.prototype.loadCookies = function(req) {
-  if (req.__cookies != null) return;
-  return req.__cookies = getRequestCookies(req);
+  if (req.cookies != null) return;
+  return req.cookies = getRequestCookies(req);
 }
 
 /**
