@@ -269,4 +269,50 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
     
   }
   
+}).addBatch({
+  
+  'Controller Filters': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // Routes blocked by filters
+      multi.curl('-i /filter/bad-route-1');
+      multi.curl('-i /filter/bad-route-2');
+      
+      // Normal route with params (should not be blocked by filters)
+      multi.curl('-i /filter/greeting/ernie');
+      
+      // Should not conflict with route resolution
+      multi.curl('-i /filter/404');
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    'Filters can block route callbacks': function(results) {
+      var r1 = results[0],
+          r2 = results[1];
+      assert.isTrue(r1.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r1.indexOf('{BAD ROUTE 1}') >= 0);
+      assert.isTrue(r2.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r2.indexOf('{BAD ROUTE 2}') >= 0);
+    },
+    
+    'Filter chain works properly': function(results) {
+      var r = results[2];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r.indexOf('{Hello ernie}') >= 0);
+    },
+    
+    "Filters don't conflict with route resolution": function(results) {
+      var r = results[3];
+      assert.isTrue(r.indexOf('HTTP/1.1 404 Not Found') >= 0);
+    }
+    
+  }
+  
 }).export(module);
