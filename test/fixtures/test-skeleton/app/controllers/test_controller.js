@@ -6,7 +6,10 @@ function TestController(app) {
 
   /* Dynamic routes, covering all route methods */
   
-  for (var key in this) {
+  var routeMethods = this.prototype.routeMethods;
+  
+  for (var key,i=0; i < routeMethods.length; i++) {
+    key = routeMethods[i];
     if (key != 'super_' && this.hasOwnProperty(key) && this[key] instanceof Function) {
       (function(k) {
         this[k]('/'+ k, function(req, res) {
