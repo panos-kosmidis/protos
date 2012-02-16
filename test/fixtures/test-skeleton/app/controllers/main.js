@@ -8,6 +8,12 @@ function MainController(app) {
     res.render('index');
   });
   
+  /* File Download */
+  
+  get('/download', function(req, res) {
+    res.download(app.fullPath('/public/robots.txt'), req.queryData.file);
+  });
+  
   /* JSON Response */
   
   get('/:name.json', {name: 'alpha_dashes'}, function(req, res, params) {

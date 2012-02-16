@@ -49,6 +49,12 @@ vows.describe('Static File Server (middleware)').addBatch({
         headers: { Range: 'bytes=5-1' }
       });
       
+      // File download (without attachment name)
+      multi.curl('-i /download');
+      
+      // File download with attachment name                
+      multi.curl('-i -G -d "file=hello.txt" /download');
+      
       multi.exec(function(err, results) {
         app.supports.session = sessionState;
         if (err) throw err;
@@ -127,6 +133,15 @@ vows.describe('Static File Server (middleware)').addBatch({
       assert.equal(r1[1].status, '206 Partial Content');
       assert.equal(r2[0], '');
       assert.equal(r2[1].status, '416 Requested Range Not Satisfiable');
+    },
+    
+    'Successfully sends files (forcing download)': function(results) {
+      var r1 = results[13],
+          r2 = results[14];
+      assert.isTrue(r1.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r1.indexOf('Content-Disposition: attachment') >= 0);
+      assert.isTrue(r2.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r2.indexOf('Content-Disposition: attachment; filename="hello.txt"') >= 0);
     }
     
   }

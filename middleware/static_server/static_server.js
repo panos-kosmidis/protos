@@ -5,6 +5,7 @@ var app = corejs.app,
     fs = require('fs');
 
 require('./application.js');
+require('./response.js');
 
 function StaticServer(config, middleware) {
   
