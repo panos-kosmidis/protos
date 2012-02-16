@@ -4,10 +4,15 @@ function MainController(app) {
   
   var util = require('util');
   
-  /* Landing Page */
-  
   get('/', function(req, res) {
     res.render('index');
+  });
+  
+  /* JSON Response */
+  
+  get('/:name.json', {name: 'alpha_dashes'}, function(req, res, params) {
+    req.queryData.file = params.name + '.json';
+    res.json(req.queryData, req.queryData.jsoncallback);
   });
   
   /* View Engine Tests */
@@ -30,7 +35,7 @@ function MainController(app) {
   /* Header Tests */
   
   get('/setheaders', function(req, res, params) {
-    res.setHeaders(req.__queryData);
+    res.setHeaders(req.queryData);
     res.sendHeaders();
     res.end('');
   });
@@ -38,7 +43,7 @@ function MainController(app) {
   /* Cookie Tests */
   
   get('/setcookie/:name/:value', {name: 'alpha', value: 'alnum_dashes'}, function(req, res, params) {
-    res.setCookie(params.name, params.value, req.__queryData);
+    res.setCookie(params.name, params.value, req.queryData);
     res.sendHeaders();
     res.end('');
   });

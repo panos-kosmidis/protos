@@ -9,7 +9,7 @@ function SessionController(app) {
   });
   
   get('/create/:user', {user: 'alpha'}, function(req, res, params) {
-    var pers = req.__queryData.persistent == '1';
+    var pers = req.queryData.persistent == '1';
     app.session.create(req, res, {user: params.user}, pers, function(session, hashes, expires) {
       app.globals.userSession = session;
       res.sendHeaders({

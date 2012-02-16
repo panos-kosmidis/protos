@@ -154,4 +154,40 @@ vows.describe('Response Misc').addBatch({
     
   }
   
+}).addBatch({
+  
+  'JSON Response': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // Display a raw JSON response, to make assertions easier
+      app.config.json.pretty = false;
+      
+      multi.curl('-i -G -d "name=ernie" -d "age=28" /hello.json');
+      multi.curl('-i -G -d "name=ernie" -d "age=28" -d "jsoncallback=myCoolFunc" /hello.json');
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    'Are successfully sent with proper headers': function(results) {
+      var r = results[0];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r.indexOf('Content-Type: ' + app.config.json.contentType) >= 0);
+      assert.isTrue(r.indexOf('Connection: ' + app.config.json.connection) >= 0);
+      assert.isTrue(r.indexOf('{"name":"ernie","age":"28","file":"hello.json"}') >= 0);
+    },
+    
+    'Optionally displays JSON Callback': function(results) {
+      var r = results[1];
+      assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r.indexOf('myCoolFunc({"name":"ernie","age":"28","jsoncallback":"myCoolFunc","file":"hello.json"})') >= 0);
+    }
+    
+  }
+  
 }).export(module);

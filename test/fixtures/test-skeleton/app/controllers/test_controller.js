@@ -33,13 +33,13 @@ function TestController(app) {
   // Query String values + no param validation
   get('/qstring', function(req, res) {
     res.sendHeaders();
-    res.end(inspect(req.__queryData));
+    res.end(inspect(req.queryData));
   });
   
   // Query String values + param validation 
   get('/qstring/:rule1/:rule2', {rule1: 'alpha', rule2: 'integer'}, function(req, res, params) {
     res.sendHeaders();
-    res.end(inspect(params) + ' ' + inspect(req.__queryData));
+    res.end(inspect(params) + ' ' + inspect(req.queryData));
   });
   
   // Query String validation + no param validation 

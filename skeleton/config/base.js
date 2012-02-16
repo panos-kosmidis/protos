@@ -23,7 +23,15 @@ module.exports = {
     maxAge: 10 * 365 * 24 * 60 * 60,
     static: 'public',
     dynamic: 'private, must-revalidate, max-age=0',
-    error: 'no-cache'
+    error: 'no-cache',
+    json: 'private'
+  },
+  
+  json: {
+    pretty: true,
+    replacer: null,
+    contentType: 'application/json',
+    connection: 'close'
   },
   
   viewExtensions: {
