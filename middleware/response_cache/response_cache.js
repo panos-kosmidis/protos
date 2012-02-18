@@ -25,8 +25,6 @@ function ResponseCache(config, middleware) {
     storage: sto
   };
   
-  app.debug('Response Cache enabled');
-  
 }
 
 module.exports = ResponseCache;

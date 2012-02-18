@@ -23,8 +23,6 @@ function BodyParser(config, middleware) {
     file_manager: require('./file_manager.js')
   }
   
-  app.debug('Body Parser enabled');
-  
 }
 
 module.exports = BodyParser;

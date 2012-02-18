@@ -10,6 +10,7 @@
   "engines"           : { "node": ">= 0.6.0" },
   "dependencies"      : {
     "node-inspector"    : ">= 0.1.10",
+    "nodemailer"        : ">= 0.3.2",
     "multi"             : ">= 0.1.0",
     "file"              : ">= 0.1.1",
     "formidable"        : ">= 1.0.7",

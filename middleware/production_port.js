@@ -9,8 +9,6 @@ function ProductionPort() {
   
   app.baseUrl = url;
   
-  app.debug('Production Port enabled');
-  
 }
 
 module.exports = ProductionPort;
