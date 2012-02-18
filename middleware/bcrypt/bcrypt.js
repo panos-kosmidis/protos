@@ -19,8 +19,6 @@ function Blowfish(cfg, middleware) {
 /**
   Hashes a password
   
-  Provides: [err, pass]
-  
   @param {string} password
   @param {function} callback
   @public
