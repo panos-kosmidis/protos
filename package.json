@@ -37,7 +37,13 @@
     "handlebars"        : ">= 1.0.2beta",
     "coffeekup"         : ">= 0.3.1",
     "jshtml"            : ">= 0.2.2",
-    "dot"               : ">= 0.1.7"
+    "dot"               : ">= 0.1.7",
+    "winston"           : ">= 0.5.9",
+    "winston-riak"      : ">= 0.3.2",
+    "winston-redis"     : ">= 0.1.0",
+    "winston-mongodb"   : ">= 0.3.3",
+    "winston-simpledb"  : ">= 0.1.1",
+    "winston-mail"      : ">= 0.1.3"
   },
   "devDependencies"     : {
     "jshint"            : ">= 0.5.6",
