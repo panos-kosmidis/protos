@@ -1,7 +1,4 @@
 
-// Commented out until bcrypt module is fixed
-
-/*
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
@@ -18,7 +15,6 @@ vows.describe('BCrypt (middleware)').addBatch({
       var promise = new EventEmitter(); 
 
       app.use('bcrypt');
-      console.exit('here');
       multi = new Multi(app.bcrypt);
       
       var pass='hello', hash;
@@ -44,4 +40,3 @@ vows.describe('BCrypt (middleware)').addBatch({
   }
   
 }).export(module);
-*/
