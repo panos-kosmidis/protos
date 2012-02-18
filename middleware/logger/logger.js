@@ -40,7 +40,8 @@ Logger.prototype.enableAccessLog = function() {
   
   if (!accessLogFormat) config.accessLogFormat = accessLogFormat = function(req, res, app) {
     var ms = Date.now() - req.startTime;
-    return util.format('%s (%s) %s %s %s (%sms)', app.domain, app.date(), req.method, req.url, res.statusCode, ms);
+    return util.format('%s (%s) [%s] %s %s %s (%sms)', app.domain, app.date(), req.socket.remoteAddress, req.method, 
+    req.url, res.statusCode, ms);
   };
   
   // Access log filter
