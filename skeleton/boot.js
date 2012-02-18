@@ -14,22 +14,19 @@ CoreJS.bootstrap(__dirname, {
   environment: {
     default: 'development',
     development: function(app) {
-      app.debugLog = true;
-    }
+      app.debugLog = true; // Enable debug messages on development
+    },
     production: function(app) {
       app.use('production_port'); // Use port 80 on production
     }
   },
   
   // Attach events
-  events: {},
-  
-  // Load middleware
-  middleware: {
-    static_server: {},
-    body_parser: {},
-    mailer: {},
-    logger: {},
+  events: {
+    init: function(app) {
+      // Load middleware before initialization
+      app.use('logger');
+    }
   }
   
 });
