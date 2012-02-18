@@ -2,3 +2,4 @@
 /work
 /npm-debug.log
 /node_modules
+/skeleton/log/*.log
