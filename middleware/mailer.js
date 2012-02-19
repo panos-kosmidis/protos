@@ -11,7 +11,7 @@ function Mailer(config, middleware) {
   
   // Middleware configuration
   var keys = Object.keys(config);
-  if (keys.length == 0) config = {sendmail: true};
+  if (keys.length === 0) config = {sendmail: true};
   
   // Validate mail transports
   if (keys.length > 1) {
