@@ -40,6 +40,8 @@ Application.prototype.isStaticFileRequest = function(req, res) {
 
 Application.prototype.serveStaticFile = function(path, req, res) {
 
+  req.__handledRoute = true;
+
   if ( pathModule.basename(path).charAt(0) == '.' ) {
     
     // Forbid access to hidden files
@@ -140,7 +142,6 @@ Application.prototype.serveStaticFile = function(path, req, res) {
 
         // When stream is ready
         stream.on('open', function() {
-          app.emit('static_file_headers', req, res, headers, stats, path);
           res.sendHeaders(headers);
           stream.pipe(res);
         });
