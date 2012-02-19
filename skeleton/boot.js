@@ -16,9 +16,6 @@ CoreJS.bootstrap(__dirname, {
     default: 'development',
     development: function(app) {
       app.debugLog = false;
-    },
-    production: function(app) {
-      app.use('production_url');
     }
   },
   
