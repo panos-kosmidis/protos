@@ -14,12 +14,10 @@ CoreJS.bootstrap(__dirname, {
   environment: {
     default: 'development',
     development: function(app) {
-      // Debug messages in development
       app.debugLog = false;
     },
     production: function(app) {
-      // Use port 80 in production
-      app.use('production_port'); 
+      app.use('production_url');
     }
   },
   

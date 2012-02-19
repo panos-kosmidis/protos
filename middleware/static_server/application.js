@@ -43,15 +43,13 @@ Application.prototype.isStaticFileRequest = function(req, res) {
 
 Application.prototype.serveStaticFile = function(path, req, res) {
 
-  // Mark route as handled to prevent loops
-
   if ( pathModule.basename(path).charAt(0) == '.' ) {
     
+    // Forbid access to hidden files
     this.notFound(res);
 
   } else {
     
-    // console.trace(path);
     fs.stat(path, function(err, stats) {
 
       if (err || stats.isDirectory() ) {
@@ -60,12 +58,11 @@ Application.prototype.serveStaticFile = function(path, req, res) {
         app.notFound(res);
 
       } else {
-
         var date = new Date(),
-          now = date.toUTCString(),
-          lastModified = stats.mtime.toUTCString(),
-          contentType = mime.lookup(path),
-          maxAge = app.config.cacheControl.maxAge;
+            now = date.toUTCString(),
+            lastModified = stats.mtime.toUTCString(),
+            contentType = mime.lookup(path),
+            maxAge = app.config.cacheControl.maxAge;
 
         date.setTime(date.getTime() + maxAge * 1000);
 
@@ -76,7 +73,7 @@ Application.prototype.serveStaticFile = function(path, req, res) {
         // Static headers
         var headers = {
           'Content-Type': contentType,
-          'Cache-Control': app.config.cacheControl.static + ", max-age=" + maxAge,
+          'Cache-Control': app.config.cacheControl.static + ', max-age=' + maxAge,
           'Last-Modified': lastModified,
           'Content-Length': stats.size,
           Expires: expires

@@ -7,7 +7,7 @@ vows.describe('Production Port (middleware)').addBatch({
   
   "Removes port from app.baseUrl": function() {
     var oldUrl = app.baseUrl;
-    app.use('production_port');
+    app.use('production_url');
     assert.equal(app.baseUrl, 'http://' + app.domain);
     app.baseUrl = oldUrl;
   }
