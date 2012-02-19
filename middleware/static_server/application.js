@@ -21,14 +21,11 @@ Application.prototype.isStaticFileRequest = function(req, res) {
   var url = req.urlData.pathname;
 
   if (req.method == 'GET' && (this.staticFileRegex.test(url) || this.regex.fileWithExtension.test(url))) {
-    
     req.isStatic = true;
-    this.emit('static_file_request', req, res);
-    if (req.__stopRoute === true) return;
-    
     return true;
-    
-  } else return false;
+  } else {
+    return false;
+  }
   
 }
 
@@ -58,6 +55,10 @@ Application.prototype.serveStaticFile = function(path, req, res) {
         app.notFound(res);
 
       } else {
+        
+        app.emit('static_file_request', req, res, path);
+        if (req.__stopRoute) return;
+
         var date = new Date(),
             now = date.toUTCString(),
             lastModified = stats.mtime.toUTCString(),
