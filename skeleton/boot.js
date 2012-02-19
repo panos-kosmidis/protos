@@ -26,7 +26,6 @@ CoreJS.bootstrap(__dirname, {
   // Application events
   events: {
     init: function(app) {
-      // Load middleware
       app.use('logger');
       app.use('body_parser');
       app.use('cookie_parser');

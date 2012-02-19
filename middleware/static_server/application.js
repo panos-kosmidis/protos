@@ -44,10 +44,9 @@ Application.prototype.isStaticFileRequest = function(req, res) {
 Application.prototype.serveStaticFile = function(path, req, res) {
 
   // Mark route as handled to prevent loops
-  req.__handledRoute = true;
 
   if ( pathModule.basename(path).charAt(0) == '.' ) {
-
+    
     this.notFound(res);
 
   } else {
@@ -55,7 +54,7 @@ Application.prototype.serveStaticFile = function(path, req, res) {
     // console.trace(path);
     fs.stat(path, function(err, stats) {
 
-      if (err || stats.isDirectory()) {
+      if (err || stats.isDirectory() ) {
         
         // File not found
         app.notFound(res);
@@ -146,7 +145,6 @@ Application.prototype.serveStaticFile = function(path, req, res) {
           app.emit('static_file_headers', req, res, headers, stats, path);
           res.sendHeaders(headers);
           stream.pipe(res);
-          res.emit('finish');
         });
 
       }

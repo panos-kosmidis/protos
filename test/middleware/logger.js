@@ -19,7 +19,7 @@ vows.describe('Logger (middleware)').addBatch({
 
       // Enable logger
       app.logging = false;
-      app.use('logger', {accessLogConsole: false});
+      app.use('logger', {accessLog: true, accessLogConsole: false});
 
       var promise = new EventEmitter();
 

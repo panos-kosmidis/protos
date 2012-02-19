@@ -25,6 +25,11 @@ CoreJS.on('pre_init', function(app) {
   app.config.storage.redis = testConfig.redis;
 });
 
+CoreJS.on('bootstrap_config', function(bootstrap) {
+  // For debugging purposes
+  // console.log(bootstrap);
+});
+
 var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
     corejs = CoreJS.bootstrap(testSkeleton, {
       // redirect: 'http://corejs.org',
