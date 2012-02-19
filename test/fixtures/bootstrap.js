@@ -21,6 +21,7 @@ if (module.parent.id == '.') {
 CoreJS.configure('autoCurl', false);
 
 CoreJS.on('pre_init', function(app) {
+  app.config.database.default = 'mysql';
   app.config.database.mysql = testConfig.mysql;
   app.config.storage.redis = testConfig.redis;
 });

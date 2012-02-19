@@ -2,7 +2,8 @@
 /* Database Configuration */
 
 module.exports = {
-  
+
+/*
   default: 'mysql',
   
   mysql: {
@@ -13,5 +14,6 @@ module.exports = {
     database: 'test_db',
     storage: 'redis'
   }
+*/
 
 }
