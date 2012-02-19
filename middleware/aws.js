@@ -4,6 +4,8 @@ var app = corejs.app,
     aws2js = require('aws2js'),
     isArray = util.isArray;
 
+var accessKey, secretKey;
+
 function AmazonWebServices(config, middleware) {
 
   var self = this;
@@ -18,15 +20,10 @@ function AmazonWebServices(config, middleware) {
     clients: {}
   }, config);
   
-  // Define config as non-enumerable property
-  Object.defineProperty(this, 'config', {
-    value: config,
-    enumerable: false,
-    writable: true,
-    configurable: true
-  });
-
-  if (!config.accessKey && !config.secretKey) {
+  accessKey = config.accessKey;
+  secretKey = config.secretKey;
+  
+  if (!accessKey && !secretKey) {
     throw new Error("Please specify the 'accessKey' and 'secretKey' in the config");
   }
   
@@ -35,6 +32,7 @@ function AmazonWebServices(config, middleware) {
   // Configure each of the client aliases
   Object.keys(clients).forEach(function(alias) {
     
+    // Check for service type
     if (!clients[alias].type) throw new Error("Missing type for client alias: " + alias);
     
     var opts = clients[alias],
@@ -63,7 +61,7 @@ function AmazonWebServices(config, middleware) {
 }
 
 AmazonWebServices.prototype.load = function(client) {
-  return aws2js.load(client, this.config.accessKey, this.config.secretKey);
+  return aws2js.load(client, accessKey, secretKey);
 }
 
 module.exports = AmazonWebServices;
