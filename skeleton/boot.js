@@ -4,12 +4,15 @@ var CoreJS = require('../');
 CoreJS.bootstrap(__dirname, {
   
   // Server configuration
-  host: 'localhost',
-  port: 8080,
-  multiProcess: false,
-  stayUp: false,
+  server: {
+    host: 'localhost',
+    port: 8080,
+    multiProcess: false,
+    stayUp: false,
+    inspector_port: 3000
+  },
   
-  // Environments
+  // Application environments
   environment: {
     default: 'development',
     development: function(app) {
