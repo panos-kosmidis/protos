@@ -33,7 +33,6 @@ CoreJS.on('bootstrap_config', function(bootstrap) {
 
 var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
     corejs = CoreJS.bootstrap(testSkeleton, {
-      // redirect: 'http://corejs.org',
       events: {
         init: function(app) {
           app.__initBootstrapEvent = true;
