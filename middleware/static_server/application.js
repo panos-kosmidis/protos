@@ -43,28 +43,30 @@ Application.prototype.isStaticFileRequest = function(req, res) {
 
 Application.prototype.serveStaticFile = function(path, req, res) {
 
-  var callback, self = this;
+  // Mark route as handled to prevent loops
+  req.__handledRoute = true;
 
   if ( pathModule.basename(path).charAt(0) == '.' ) {
 
     this.notFound(res);
 
   } else {
-
-    fs.stat(path, callback = function(err, stats) {
+    
+    // console.trace(path);
+    fs.stat(path, function(err, stats) {
 
       if (err || stats.isDirectory()) {
-
+        
         // File not found
-        self.notFound(res);
+        app.notFound(res);
 
-      } else  {
+      } else {
 
         var date = new Date(),
           now = date.toUTCString(),
           lastModified = stats.mtime.toUTCString(),
           contentType = mime.lookup(path),
-          maxAge = self.config.cacheControl.maxAge;
+          maxAge = app.config.cacheControl.maxAge;
 
         date.setTime(date.getTime() + maxAge * 1000);
 
@@ -75,14 +77,14 @@ Application.prototype.serveStaticFile = function(path, req, res) {
         // Static headers
         var headers = {
           'Content-Type': contentType,
-          'Cache-Control': self.config.cacheControl.static + ", max-age=" + maxAge,
+          'Cache-Control': app.config.cacheControl.static + ", max-age=" + maxAge,
           'Last-Modified': lastModified,
           'Content-Length': stats.size,
           Expires: expires
         };
 
         // Etags
-        var enableEtags = self.config.staticServer.eTags;
+        var enableEtags = app.config.staticServer.eTags;
         if (enableEtags === true) {
           headers.Etag = JSON.stringify([stats.ino, stats.size, Date.parse(stats.mtime)].join('-'));
         } else if (typeof enableEtags == 'function') {
@@ -92,13 +94,13 @@ Application.prototype.serveStaticFile = function(path, req, res) {
         // Return cached content
         if (isCached) {
           res.statusCode = 304;
-          self.emit('static_file_headers', req, res, headers, stats, path);
+          app.emit('static_file_headers', req, res, headers, stats, path);
           res.sendHeaders(headers);
           res.end();
           return;
         }
 
-        var acceptRanges = self.config.staticServer.acceptRanges;
+        var acceptRanges = app.config.staticServer.acceptRanges;
         if (acceptRanges) headers['Accept-Ranges'] = 'bytes';
 
         var stream, streamArgs = [path];
@@ -136,14 +138,15 @@ Application.prototype.serveStaticFile = function(path, req, res) {
         stream = fs.createReadStream.apply(null, streamArgs);
 
         stream.on('error', function(err) {
-          self.serverError(res, ["Unable to read " + self.relPath(path) + ": " + err.toString()]);
+          app.serverError(res, ["Unable to read " + app.relPath(path) + ": " + err.toString()]);
         });
 
         // When stream is ready
         stream.on('open', function() {
-          self.emit('static_file_headers', req, res, headers, stats, path);
+          app.emit('static_file_headers', req, res, headers, stats, path);
           res.sendHeaders(headers);
           stream.pipe(res);
+          res.emit('finish');
         });
 
       }

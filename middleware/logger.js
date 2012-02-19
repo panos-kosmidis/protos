@@ -20,7 +20,7 @@ function Logger(config, middleware) {
   
   // Middleware config
   this.config = config = corejs.extend({
-    accessLog: true,
+    accessLog: false,
     accessLogConsole: true,
     accessLogFormat: null
   }, config);
@@ -29,7 +29,8 @@ function Logger(config, middleware) {
   app.on('info_log', this.info);
   app.on('error_log', this.error);
   
-  if (config.accessLog) this.enableAccessLog();
+  // Enable access log
+  if (config.accessLog || config.accessLogConsole) this.enableAccessLog();
   
 }
 
@@ -48,7 +49,7 @@ Logger.prototype.enableAccessLog = function() {
   var accessLogFilter = function() {
     var log = accessLogFormat(this.request, this, app);
     if (config.accessLogConsole) console.log(log);
-    accessLog.write(log+'\n');
+    if (config.accessLog) accessLog.write(log+'\n');
   }
   
   accessLog = fs.createWriteStream(app.fullPath('log/access.log'), {flags: 'a'});
