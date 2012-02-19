@@ -41,8 +41,8 @@ Logger.prototype.enableAccessLog = function() {
   
   if (!accessLogFormat) config.accessLogFormat = accessLogFormat = function(req, res, app) {
     var ms = Date.now() - req.startTime;
-    return util.format('%s (%s) [%s] %s %s %s (%sms)', app.domain, app.date(), req.socket.remoteAddress, req.method, 
-    req.url, res.statusCode, ms);
+    return util.format('%s (%s) [%s] %s %s %s (%s)', app.domain, app.date(), req.socket.remoteAddress, req.method, 
+    req.url, res.statusCode, timeDelta(ms));
   };
   
   // Access log filter
@@ -64,6 +64,28 @@ Logger.prototype.info = function(msg) {
 
 Logger.prototype.error = function(msg) {
   errorLog.write(msg+'\n', 'utf8');
+}
+
+function timeDelta(ms) {
+  var s, m, h, p=2;
+  if (ms >= 1000) {
+    s = ms / 1000.0;
+    if (s < 60) {
+      // seconds
+      return s.toFixed(p) + 's';
+    } else if (s < 3600) {
+      // minutes
+      m = s / 60.0;
+      return m.toFixed(p) + 'min';
+    } else {
+      // hours
+      h = s / 3600.0;
+      return h.toFixed(p) + 'hr';
+    }
+  } else {
+    // Return miliseconds
+    return ms + 'ms';
+  }
 }
 
 module.exports = Logger;
