@@ -8,8 +8,7 @@ CoreJS.bootstrap(__dirname, {
     host: 'localhost',
     port: 8080,
     multiProcess: false,
-    stayUp: false,
-    inspector_port: 3000
+    stayUp: false
   },
   
   // Application environments
