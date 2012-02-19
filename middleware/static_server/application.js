@@ -101,7 +101,7 @@ Application.prototype.serveStaticFile = function(path, req, res) {
 
         var acceptRanges = app.config.staticServer.acceptRanges;
         if (acceptRanges) headers['Accept-Ranges'] = 'bytes';
-
+        
         var stream, streamArgs = [path];
 
         if (acceptRanges && (req.headers.range != null)) {
@@ -117,9 +117,8 @@ Application.prototype.serveStaticFile = function(path, req, res) {
             streamArgs.push({start: start, end: end});
             len = end - start + 1;
             res.statusCode = 206; // HTTP/1.1 206 Partial Content
-            res.setHeaders({
-              'Content-Range': "bytes " + start + "-" + end + "/" + stats.size
-            });
+            headers['Content-Length'] = (end - start);
+            headers['Content-Range'] =  "bytes " + start + "-" + end + "/" + stats.size;
           } else {
             res.statusCode = 416; // HTTP/1.1 416 Requested Range Not Satisfiable
             headers.Connection = 'close';
@@ -140,7 +139,6 @@ Application.prototype.serveStaticFile = function(path, req, res) {
           app.serverError(res, ["Unable to read " + app.relPath(path) + ": " + err.toString()]);
         });
 
-        // When stream is ready
         stream.on('open', function() {
           res.sendHeaders(headers);
           stream.pipe(res);

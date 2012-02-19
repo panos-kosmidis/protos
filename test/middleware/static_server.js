@@ -38,22 +38,22 @@ vows.describe('Static File Server (middleware)').addBatch({
       multi.curl('-i /.hidden-file');                 // hidden file, root level
       multi.curl('-i /dir/.hidden-file');             // hidden file, level 1
 
-      // // Partial content
-      // multi.clientRequest({                           // partial file request, valid
-      //   path: '/ranges.txt',
-      //   headers: { Range: 'bytes=5-' }
-      // });
-      // 
-      // multi.clientRequest({                           // partial file request, invalid
-      //   path: '/ranges.txt',
-      //   headers: { Range: 'bytes=5-1' }
-      // });
-      // 
-      // // File download (without attachment name)
-      // multi.curl('-i /download');
-      // 
-      // // File download with attachment name                
-      // multi.curl('-i -G -d "file=hello.txt" /download');
+      // Partial content
+      multi.clientRequest({                           // partial file request, valid
+        path: '/ranges.txt',
+        headers: { Range: 'bytes=5-10' }
+      });
+      
+      multi.clientRequest({                           // partial file request, invalid
+        path: '/ranges.txt',
+        headers: { Range: 'bytes=10-5' }
+      });
+      
+      // File download (without attachment name)
+      multi.curl('-i /download');
+      
+      // File download with attachment name                
+      multi.curl('-i -G -d "file=hello.txt" /download');
       
       multi.exec(function(err, results) {
         app.supports.session = sessionState;
@@ -126,23 +126,23 @@ vows.describe('Static File Server (middleware)').addBatch({
       assert.equal(r4[0], 'HTTP/1.1 404 Not Found');
     },
     
-    // 'Responds with 206 for Partial Content requests': function(results) {
-    //   var r1 = results[11], // HTTP/1.1 206 Partial Content
-    //       r2 = results[12]; // HTTP/1.1 416 Requested Range Not Satisfiable
-    //   assert.equal(r1[0], 'fghijklmnopqrstuvwxyzfghij');
-    //   assert.equal(r1[1].status, '206 Partial Content');
-    //   assert.equal(r2[0], '');
-    //   assert.equal(r2[1].status, '416 Requested Range Not Satisfiable');
-    // },
-    // 
-    // 'Successfully sends files (forcing download)': function(results) {
-    //   var r1 = results[13],
-    //       r2 = results[14];
-    //   assert.isTrue(r1.indexOf('HTTP/1.1 200 OK') >= 0);
-    //   assert.isTrue(r1.indexOf('Content-Disposition: attachment') >= 0);
-    //   assert.isTrue(r2.indexOf('HTTP/1.1 200 OK') >= 0);
-    //   assert.isTrue(r2.indexOf('Content-Disposition: attachment; filename="hello.txt"') >= 0);
-    // }
+    'Responds with 206 for Partial Content requests': function(results) {
+      var r1 = results[11], // HTTP/1.1 206 Partial Content
+          r2 = results[12]; // HTTP/1.1 416 Requested Range Not Satisfiable
+      assert.equal(r1[0], 'fghij');
+      assert.equal(r1[1].status, '206 Partial Content');
+      assert.equal(r2[0], '');
+      assert.equal(r2[1].status, '416 Requested Range Not Satisfiable');
+    },
+    
+    'Successfully sends files (forcing download)': function(results) {
+      var r1 = results[13],
+          r2 = results[14];
+      assert.isTrue(r1.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r1.indexOf('Content-Disposition: attachment') >= 0);
+      assert.isTrue(r2.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r2.indexOf('Content-Disposition: attachment; filename="hello.txt"') >= 0);
+    }
     
   }
   

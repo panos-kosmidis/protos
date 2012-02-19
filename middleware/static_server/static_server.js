@@ -13,7 +13,7 @@ function StaticServer(config, middleware) {
   
   // Middleware configuration
   config = corejs.extend({
-    eTags: true,
+    eTags: false,
     acceptRanges: true
   }, config);
   
