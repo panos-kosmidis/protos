@@ -14,25 +14,16 @@ function Hogan(app) {
   this.multiPart = true;
   this.extensions = ['hogan', 'hogan.html', 'hg.html'];
   
+  this.helperPartials = {};
+  
   app.on('init', function() {
+    // App partials
     Object.keys(app.views.partials).map(function(p) {
       var func = app.views.partials[p];
       if (func.tpl) partials[p] = func.tpl;
       else {
-        // Compile a new partial. Using Math.random() to simulate 
-        // Unique template content, which generates unique templates.
-        var seed = Math.random();
-        var tpl = hogan.compile(seed);
-        
-        // Delete the partial from seed (improves performance)
-        delete hogan.cache[seed + '||false'];
-        
-        // Create a hogan compatible rendering function
-        tpl.ri = function(locals) {
-          return func(locals[0]);
-        }
-        
-        partials[p] = tpl;
+        // Compile hogan partial
+        partials[p] = funcToPartial(func);
       }
     });
   });
@@ -57,6 +48,23 @@ Hogan.prototype.render = function(data, vars) {
 
 Hogan.prototype.returnPartials = function() {
   return partials;
+}
+
+function funcToPartial(func) {
+  // Compile a new partial. Using Math.random() to simulate 
+  // Unique template content, which generates unique templates.
+  var seed = Math.random();
+  var tpl = hogan.compile(seed);
+  
+  // Delete the partial from seed (improves performance)
+  delete hogan.cache[seed + '||false'];
+  
+  // Create a hogan compatible rendering function
+  tpl.ri = function(locals) {
+    return func(locals[0]);
+  }
+  
+  return tpl;
 }
 
 module.exports = Hogan;
