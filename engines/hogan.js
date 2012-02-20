@@ -14,17 +14,12 @@ function Hogan(app) {
   this.multiPart = true;
   this.extensions = ['hogan', 'hogan.html', 'hg.html'];
   
-  this.helperPartials = {};
-  
   app.on('init', function() {
     // App partials
     Object.keys(app.views.partials).map(function(p) {
       var func = app.views.partials[p];
       if (func.tpl) partials[p] = func.tpl;
-      else {
-        // Compile hogan partial
-        partials[p] = funcToPartial(func);
-      }
+      else partials[p] = funcToPartial(func);
     });
   });
   
