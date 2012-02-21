@@ -1,6 +1,16 @@
 
 /** 
-  Markdown Middleware
+  Markdown
+  
+  Provides markdown support for applications & views.
+  
+  The concept of "flag aliases" is introduced, as a mechanism to store a group
+  of discount flags for specific types of content. This allows fine grained parsing
+  of markdown syntax where different requirements are needed.
+  
+  The markdown syntax is automatically sanitized, if the flag alias specified has been
+  configured to be sanitized. In other words, if it's present in the `sanitize` 
+  configuration array.
   
   » References:
   
@@ -14,6 +24,10 @@
     {object} flags: containing flag aliases to set
     {array} sanitize: containing the flag aliases to sanitize
     
+  » View Helpers:
+  
+    $markdown: Parses a markdown string. Alias of `Markdown::parse`
+    
   » Example:
   
     app.use('markdown', {
@@ -23,6 +37,10 @@
       },
       sanitize: ['default', 'comments']
     });
+    
+  » Usage example (liquor rendering engine):
+  
+    #{$markdown('## This is a **heading** level 2')}
 
  */
 
