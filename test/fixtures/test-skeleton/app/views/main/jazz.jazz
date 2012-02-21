@@ -1,3 +1,1 @@
 <h1>{res.engine.className} Template Engine</h1>
-<p>{helperProperty}</p>
-{jazz_link('hello', 'google.com')}
