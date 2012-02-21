@@ -1,9 +1,11 @@
 /*jshint undef: false */
 
-function MainController() {
+function MainController(app) {
   
   get('/', function(req, res) {
-    res.render('index');
+    res.render('index', {
+      myLink: {src: 'http://google.com/script.js'}
+    });
   });
 
 }

@@ -13,14 +13,35 @@ function Hogan(app) {
   this.module = hogan;
   this.multiPart = true;
   this.extensions = ['hogan', 'hogan.html', 'hg.html'];
-  
+
   app.on('init', function() {
     // App partials
-    Object.keys(app.views.partials).map(function(p) {
+    var func, p;
+    for (p in app.views.partials) {
       var func = app.views.partials[p];
       if (func.tpl) partials[p] = func.tpl;
-      else partials[p] = funcToPartial(func);
-    });
+      else {
+        /*
+          Converting regular functions as hogan template objects is possible, 
+          and enables the function to be used as a partial inside hogan templates.
+        
+          There is one problem: even though the functions can be used as 
+          hogan templates, the hogan engine provides one argument, and that 
+          is the `locals` object passed as template data.
+          
+          This represents an inconvenience, since helper methods might/can
+          receive multiple arguments, depending on the action they are 
+          designed to perform.
+          
+          Hogan is a logicless template engine. This means you can't run regular
+          functions inside hogan templates. You can only run hogan partials.
+          
+          This is the reason why in hogan templates, only hogan-compatible
+          partials are available. Helper methods are not present, since they are
+          not compatible with the engine.
+        */
+      }
+    }
   });
   
 }
@@ -43,23 +64,6 @@ Hogan.prototype.render = function(data, vars) {
 
 Hogan.prototype.returnPartials = function() {
   return partials;
-}
-
-function funcToPartial(func) {
-  // Compile a new partial. Using Math.random() to simulate 
-  // Unique template content, which generates unique templates.
-  var seed = Math.random();
-  var tpl = hogan.compile(seed);
-  
-  // Delete the partial from seed (improves performance)
-  delete hogan.cache[seed + '||false'];
-  
-  // Create a hogan compatible rendering function
-  tpl.ri = function(locals) {
-    return func(locals[0]);
-  }
-  
-  return tpl;
 }
 
 module.exports = Hogan;
