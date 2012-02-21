@@ -20,7 +20,7 @@ function Logger(config, middleware) {
   
   // Middleware config
   this.config = config = corejs.extend({
-    accessLog: false,
+    accessLog: true,
     accessLogConsole: true,
     accessLogFormat: null
   }, config);
@@ -36,13 +36,14 @@ function Logger(config, middleware) {
 
 Logger.prototype.enableAccessLog = function() {
   // Cache access log format function
-  var config = this.config;
-  var accessLogFormat = this.config.accessLogFormat;
+  var self = this,
+      config = this.config,
+      accessLogFormat = this.config.accessLogFormat;
   
   if (!accessLogFormat) config.accessLogFormat = accessLogFormat = function(req, res, app) {
     var ms = Date.now() - req.startTime;
     return util.format('%s (%s) [%s] %s %s %s (%s)', app.domain, app.date(), req.socket.remoteAddress, req.method, 
-    req.url, res.statusCode, timeDelta(ms));
+    req.url, res.statusCode, self.timeDelta(ms));
   };
   
   // Access log filter
@@ -66,7 +67,7 @@ Logger.prototype.error = function(msg) {
   errorLog.write(msg+'\n', 'utf8');
 }
 
-function timeDelta(ms) {
+Logger.prototype.timeDelta = function(ms) {
   var s, m, h, p=2;
   if (ms >= 1000) {
     s = ms / 1000.0;
