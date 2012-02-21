@@ -1,6 +1,23 @@
 
-/* 
+/**
   Session
+  
+  Provides complete session management for applications.
+  
+  » Configuration Options
+  
+    {boolean} guestSessions: If set to true, will enable sessions for guest users
+    {int} regenInterval: Interval to regenerate the sessionId (seconds)
+    {int} permanentExpires: Permanent sessions timeout (seconds)
+    {int} temporaryExpires: Temporary (browser) sessions timeout (seconds)
+    {int} guestExpires: Guest sessions timeout (seconds)
+    {array} typecastVars: Session properties to automatically typecast when loading session data
+    {string} sessCookie: Default session cookie name
+    {string} hashCookie: Default session hash name
+    {string} defaultUserAgent: Default user agent when not set
+    {string} salt: Salt used to generate session hashes
+    {string|object} storage: Resource string pointing to the storage backend to use, or Storage instance.
+
  */
 
 var app = corejs.app;
@@ -23,17 +40,17 @@ function Session(config, middleware) {
 
   // Middleware configuration defaults
   this.config = _.extend({
-    guestSessions: false,                 // Guest sessions support
-    regenInterval: 5 * 60,                // Interval to regenerate the sessionId
-    permanentExpires: 30 * 24 * 3600,     // Permanent sessions timeout
-    temporaryExpires: 24 * 3600,          // Temporary (browser) sessions timeout
-    guestExpires: 7 * 24 * 3600,          // Guest sessions timeout
-    typecastVars: [],                     // Session variables to automatically typecast
-    autoTypecast: true,                   // Automatically coerce values
-    sessCookie: "_sess",                  // Session Cookie
-    hashCookie: "_shash",                 // Session hash
-    defaultUserAgent: "Mozilla",          // Default User Agent
-    salt: "$28b28fc2ebcd355ca1a2be8881e888a.67a42975e1626d59434e576b5c63f3483!" // Session Salt
+    guestSessions: false,
+    regenInterval: 5 * 60,
+    permanentExpires: 30 * 24 * 3600,
+    temporaryExpires: 24 * 3600,
+    guestExpires: 7 * 24 * 3600,
+    typecastVars: [],
+    autoTypecast: true,
+    sessCookie: "_sess",
+    hashCookie: "_shash",
+    defaultUserAgent: "Mozilla",
+    salt: "$28b28fc2ebcd355ca1a2be8881e888a.67a42975e1626d59434e576b5c63f3483!"
     }, config);
 
     if (typeof config.storage == 'object') this.storage = config.storage;

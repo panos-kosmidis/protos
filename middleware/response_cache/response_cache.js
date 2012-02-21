@@ -1,5 +1,29 @@
 
-/* Response Cache */
+/**
+  Response Cache
+  
+  Caches views into a specific storage backend.
+  
+  » Configuration Options:
+  
+    {string|object} storage: Resource string pointing to the storage backend to use, or Storage instance.
+    
+  » Examples:
+  
+    app.use('response_cache', {
+      storage: 'redis'
+    });
+    
+    In this example, the 'redis' resource string points to the storage configuration
+    specified in `config/storage.js`.
+    
+  » Usage example:
+  
+    res.useCache('faq_cache');
+    res.render('faq');
+  
+ */
+
 
 var app = corejs.app;
 

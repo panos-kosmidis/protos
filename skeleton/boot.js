@@ -23,6 +23,7 @@ CoreJS.bootstrap(__dirname, {
   events: {
     init: function(app) {
       app.use('logger');
+      app.use('markdown');
       app.use('body_parser');
       app.use('cookie_parser');
       app.use('static_server');

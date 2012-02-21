@@ -1,4 +1,49 @@
 
+/**
+  Mailer
+  
+  Provides mail functionality to the application, with full unicode support.
+  
+  Transports available are SMTP, Amazon SES (Simple Email Service) and sendmail.
+  
+  » References:
+  
+    http://www.nodemailer.org/
+
+  » SMTP Example:
+  
+    app.use('mailer', {
+      SMTP: {
+        host: 'smtp.example.com',     // required
+        port: 25,                     // optional, defaults to 25 or 465
+        use_authentication: false,    // optional, false by default
+        user: '',                     // used only when use_authentication is true 
+        pass: ''                      // used only when use_authentication is true
+      }
+    });
+  
+  » Amazon SES Example:
+  
+    app.use('mailer', {
+      SES: {
+        AWSAccessKeyID: 'ACCESSKEY',  // required
+        AWSSecretKey: 'SECRETKEY',    // required
+        ServiceUrl: 'https://email.us-east-1.amazonaws.com', // optional
+      }
+    });
+
+  » Sendmail Example (default):
+  
+    app.use('mailer', {
+      sendmail: true
+    });
+    
+    app.use('mailer', {
+      sendmail: '/path/to/sendmail'
+    });
+  
+ */
+
 var app = corejs.app,
     util = require('util'),
     nodemailer = require('nodemailer'),

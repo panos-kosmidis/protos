@@ -1,5 +1,14 @@
 
-/* Body Parser */
+/**
+  Body Parser
+  
+  » Configuration Options
+  
+    {int} maxFieldSize: Max amount of bytes to allow for each field
+    {int} maxUploadSize: Max number of bytes to allow for uploads
+    {boolean} keepUploadExtensions: If set to true (default) will keep extensions for uploaded files
+  
+ */
 
 var app = corejs.app;
 

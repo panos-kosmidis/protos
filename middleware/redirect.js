@@ -1,4 +1,17 @@
 
+/**
+  Redirect 
+  
+  Redirect all application requests to a specific URL.
+  
+  An HTTP/400 Response will be sent on requests other than GET/HEAD.
+  
+  » Examples:
+  
+    app.use('redirect', 'http://google.com');
+  
+ */
+
 var app = corejs.app;
 
 function Redirect(url, middleware) {

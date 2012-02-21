@@ -1,5 +1,17 @@
 
-/* Static Server » Dependencies */
+/**
+  Static Server
+  
+  Provides a fully featured static file server for applications.
+  
+  Reads static content from the application's `public/` directory.
+  
+  » Configuration options:
+  
+    {boolean} eTags: If set to true, will include the eTag header
+    {boolean} acceptRanges: If set to true (default), responds to partial content requests
+
+ */
 
 var app = corejs.app,
     fs = require('fs');

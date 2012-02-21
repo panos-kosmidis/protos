@@ -1,5 +1,5 @@
 
-/* Cookie Parser » Dependencies */
+/* Cookie Parser */
 
 var app = corejs.app;
 

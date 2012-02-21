@@ -1,4 +1,21 @@
 
+/**
+  BCrypt
+  
+  Provides Blowfish encryption capabilities for the application.
+  
+  » References:
+  
+    https://github.com/ncb000gt/node.bcrypt.js
+    http://codahale.com/how-to-safely-store-a-password/
+    
+  » Configuration Options
+  
+    {int} rounds: Number of rounds to process the data for
+    {int} seedLength: Seed length to pass to rand bytes
+  
+  */
+
 var app = corejs.app,
     bcrypt = require('bcrypt');
     

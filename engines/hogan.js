@@ -1,3 +1,4 @@
+/*jshint noempty: false */
 
 /* Hogan */
 
@@ -16,8 +17,7 @@ function Hogan(app) {
 
   app.on('init', function() {
     // App partials
-    var func, p;
-    for (p in app.views.partials) {
+    for (var p in app.views.partials) {
       var func = app.views.partials[p];
       if (func.tpl) partials[p] = func.tpl;
       else {

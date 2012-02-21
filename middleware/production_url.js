@@ -1,4 +1,14 @@
 
+/**
+  Production URL 
+
+  Removes the port suffix from the application's url. 
+  
+  This is useful if the application is running under a proxy, 
+  or if there are kernel level redirection rules (iptables).
+
+*/
+
 var app = corejs.app;
 
 function ProductionUrl() {

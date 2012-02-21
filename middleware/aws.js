@@ -1,4 +1,56 @@
 
+/** 
+  Amazon Web Services
+  
+  » References:
+  
+    https://github.com/SaltwaterC/aws2js
+    https://github.com/SaltwaterC/aws2js/wiki/S3-Client
+    https://github.com/SaltwaterC/aws2js/wiki/EC2-Client
+    
+  » Configuration Options:
+
+    {string} accessKey: AWS access key
+    {string} secretKey: AWS secret key
+    {object} clients: Object containing the clients to configure
+    
+  » Example:
+  
+    app.use('aws', {
+      accessKey: 'username',
+      secretKey: 'password',
+      clients: {
+        thumbs: {
+          type: 's3',
+          setBucket: 'my.cool.bucket',
+        },
+        cloud: {
+          type: 'ec2',
+          setRegion: 'ap-southeast-1'
+        }
+      }
+    });
+    
+  » Client Configuration
+    
+    In the example above, each client configuration receives a 'type' property, which
+    is the AWS Client to use. For more info on the supported clients, refer to the
+    aws2js module documentation (link in References section).
+    
+    The rest of the properties of each client configuration are the specific methods
+    supported by the client in question. In the example above (on the s3 client, thumbs)
+    the 'setBucket' option is set to 'my.cool.bucket'.
+    
+    This is the same as manually running `s3.setBucket('my.cool.bucket')` after loading 
+    the aws client. In other words, the methods and arguments for the aws client are exposed
+    as properties. If the argument is passed as an array, then `Function.prototype.apply` will
+    be used to pass the arguments to the aws client.
+    
+    Upon instantiation, each defined client will be available in `app.aws.{client}`. The clients
+    are instances of aws2js clients. For more info, consult the References section above.
+
+*/
+
 var app = corejs.app,
     util = require('util'),
     aws2js = require('aws2js'),

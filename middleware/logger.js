@@ -1,4 +1,32 @@
 
+/**
+  Logger
+  
+  Application logger. Also provides request logging functionality, supporting
+  custom logging formats.
+  
+  The logging functions are exposed by the middleware object, and connected to the
+  `info_log` and `error_log` events of the application.
+  
+  Error logs are conveniently printed with a stack trace, for proper inspection.
+  
+  The log events are emitted by `app.log`. If an `Error` instance is passed to it,
+  the `error_log` event is automatically emitted with the error in question.
+  
+  » Configuration Options:
+  
+    {boolean} accessLog: If set to true (default), will save requests to the access.log file
+    {boolean} accessLogConsole: If set to true (default), will log requests to the console
+    {function} accessLogFormat: Function to use to format the logs
+    
+  » Log Locations:
+  
+      Info log:   skeleton/log/info.log
+     Error log:   skeleton/log/error.log
+    Access log:   skeleton/log/access.log
+    
+ */
+
 var app = corejs.app,
     fs = require('fs'),
     http = require('http'),
