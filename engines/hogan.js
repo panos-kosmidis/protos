@@ -1,7 +1,7 @@
 
 /* Hogan */
 
-var hogan = corejs.require('hogan.js', true),
+var hogan = require('hogan.js'),
     util = require('util');
     
 // https://github.com/twitter/hogan.js

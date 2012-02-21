@@ -35,8 +35,8 @@ module.exports = {
   },
   
   viewExtensions: {
-    html: 'hogan',
-    mustache: 'hogan'
+    html: 'liquor',
+    mustache: 'handlebars'
   }
 
 }

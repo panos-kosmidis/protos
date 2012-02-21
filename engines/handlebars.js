@@ -1,10 +1,10 @@
 
 /* Handlebars */
 
-var handlebars = corejs.require('handlebars', true),
+var handlebars = require('handlebars'),
     util = require('util');
     
-var appPartials; // Cache partials reference within closure
+var partials;
 
 // https://github.com/wycats/handlebars.js
 
@@ -13,7 +13,7 @@ function Handlebars(app) {
   this.module = handlebars;
   this.multiPart = true;
   this.extensions = ['handlebars', 'handlebars.html', 'hb.html'];
-  appPartials = app.views.partials; // Set partials reference
+  partials = app.views.partials;
 }
 
 util.inherits(Handlebars, corejs.lib.engine);
@@ -33,7 +33,7 @@ Handlebars.prototype.registerHelper = function(alias, callback) {
 }
 
 Handlebars.prototype.returnPartials = function() {
-  return {partials: appPartials}; // Use cached partials reference
+  return {partials: partials}; // Use cached partials reference
 }
 
 module.exports = Handlebars;
