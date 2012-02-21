@@ -50,15 +50,6 @@ vows.describe('lib/controller.js').addBatch({
       assert.equal(alias, 'blog');
     }
     
-  },
-  
-  'CController::getHelper': {
-    
-    'Returns the helper associated with controller': function() {
-      var helper = app.controller.getHelper();
-      assert.instanceOf(helper, corejs.lib.helper);
-    }
-    
   }
     
 }).export(module);

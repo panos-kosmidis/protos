@@ -38,7 +38,7 @@ vows.describe('lib/application.js').addBatch({
     },
     
     'Initializes helpers': function() {
-      assert.instanceOf(app.helpers.main, corejs.lib.helper);
+      assert.equal(app.helpers.main.className, 'MainHelper');
     },
     
     'Initializes controllers': function() {
