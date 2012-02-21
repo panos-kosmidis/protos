@@ -33,7 +33,7 @@
     app.use('markdown', {
       flags: {
         content: ['noImage', 'noPants', 'autolink'],
-        comments: ['noHTML', 'noTables', 'strict']
+        comment: ['noHTML', 'noTables', 'strict']
       },
       sanitize: ['default', 'comments']
     });
@@ -41,6 +41,8 @@
   » Usage example (liquor rendering engine):
   
     #{$markdown('## This is a **heading** level 2')}
+    
+    #{$markdown('This is comment text', 'comment')}
 
  */
 
