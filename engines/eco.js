@@ -1,7 +1,7 @@
 
 /* Eco  */
 
-var eco = corejs.require('eco', true),
+var eco = require('eco'),
     util = require('util');
 
 // https://github.com/sstephenson/eco

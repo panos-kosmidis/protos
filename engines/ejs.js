@@ -1,7 +1,7 @@
 
 /* EJS */
 
-var ejs = corejs.require('ejs', true),
+var ejs = require('ejs'),
     util = require('util');
 
 // https://github.com/visionmedia/ejs

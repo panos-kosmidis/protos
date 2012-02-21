@@ -1,7 +1,7 @@
 
 /* JsHtml  */
 
-var j = corejs.require('jshtml', true),
+var j = require('jshtml'),
     util = require('util');
 
 // https://github.com/LuvDaSun/jshtml

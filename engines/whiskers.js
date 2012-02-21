@@ -1,7 +1,7 @@
 
 /* Whiskers */
 
-var whiskers = corejs.require('whiskers', true),
+var whiskers = require('whiskers'),
     util = require('util');
 
 // https://github.com/gsf/whiskers.js/tree

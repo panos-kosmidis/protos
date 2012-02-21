@@ -1,7 +1,7 @@
 
 /* Dot  */
 
-var dot = corejs.require('dot', true),
+var dot = require('dot'),
     util = require('util');
 
 // https://github.com/olado/doT

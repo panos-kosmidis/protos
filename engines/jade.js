@@ -1,9 +1,9 @@
 
 /* Jade */
 
-var jade = corejs.require('jade', true),
+var jade = require('jade'),
     util = require('util'),
-    _ = require('underscore');
+    extend = corejs.extend;
 
 // https://github.com/visionmedia/jade
 
@@ -24,7 +24,7 @@ Jade.prototype.render = function(data, vars, relPath) {
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     var filename = this.app.fullPath(this.app.mvcpath + 'views/' + relPath),
-        options = _.extend({filename: filename}, this.options);
+        options = extend({filename: filename}, this.options);
     func = jade.compile(data, options);
     this.cacheFunction(func, arguments);
   }

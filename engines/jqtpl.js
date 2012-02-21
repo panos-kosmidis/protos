@@ -1,7 +1,7 @@
 
 /* JqueryTemplate */
 
-var jq = corejs.require('jqtpl', true),
+var jq = require('jqtpl'),
     util = require('util');
 
 // https://github.com/kof/node-jqtpl

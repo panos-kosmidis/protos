@@ -1,7 +1,7 @@
 
 /* Liquor */
 
-var liquor = corejs.require('liquor', true),
+var liquor = require('liquor'),
     util = require('util');
 
 // https://github.com/chjj/liquor

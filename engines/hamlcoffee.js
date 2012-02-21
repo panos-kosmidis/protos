@@ -1,7 +1,7 @@
 
 /* HamlCoffee */
 
-var hamlCoffee = corejs.require('haml-coffee', true),
+var hamlCoffee = require('haml-coffee'),
     util = require('util');
 
 // https://github.com/9elements/haml-coffee

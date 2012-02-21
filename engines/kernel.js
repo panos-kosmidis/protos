@@ -1,7 +1,7 @@
 
 /* Kernel */
 
-var kernel = corejs.require('kernel', true),
+var kernel = require('kernel'),
     util = require('util'),
     generator = kernel.generator,
     parser = kernel.parser,

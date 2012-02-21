@@ -1,7 +1,7 @@
 
 /* Haml */
 
-var haml = corejs.require('hamljs', true),
+var haml = require('hamljs'),
     util = require('util');
     
 // https://github.com/visionmedia/haml.js

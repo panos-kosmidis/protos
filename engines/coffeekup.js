@@ -1,8 +1,7 @@
 
 /* Coffeekup  */
 
-var _ = require('underscore'),
-    ck = corejs.require('coffeekup', true),
+var ck = require('coffeekup'),
     util = require('util');
     
 // https://github.com/mauricemach/coffeekup

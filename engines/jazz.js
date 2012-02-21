@@ -1,7 +1,7 @@
 
 /* Jazz */
 
-var jazz = corejs.require('jazz', true),
+var jazz = require('jazz'),
     util = require('util');
 
 // https://github.com/shinetech/jazz

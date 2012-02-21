@@ -1,7 +1,7 @@
 
 /* Swig */
 
-var swig = corejs.require('swig', true),
+var swig = require('swig'),
     util = require('util');
 
 // https://github.com/paularmstrong/swig
