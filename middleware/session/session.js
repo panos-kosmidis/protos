@@ -34,7 +34,9 @@ require('./response.js');
 function Session(config, middleware) {
 
   // Automatically load cookie_parser module dependency
-  if (!app.supports.cookie_parser) app.use('cookie_parser');
+  if (!app.supports.cookie_parser) {
+    throw new Error("The 'session' middleware requires 'cookie_parser'.");
+  }
 
   app[middleware] = this; // Attach to application singleton
 
@@ -55,7 +57,7 @@ function Session(config, middleware) {
 
     if (typeof config.storage == 'object') this.storage = config.storage;
     else if (typeof config.storage == 'string') this.storage = app.getResource('storages/' + config.storage);
-    else throw new Error('Session requires a storage');
+    else throw new Error("The 'session' middleware requires a storage to be passed in config.");
 
     this.className = this.constructor.name;
 
