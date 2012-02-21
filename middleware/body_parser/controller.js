@@ -15,31 +15,46 @@ var app = corejs.app,
   The files uploaded are stored by default on /private/incoming.
 
   @param {object} req
-  @param {string} token (optional)
+  @param {string} CSRF token (optional)
   @param {function} callback
   @public
  */
 
-Controller.prototype.getRequestData = function(req, callback) {
+Controller.prototype.getRequestData = function(req, token, callback) {
   var fields, files, requestData,
       self = this,
       res = req.response;
+      
+  if (typeof callback == 'undefined') { callback = token; token = null; }
 
   if (req.method == 'POST' || req.method == 'PUT') {
     requestData = req.__requestData;
     fields = requestData.fields;
     files = requestData.files;
 
-    // TODO: CSRF Middleware
-    if (app.supports.csrf_protect) {
-      console.trace('Validate CSRF Token');
-      process.exit();
-    } else {
-      if (app.validate(req, fields)) {
-        callback.call(self, fields, files);
+    if (app.validate(req, fields)) {
+      
+      /*
+      
+        NOTE: There is no need to use `else` here, since app.validate will
+        properly respond with an HTTP/400 Response, and will remove any
+        uploaded files automatically if the body_parser is enabled.
+        
+       */
+      
+      // Check CSRF Token upon validation
+      if (app.supports.csrf) app.emit('csrf_check', req, token, fields);
+      
+      // Route stop: allows `csrf_check` event to stop execution
+      if (req.__stopRoute) {
+        files.removeAll(); // Remove any uploaded files
+        return;
       }
+      
+      callback.call(self, fields, files);
+      
     }
-
+    
   } else {
     app.badRequest(res);
   }
