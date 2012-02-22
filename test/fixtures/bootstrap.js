@@ -31,15 +31,22 @@ CoreJS.on('bootstrap_config', function(bootstrap) {
   // console.log(bootstrap);
 });
 
-var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton',
-    corejs = CoreJS.bootstrap(testSkeleton, {
+var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton';
+
+var corejs = CoreJS.bootstrap(testSkeleton, {
+      server: {
+        port: (global.listenPort || 8080)
+      },
       events: {
         init: function(app) {
           app.__initBootstrapEvent = true;
         }
       }
-    }),
-    app = corejs.app;
+    });
+    
+var app = corejs.app;
+
+if (global.listenPort) delete global.listenPort;
 
 app.logging = false;
 

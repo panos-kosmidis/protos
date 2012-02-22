@@ -11,6 +11,7 @@ vows.describe('Session (middleware) » Unit Tests').addBatch({
     
     topic: function() {
       // Enable session
+      app.use('cookie_parser');
       app.use('session', {storage: 'redis'});
       return true;
     },

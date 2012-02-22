@@ -42,6 +42,8 @@ function Csrf(config, middleware) {
   // Dependency check
   if (!app.supports.session) {
     throw new Error("The 'csrf' middleware requires 'session'");
+  } else if (!app.supports.body_parser) {
+    throw new Error("The 'csrf' middleware requires 'body_parser'");
   }
   
   // Attach instance to app singleton

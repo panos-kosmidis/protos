@@ -115,6 +115,7 @@ var currentBatch = batch['Controllers » auth/sessions + authentication'] = {
 
     var promise = new EventEmitter();
 
+    app.use('cookie_parser');
     app.use('session', {storage: 'redis', guestSessions: false});
 
     multi.exec(function(err, results) {
