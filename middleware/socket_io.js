@@ -1,0 +1,141 @@
+
+/**
+  SocketIO
+  
+  Provides socket.io support for applications. The middleware acts as an automatic
+  and convenient configuration of socket.io, supporting namespaces.
+  
+  » References:
+  
+    https://github.com/learnboost/socket.io
+    https://github.com/LearnBoost/socket.io-spec
+    https://github.com/LearnBoost/Socket.IO/wiki/Configuring-Socket.IO
+
+  » Provides:
+  
+    {object} app.io: SocketIO server, listening on the application's port
+    {object} app.sockets: Contains all the SocketIO namespaces, ready to use & configured
+  
+  » Configuration options:
+  
+    {boolean} log: If set to true, logging will be enabled
+    {object} sockets: Contains socket namespaces as {name: endpoint}
+    {object} environments: Object containing callbacks that will run on each application environment
+    
+  » Example:
+  
+    app.use('socket_io', {
+      log: false,
+      sockets: {
+        chat: '/chat',
+        news: '/news'
+      },
+      environments: {
+        development: function(io) {
+          // Code to run on development
+        },
+        production: function(io) {
+          // Code to run on production
+        }
+      }
+    });
+
+ */
+
+var app = corejs.app,
+    util = require('util');
+
+function SocketIO(config, middleware) {
+  
+  // Default configuration
+  var options = {
+    log: false,
+    sockets: {
+      main: '/',
+    },
+    environments: {
+      development: function(io) {
+        // Enable only websocket when on development
+        io.set('transports', ['websocket']);
+      },
+      production: function(io) {
+        // Enable log + reduce logging
+        io.enable('log');
+        io.set('log level', 1);
+        
+        // Send minified client
+        io.enable('browser client minification');
+        
+        // Use eTag caching logic
+        io.enable('browser client etag');
+        
+        // Gzip-encode the client script
+        io.enable('browser client gzip');
+        
+        // Enable production transports
+        io.set('transports', ['websocket', 'flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling']);
+      }
+    },
+    clientScript: '/socket.io/socket.io.js'
+  }
+  
+  // Extend the options, 1 level deep
+  for (var key in options) {
+    if (key in config) {
+      if (config[key] instanceof Array) {
+        options[key] = config[key];
+      } else if (config[key] instanceof Object) {
+        corejs.extend(options[key], config[key]);
+      } else {
+        options[key] = config[key];
+      }
+    }
+  }
+  
+  // If no debug env specified, use development env
+  if (config.environment && config.environment[debug] == null) {
+    options.environments.debug = options.environments.development;
+  }
+  
+  // Add socket.io client resource
+  app.addClientScript({
+    name: 'socket.io',
+    path: options.clientScript
+  });
+  
+  // Defaults has been extended with config
+  initSockets(options);
+}
+
+/**
+  Initializes the socket configuration
+  
+  @param {object} config
+  @private
+ */
+
+function initSockets(config) {
+  var io = require('socket.io').listen(app.server);
+  
+  // Set Logging
+  if (!config.log) io.disable('log');
+  
+  // Run environment code
+  var func = config.environments[corejs.environment];
+  if (func instanceof Function) func(io);
+  
+  // Set app.sockets
+  app.sockets = {};
+  
+  // Attach namespaces to app.sockets
+  var s, namespace;
+  for (s in config.sockets) {
+    namespace = config.sockets[s];
+    app.sockets[s] = io.of(namespace);
+  }
+  
+  // Attach io to app
+  app.io = io;
+}
+
+module.exports = SocketIO;
