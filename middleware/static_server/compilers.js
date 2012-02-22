@@ -8,12 +8,16 @@ var less = require('less'),
 // Asset compilers
 module.exports = {
   
-  coffee: function(source, callback) {
-    callback(null, coffee.compile(source));
-  },
-  
   less: function(source, callback) {
     less.render(source, callback);
+  },
+  
+  styl: function(source, callback) {
+    stylus.render(source, {}, callback);
+  },
+  
+  coffee: function(source, callback) {
+    callback(null, coffee.compile(source));
   }
   
 }

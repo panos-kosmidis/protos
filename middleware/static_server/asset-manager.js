@@ -59,6 +59,7 @@ function compileSrc(file, compiler) {
   var src, outFile;
   src = fs.readFileSync(file, 'utf8');
   compiler(src, function(err, code) {
+    if (err) app.log(err);
     outFile = file.replace(extRegex, '.' + config.compileExts[ext]);
     fs.writeFileSync(outFile, code, 'utf8');
     app.debug(util.format('Asset Manager: Compiled %s (%s)', app.relPath(outFile), ext));
