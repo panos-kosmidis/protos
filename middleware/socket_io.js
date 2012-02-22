@@ -18,14 +18,18 @@
   
   » Configuration options:
   
-    {boolean} log: If set to true, logging will be enabled
+    {object} settings: Settings to pass to the socket on initialization
     {object} sockets: Contains socket namespaces as {name: endpoint}
     {object} environments: Object containing callbacks that will run on each application environment
     
   » Example:
   
     app.use('socket_io', {
-      log: false,
+      settings: {
+        log: true,
+        heartbeats: true,
+        'log level': 1
+      },
       sockets: {
         chat: '/chat',
         news: '/news'
@@ -49,9 +53,11 @@ function SocketIO(config, middleware) {
   
   // Default configuration
   var options = {
-    log: false,
+    settings: {
+      log: false
+    },
     sockets: {
-      main: '/',
+      main: '',
     },
     environments: {
       development: function(io) {
@@ -115,10 +121,7 @@ function SocketIO(config, middleware) {
  */
 
 function initSockets(config) {
-  var io = require('socket.io').listen(app.server);
-  
-  // Set Logging
-  if (!config.log) io.disable('log');
+  var io = require('socket.io').listen(app.server, config.settings);
   
   // Run environment code
   var func = config.environments[corejs.environment];
