@@ -5,7 +5,7 @@ var less = require('less'),
     sass = require('sass'),
     scss = require('scss'),
     coffee = require('coffee-script');
-
+    
 // Asset compilers
 module.exports = {
   
@@ -18,7 +18,8 @@ module.exports = {
   },
   
   sass: function(source, callback) {
-    callback(null, sass.render(source));
+    var css = sass.render(source);
+    callback(null, css.trim());
   }
   
 }
