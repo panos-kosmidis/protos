@@ -3,4 +3,5 @@
 /npm-debug.log
 /node_modules
 /skeleton/log/*.log
+/skeleton/public/test
 /test/fixtures/test-skeleton/log/*.log
