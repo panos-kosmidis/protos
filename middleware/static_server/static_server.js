@@ -29,6 +29,7 @@ function StaticServer(config, middleware) {
     acceptRanges: true,
     watchOn: ['development', 'debug'],
     compile: ['less', 'sass', 'coffee'],
+    assetSourceAccess: false,
     compilers: require('./compilers.js'),
     compileExts: {
       coffee: 'js',

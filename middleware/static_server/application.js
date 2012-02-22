@@ -41,13 +41,18 @@ Application.prototype.isStaticFileRequest = function(req, res) {
 Application.prototype.serveStaticFile = function(path, req, res) {
 
   req.__handledRoute = true;
-
+  
   if ( pathModule.basename(path).charAt(0) == '.' ) {
     
     // Forbid access to hidden files
     this.notFound(res);
 
   } else {
+    
+    app.emit('static_file_request', req, res, path);
+    
+    // Ability to stop route on `static_file` event
+    if (req.__stopRoute) return;
     
     fs.stat(path, function(err, stats) {
 
@@ -58,7 +63,9 @@ Application.prototype.serveStaticFile = function(path, req, res) {
 
       } else {
         
-        app.emit('static_file_request', req, res, path);
+        app.emit('existing_static_file', req, res, path);
+        
+        // Ability to stop route on `existing_static_file` event
         if (req.__stopRoute) return;
 
         var date = new Date(),
@@ -93,7 +100,6 @@ Application.prototype.serveStaticFile = function(path, req, res) {
         // Return cached content
         if (isCached) {
           res.statusCode = 304;
-          app.emit('static_file_headers', req, res, headers, stats, path);
           res.sendHeaders(headers);
           res.end();
           return;

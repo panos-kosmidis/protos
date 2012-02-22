@@ -10,10 +10,20 @@ var app = corejs.app,
 // Do nothing if no compilation is required
 if (config.compile.length == 0) return;
 
-// Scan for files to compile
 var assets = {},
     extRegex = new RegExp('\\.(' + config.compile.join('|') + ')$');
 
+// Prevent access to raw source files
+if (! config.assetSourceAccess) {
+  app.on('static_file_request', function(req, res, path) {
+   if (extRegex.test(path.trim())) {
+     req.stopRoute();
+     app.notFound(res);
+   }
+  });
+}
+
+// Scan for files to compile
 fileModule.walkSync(app.fullPath(app.paths.public), function(dirPath, dirs, files) {
   for (var matches, path, ext, file, i=0; i < files.length; i++) {
     file = files[i].trim();

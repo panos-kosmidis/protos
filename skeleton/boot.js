@@ -15,7 +15,7 @@ CoreJS.bootstrap(__dirname, {
   environments: {
     default: 'development',
     development: function(app) {
-      app.debugLog = true;
+      app.debugLog = false;
     }
   },
   
