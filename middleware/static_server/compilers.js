@@ -1,13 +1,18 @@
 
 /* Static Server » Asset compilers */
 
-var coffeeScript = require('coffee-script');
+var less = require('less'),
+    coffee = require('coffee-script');
 
 // Asset compilers
 module.exports = {
   
-  coffee: function(source) {
-    return coffeeScript.compile(source);
+  coffee: function(source, callback) {
+    callback(null, coffee.compile(source));
+  },
+  
+  less: function(source, callback) {
+    less.render(source, callback);
   }
   
 }

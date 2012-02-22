@@ -12,6 +12,8 @@
     {boolean} acceptRanges: If set to true (default), responds to partial content requests
 
  */
+ 
+// TODO: Concatenate Assets with support for minification/compression
 
 var app = corejs.app,
     fs = require('fs');

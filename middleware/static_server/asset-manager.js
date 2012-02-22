@@ -56,12 +56,13 @@ for (var compiler, files, ext, i=0; i < assetExts.length; i++) {
 }
 
 function compileSrc(file, compiler) {
-  var src, outSrc, outFile;
+  var src, outFile;
   src = fs.readFileSync(file, 'utf8');
-  outSrc = compiler(src);
-  outFile = file.replace(extRegex, '.' + config.compileExts[ext]);
-  fs.writeFileSync(outFile, outSrc, 'utf8');
-  app.debug(util.format('Asset Manager: Compiled %s (%s)', app.relPath(outFile), ext));
+  compiler(src, function(err, code) {
+    outFile = file.replace(extRegex, '.' + config.compileExts[ext]);
+    fs.writeFileSync(outFile, code, 'utf8');
+    app.debug(util.format('Asset Manager: Compiled %s (%s)', app.relPath(outFile), ext));
+  });
 }
 
 /**
