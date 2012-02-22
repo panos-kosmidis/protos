@@ -8,6 +8,8 @@ var app = require('../fixtures/bootstrap.js'),
     
 var multi = new Multi(app);
 
+var sessionBackup, sessionSupport;
+
 vows.describe('CSRF (middleware)').addBatch({
   
   '': {
@@ -18,6 +20,9 @@ vows.describe('CSRF (middleware)').addBatch({
       
       console.log("    Note: using HTTP/403 as the response for testing purposes (default is HTTP/400).");
       console.log("    This prevents any confusion between the regular HTTP/400 errors and the CSRF ones.\n")
+      
+      sessionBackup = app.session;
+      sessionSupport = app.supports.session;
       
       app.use('cookie_parser');
       app.use('body_parser');
@@ -79,6 +84,7 @@ vows.describe('CSRF (middleware)').addBatch({
               multi.curl(util.format('-i -X PUT --cookie "_sess=%s" -d "protect_key=%s" -d "name=ernie" -d "age=28" /csrf/check/post/fields', sess, token));
               
               multi.exec(function(err, results) {
+                delete app.supports.session;
                 promise.emit('success', err || results);
               });
             }

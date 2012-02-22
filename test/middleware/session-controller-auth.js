@@ -1,5 +1,5 @@
 
-var app = require('../fixtures/bootstrap'),
+var app = require('../fixtures/bootstrap.js'),
     vows = require('vows'),
     assert = require('assert'),
     util = require('util'),
@@ -115,8 +115,12 @@ var currentBatch = batch['Controllers » auth/sessions + authentication'] = {
 
     var promise = new EventEmitter();
 
-    app.use('cookie_parser');
-    app.use('session', {storage: 'redis', guestSessions: false});
+    if (!app.supports.csrf) {
+      app.use('cookie_parser');
+      app.use('session', {storage: 'redis', guestSessions: false});
+    } else {
+      app.session.config.guestSessions = false;
+    }
 
     multi.exec(function(err, results) {
       promise.emit('success', err || results);
