@@ -171,6 +171,32 @@ vows.describe('lib/application.js').addBatch({
       assert.deepEqual(topic, ['<<', 'data', '>>']);
     }
     
+  },
+  
+  'Application::registerViewHelper': {
+    
+    topic: function() {
+      var ob = {
+        self: true,
+        method: function() {
+          if (this.self) return '{OK}';
+          else return '{FAIL}';
+        }
+      }
+      
+      app.registerViewHelper('$method', ob.method);
+      app.registerViewHelper('$method_with_context', ob.method, ob);
+
+      return ob;
+    },
+    
+    "Properly registers view helpers": function(ob) {
+      var partials = app.views.partials,
+          src = partials.$method_with_context.toString();
+      assert.equal(partials.$method.toString(), ob.method);
+      assert.isTrue(src.indexOf('return func.apply(context, slice.call(arguments, 0));') >= 0);
+    }
+    
   }
   
 }).addBatch({
