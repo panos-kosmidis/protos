@@ -2,8 +2,7 @@
 /* Static Server » Asset compilers */
 
 var less = require('less'),
-    sass = require('sass'),
-    scss = require('scss'),
+    stylus = require('stylus'),
     coffee = require('coffee-script');
     
 // Asset compilers
@@ -15,11 +14,6 @@ module.exports = {
   
   less: function(source, callback) {
     less.render(source, callback);
-  },
-  
-  sass: function(source, callback) {
-    var css = sass.render(source);
-    callback(null, css.trim());
   }
   
 }

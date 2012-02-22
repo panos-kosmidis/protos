@@ -30,13 +30,12 @@ function StaticServer(config, middleware) {
     eTags: false,
     acceptRanges: true,
     watchOn: ['development', 'debug'],
-    compile: ['less', 'sass', 'coffee'],
+    compile: ['less', 'coffee'],
     assetSourceAccess: false,
     compilers: require('./compilers.js'),
     compileExts: {
       coffee: 'js',
       less: 'css',
-      sass: 'css'
     }
   }, config);
   
