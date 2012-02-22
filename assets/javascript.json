@@ -1,0 +1,39 @@
+{
+  "jquery": {
+    "name": "jQuery JavaScript Library",
+    "version": "1.7.1",
+    "website": "http://jquery.com/",
+    "download": "http://code.jquery.com/jquery-1.7.1.min.js"
+  },  
+
+  "backbone": {
+    "description": "Backbone.js",
+    "version": "0.9.1",
+    "website": "http://documentcloud.github.com/backbone/",
+    "download": "http://documentcloud.github.com/backbone/backbone-min.js" 
+  },
+  
+  "ember": {
+    "name": "Ember.js JavaScript Framework",
+    "version": "0.9.5",
+    "website": "http://emberjs.com/",
+    "download": "http://cloud.github.com/downloads/emberjs/ember.js/ember-0.9.5.min.js"
+  },
+  
+  "knowckout": {
+    "name": "Knockout JavaScript library",
+    "version": "2.0.0",
+    "website": "http://knockoutjs.com/",
+    "download": "http://cloud.github.com/downloads/SteveSanderson/knockout/knockout-2.0.0.js"
+  },
+  
+  "prototype": {
+    "name": "Prototype JavaScript Framework",
+    "version": "1.7.0.0",
+    "website": "http://www.prototypejs.org/",
+    "download": "https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js"
+  }
+}
+
+
+

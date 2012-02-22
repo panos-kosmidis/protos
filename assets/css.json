@@ -1,0 +1,29 @@
+{
+  "bootstrap": {
+    "description": "CSS Toolkit from Twitter",
+    "version": "2.0.1",
+    "website": "http://twitter.github.com/bootstrap/",
+    "download": "http://twitter.github.com/bootstrap/assets/bootstrap.zip"
+  },
+  
+  "blueprint": {
+    "description": "Blueprint CSS Framework",
+    "version": "1.0.1",
+    "website": "http://blueprintcss.org/",
+    "download": "http://nodeload.github.com/joshuaclayton/blueprint-css/zipball/master"
+  },
+  
+  "skeleton": {
+    "description": "Mobile-Friendly Responsive Framework",
+    "version": "1.1",
+    "website": "http://www.getskeleton.com/",
+    "download": "http://github.com/dhgamache/Skeleton/tarball/master"
+  },
+  
+  "960": {
+    "description": "960.gs Grid System",
+    "version": "1.0.0",
+    "website": "http://960.gs/",
+    "download": "http://github.com/nathansmith/960-Grid-System/zipball/master"
+  }
+}
