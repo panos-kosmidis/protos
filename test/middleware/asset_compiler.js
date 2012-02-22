@@ -11,7 +11,7 @@ var multi = new Multi(app);
 
 var compiledLess, compiledStylus, compiledCoffee;
 
-vows.describe('Static Server (middleware) » Asset Manager & Compiler').addBatch({
+vows.describe('Asset Compiler (middleware)').addBatch({
   
   '': {
     
@@ -22,7 +22,10 @@ vows.describe('Static Server (middleware) » Asset Manager & Compiler').addBatch
       var restore = fs.readFileSync(app.fullPath('../stylus.styl'), 'utf8');
       fs.writeFileSync(app.fullPath('public/assets/stylus.styl'), restore, 'utf8');
       
-      if (!app.supports.static_server) app.use('static_server', {
+      // Load dependencies
+      if (!app.supports.static_server) app.use('static_server');
+      
+      if (!app.supports.asset_compiler) app.use('asset_compiler', {
         watchOn: [corejs.environment]
       });
      
@@ -60,6 +63,7 @@ vows.describe('Static Server (middleware) » Asset Manager & Compiler').addBatch
           // Watches for changes of the source files (when enabled)
           
           app.curl('/assets/stylus.css', function(err, buf) {
+            delete app.supports.static_server;
             results.push(err || buf);
             promise.emit('success', err || results);
           });

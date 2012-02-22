@@ -13,8 +13,6 @@
 
  */
  
-// TODO: Concatenate Assets with support for minification/compression
-
 var app = corejs.app,
     fs = require('fs');
 
@@ -29,22 +27,11 @@ function StaticServer(config, middleware) {
   config = corejs.configExtend({
     eTags: false,
     acceptRanges: true,
-    watchOn: ['development', 'debug'],
-    compile: ['less', 'styl', 'coffee'],
-    assetSourceAccess: false,
-    compilers: require('./compilers.js'),
-    compileExts: {
-      coffee: 'js',
-      styl: 'css',
-      less: 'css',
-    }
   }, config);
   
   // Attach configuration to app
   app.config.staticServer = config;
   
-  // Run Assets manager
-  require('./asset-manager.js');
 }
 
 /**

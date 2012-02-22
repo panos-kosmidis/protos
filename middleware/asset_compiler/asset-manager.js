@@ -1,11 +1,11 @@
 
-/* Static Server » Asset manager */
+/* Asset Compiler » Asset manager */
 
 var app = corejs.app,
     fs = require('fs'),
     util = require('util'),
     fileModule = require('file'),
-    config = app.config.staticServer;
+    config = app.config.assetCompiler;
 
 // Do nothing if no compilation is required
 if (config.compile.length === 0) return;
