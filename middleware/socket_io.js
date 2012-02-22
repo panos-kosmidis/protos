@@ -86,7 +86,7 @@ function SocketIO(config, middleware) {
   }
   
   // If no debug env specified, use development env
-  if (config.environment && config.environment[debug] == null) {
+  if (config.environment && config.environment.debug == null) {
     options.environments.debug = options.environments.development;
   }
   
