@@ -85,19 +85,6 @@ function SocketIO(config, middleware) {
     clientScript: '/socket.io/socket.io.js'
   }
   
-  // Extend the options, 1 level deep
-  for (var key in options) {
-    if (key in config) {
-      if (config[key] instanceof Array) {
-        options[key] = config[key];
-      } else if (config[key] instanceof Object) {
-        corejs.extend(options[key], config[key]);
-      } else {
-        options[key] = config[key];
-      }
-    }
-  }
-  
   // If no debug env specified, use development env
   if (config.environment && config.environment[debug] == null) {
     options.environments.debug = options.environments.development;

@@ -24,13 +24,24 @@ function StaticServer(config, middleware) {
   createStaticFileRegex.call(app);
   
   // Middleware configuration
-  config = corejs.extend({
+  config = corejs.configExtend({
     eTags: false,
-    acceptRanges: true
+    acceptRanges: true,
+    watchOn: ['development', 'debug'],
+    compile: ['less', 'sass', 'coffee'],
+    compilers: require('./compilers.js'),
+    compileExts: {
+      coffee: 'js',
+      less: 'css',
+      sass: 'css'
+    }
   }, config);
   
   // Attach configuration to app
   app.config.staticServer = config;
+  
+  // Run Assets manager
+  require('./asset-manager.js');
 }
 
 /**
