@@ -4,6 +4,7 @@
 var _ = require('underscore'),
     util = require('util'),
     mongodb = require('mongodb'),
+    slice = Array.prototype.slice,
     Db = mongodb.Db,
     Server = mongodb.Server,
     ObjectID = mongodb.ObjectID;
@@ -79,8 +80,64 @@ function MongoDB(app, config) {
 
 util.inherits(MongoDB, corejs.lib.driver);
 
-function enableCollectionCache() {
-  console.exit('here');
+/**
+  Enables collection cache in collection objects
+  
+  The Client::collection method is overridden to support
+  implement caching via the Driver's internals.
+ */
+
+function enableCollectionCache(client) {
+  var self = this,
+      collectionCache = {},
+      _collection = client.collection;
+
+  // Find method that returns the records instead of a cursor
+  var __find = function() {
+    var args = slice.call(arguments, 0),
+        callback = args.pop();
+    args.push(function(err, cursor) {
+      if (err) callback.call(self, err);
+      else {
+        cursor.toArray(function(err, docs) {
+          callback.call(self, err, docs);
+        });
+      }
+    });
+    this.find.apply(this, args);
+  }
+      
+  // Override client.collection to support cache
+  client.collection = function() {
+    var args = slice.call(arguments, 0),
+        cname = args[0],
+        callback = args.pop();
+    
+    if (cname in collectionCache) {
+      // Collection is cached
+      console.log('Returning cached collection: ' + cname);
+      callback(null, collectionCache[cname]);
+    }  else {
+      // Collection not cached
+      args.push(function(err, collection) {
+        if (err) {
+          callback(err, null);
+        } else {
+          console.log('Generating new cache for collection: ' + cname);
+          // Quick find without cursor
+          collection.__find = __find;
+          // Cache collection object
+          collectionCache[cname] = collection; 
+          // Enable caching in collection object
+          self.cacheClientMethods(collection, 'insert', 'count', 'update', 'count', 'remove', '__find');
+          // Run callback with collection
+          callback(null, collection);          
+        }
+      });
+      // Get collection
+      _collection.apply(client, args);
+    }
+  }
 }
 
 /**
@@ -375,16 +432,15 @@ MongoDB.prototype.queryWhere = function(o, callback) {
       condition = o.condition || {},
       _id = condition._id;
 
-  // Note: If _id is passed other condition will be ignored
+  // If _id is passed other conditions will be ignored
   if (_id != null) condition = constructIdCondition(_id);
 
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
     else {
-      collection.find(condition, fields, function(err, cursor) {
-        cursor.toArray(function(err, docs) {
-          callback.call(self, err, docs);
-        });          
+      self.addCacheData(o, condition);
+      collection.__find(condition, fields, function(err, docs) {
+        callback.call(self, err, docs);
       });
     }
   });
