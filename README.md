@@ -46,21 +46,21 @@ demand via the several middlewares the framework provides.
 
 ## Middleware
 
-- **Asset Compiler**: Supports LESS, CoffeeScript and Stylus. Automatically compiles your assets on change.
-- **Amazon Web Services**: Provides clients for all Amazon Web Services.
+- **Asset Compiler**: Supports LESS, CoffeeScript and Stylus. Automatically watches your assets for changes & compiles them
+- **Amazon Web Services**: Provides clients for all Amazon Web Services
 - **BCrypt Encryption**: Use the Blowfish Encryption algorithm to hash passwords or any other type of data
 - **Body Parser**: POST/PUT File uploads and fields parsing. Featuring a `FileManager` that provides control of uploaded files.
 - **Cookie Parser**: Cookie parsing support, read, set, delete and update cookies.
 - **CSRF Protection**: Protect against cross-site request forgery attacks
 - **Logger**: Log application events both to console & file, featuring a built-in Request Logger
 - **Mailer**: Send email using SMTP, Amazon SES or sendmail
-- **Markdown**: Parses markdown syntax, available in views as `$markdown()`. Configurable.
+- **Markdown**: Parses markdown syntax, available in views as `$markdown()`. Configurable
 - **Production URL**: Remove the port number from your app's url: useful if behind a proxy
-- **Redirect**: Quickly redirect all your application's requests to a single location. Useful for "maintenance mode".
+- **Redirect**: Quickly redirect all your application's requests to a single location. Useful for "maintenance mode"
 - **Respone Cache**: Allows any view to be cached into a Storage backend. Useful for computationally expensive resources
 - **Session Management**: Full blown session implementation supporting Guest Sessions, expires, Browser sessions, storages, etc.
 - **SocketIO**: Helps you develop Real Time apps using the SocketIO framework. Easily configurable, full integration with apps.
-- **Static File Server**: Fully Featured file server, supporting eTags, Partial Content requests.
+- **Static File Server**: Fully Featured file server, supporting eTags, Partial Content requests
 
 ## Installation
 
