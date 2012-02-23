@@ -71,7 +71,7 @@ easily fixed by installing the library on your system.
 
 If you're on a mac: `sudo port install libxml2`
 
-If you're on linxu: `sudo apt-get install libxml2-dev`
+If you're on linux: `sudo apt-get install libxml2-dev`
 
 ## Starting the Server
 
