@@ -1,9 +1,11 @@
 # CoreJS [![Build Status](https://secure.travis-ci.org/corejs/corejs.png)](http://travis-ci.org/corejs/corejs)
 
-Web Application Framewok for Node.js using MVC ideas striving to provide simplicity, robustness and ease of use.
+Web Application Framewok for Node.js using MVC ideas aiming for pleasant simplicity, robustness and ease of use.
 
-CoreJS integrates the best Open Source Software and creates one full package, combining them all and integrating
-seamlessly, to provide a full stack Web Framework.
+CoreJS integrates the best Open Source Software and creates one full package, combining and integrating several
+components seamlessly, to provide a full stack Web Framework.
+
+One thing you can be sure of: it will be big...
 
 ## Status: alpha
 
