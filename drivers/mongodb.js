@@ -81,66 +81,6 @@ function MongoDB(app, config) {
 util.inherits(MongoDB, corejs.lib.driver);
 
 /**
-  Enables collection cache in collection objects
-  
-  The Client::collection method is overridden to support
-  implement caching via the Driver's internals.
- */
-
-function enableCollectionCache(client) {
-  var self = this,
-      collectionCache = {},
-      _collection = client.collection;
-
-  // Find method that returns the records instead of a cursor
-  var __find = function() {
-    var args = slice.call(arguments, 0),
-        callback = args.pop();
-    args.push(function(err, cursor) {
-      if (err) callback.call(self, err);
-      else {
-        cursor.toArray(function(err, docs) {
-          callback.call(self, err, docs);
-        });
-      }
-    });
-    this.find.apply(this, args);
-  }
-      
-  // Override client.collection to support cache
-  client.collection = function() {
-    var args = slice.call(arguments, 0),
-        cname = args[0],
-        callback = args.pop();
-    
-    if (cname in collectionCache) {
-      // Collection is cached
-      console.log('Returning cached collection: ' + cname);
-      callback(null, collectionCache[cname]);
-    }  else {
-      // Collection not cached
-      args.push(function(err, collection) {
-        if (err) {
-          callback(err, null);
-        } else {
-          console.log('Generating new cache for collection: ' + cname);
-          // Quick find without cursor
-          collection.__find = __find;
-          // Cache collection object
-          collectionCache[cname] = collection; 
-          // Enable caching in collection object
-          self.cacheClientMethods(collection, 'insert', 'count', 'update', 'count', 'remove', '__find');
-          // Run callback with collection
-          callback(null, collection);          
-        }
-      });
-      // Get collection
-      _collection.apply(client, args);
-    }
-  }
-}
-
-/**
   Inserts values into a collection
 
   Provides:  [err, docs]
@@ -169,6 +109,7 @@ MongoDB.prototype.insertInto = function(o, callback) {
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
     else {
+      self.addCacheData(o, values);
       collection.insert(values, function(err, docs) {
         callback.call(self, err, docs);
       });
@@ -215,6 +156,7 @@ MongoDB.prototype.updateById = function(o, callback) {
     collection.count(condition, function(err, count) {
       if (err) callback.call(self, err);
       else {
+        self.addCacheData(o, condition);
         collection.update(condition, {$set: values}, {multi: true}, function(err, doc) {
           callback.call(self, err, count);
         });
@@ -257,6 +199,7 @@ MongoDB.prototype.updateWhere = function(o, callback) {
       collection.count(condition, function(err, count) {
         if (err) callback.call(self, err);
         else {
+          self.addCacheData(o, condition);
           collection.update(condition, {$set: values}, function(err, doc) {
             callback.call(self, err, count);
           });
@@ -305,6 +248,7 @@ MongoDB.prototype.deleteById = function(o, callback) {
       collection.count(condition, function(err, count) {
         if (err) callback.call(self, err);
         else {
+          self.addCacheData(o, condition);
           collection.remove(condition, function(err, doc) {
             callback.call(self, err, count);
           });
@@ -346,6 +290,7 @@ MongoDB.prototype.deleteWhere = function(o, callback) {
       collection.count(condition, function(err, count) {
         if (err) callback.call(self, err);
         else {
+          self.addCacheData(o, condition);
           collection.remove(condition, function(err, doc) {
             callback.call(self, err, count);
           });
@@ -394,10 +339,9 @@ MongoDB.prototype.queryById = function(o, callback) {
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
     else {
-      collection.find(condition, fields, function(err, cursor) {
-        cursor.toArray(function(err, docs) {
-          callback.call(self, err, docs);
-        });          
+      self.addCacheData(o, condition);
+      collection.__find(condition, fields, function(err, docs) {
+        callback.call(self, err, docs);
       });
     }
   });
@@ -475,10 +419,10 @@ MongoDB.prototype.queryAll = function(o, callback) {
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
     else {
-      collection.find({}, fields, function(err, cursor) {
-        cursor.toArray(function(err, docs) {
-          callback.call(self, err, docs);
-        });          
+      var cdata = {};
+      self.addCacheData(o, cdata);
+      collection.__find(cdata, fields, function(err, docs) {
+        callback.call(self, err, docs);
       });
     }
   });
@@ -516,14 +460,13 @@ MongoDB.prototype.recordExists = function(o, callback) {
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
     else {
-      collection.find(condition, fields, function(err, cursor) {
-        cursor.toArray(function(err, docs) {
-          if (docs.length === 0) {
-            callback.call(self, err, false, null);
-          } else {
-            callback.call(self, err, true, docs);
-          }
-        });          
+      self.addCacheData(o, condition);
+      collection.__find(condition, fields, function(err, docs) {
+        if (docs.length === 0) {
+          callback.call(self, err, false, null);
+        } else {
+          callback.call(self, err, true, docs);
+        }
       });
     }
   });
@@ -565,6 +508,7 @@ MongoDB.prototype.recordExists = function(o, callback) {
  */
 
 MongoDB.prototype.idExists = function(o, callback) {
+  // No need to transfer cache keys, since `o` is passed unmodified
   o.condition = constructIdCondition(o._id);
   this.recordExists(o, callback);
 };
@@ -595,7 +539,9 @@ MongoDB.prototype.countRows = function(o, callback) {
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
     else {
-      collection.count(function(err, count) {
+      var cdata = {};
+      self.addCacheData(o, cdata);
+      collection.__count(cdata, function(err, count) {
         callback.call(self, err, count);
       });
     }
@@ -630,6 +576,8 @@ MongoDB.prototype.removeRecords = function(o, callback) {
       collection.count(function(err, count) {
         if (err) callback.call(self, err);
         else {
+          var cdata = {};
+          self.addCacheData(o, cdata);
           collection.remove({}, function(err, docs) {
             callback.call(self, err, count);
           });
@@ -677,7 +625,7 @@ MongoDB.prototype.__modelMethods = {
     if (typeof o == 'number' || typeof o == 'string') { 
       // If `o` is number: Convert to object
       o = {_id: o};
-    } else if (util.isArray(o)) {
+    } else if (o instanceof Array) {
 
       // If `o` is an array of params, process args recursively using multi
       var arr = o, 
@@ -690,7 +638,7 @@ MongoDB.prototype.__modelMethods = {
       });
       return;
 
-    } else if (typeof o == 'object') {
+    } else if (o instanceof Object) {
 
       // IF `o` is object: Validate without checking required fields
       this.__propertyCheck(o);
@@ -707,7 +655,6 @@ MongoDB.prototype.__modelMethods = {
     options.fields = {};
 
     this.driver.queryWhere(options, function(err, docs) {
-
       if (err) callback.call(self, err, null);
       else {
         if (docs.length === 0) callback.call(self, null, null);
@@ -744,13 +691,13 @@ MongoDB.prototype.__modelMethods = {
   /** Model API save */
 
   save: function(o, cdata, callback) {
-    var _id, self = this;
+    var self = this;
 
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
     // Update data. Validation has already been performed by ModelObject
-    _id = o._id; 
+    var _id = o._id; 
     delete o._id;
     this.driver.updateById(_.extend({
       _id: _id,
@@ -802,6 +749,75 @@ MongoDB.prototype.__modelMethods = {
   }
 }
 
+/**
+  Enables collection cache in collection objects
+  
+  The Client::collection method is overridden to support
+  implement caching via the Driver's internals.
+ */
+
+function enableCollectionCache(client) {
+  var self = this,
+      collectionCache = {},
+      _collection = client.collection;
+
+  // Find method that supports caching
+  var __find = function() {
+    var args = slice.call(arguments, 0),
+        callback = args.pop();
+    args.push(function(err, cursor) {
+      if (err) callback.call(self, err);
+      else {
+        cursor.toArray(function(err, docs) {
+          callback.call(self, err, docs);
+        });
+      }
+    });
+    this.find.apply(this, args);
+  }
+  
+  // Count method that supports caching
+  var __count = function(cdata, callback) {
+    // This function is overridden, and the cdata var is used for caching
+    this.count(function(err, count) {
+      callback.call(self, err, count);
+    });
+  }
+      
+  // Override client.collection to support cache
+  client.collection = function() {
+    var args = slice.call(arguments, 0),
+        cname = args[0],
+        callback = args.pop();
+    
+    if (cname in collectionCache) {
+      // Collection is cached
+      console.log('Returning cached collection: ' + cname);
+      callback(null, collectionCache[cname]);
+    }  else {
+      // Collection not cached
+      args.push(function(err, collection) {
+        if (err) {
+          callback(err, null);
+        } else {
+          console.log('Generating new cache for collection: ' + cname);
+          // Find method that supports caching
+          collection.__find = __find;
+          // Count method that supports caching
+          collection.__count = __count;
+          // Cache collection object
+          collectionCache[cname] = collection; 
+          // Enable caching in collection object
+          self.cacheClientMethods(collection, 'insert', 'count', 'update', 'remove', '__count', '__find');
+          // Run callback with collection
+          callback(null, collection);          
+        }
+      });
+      // Get collection
+      _collection.apply(client, args);
+    }
+  }
+}
 
 /**
   Construct Id condition 
@@ -815,27 +831,20 @@ MongoDB.prototype.__modelMethods = {
 function constructIdCondition(_id) {
   var condition = {},
       inClause = {};
-
   if (typeof _id === 'number') {
     condition._id = _id;
-
   } else if(typeof _id === 'string') {
     condition._id = new ObjectID(_id);
-
   } else if(util.isArray(_id)) {
     inClause.$in = [];
-
     _id.forEach(function(_id) {
       if(typeof _id === 'string') {
         _id = new ObjectID(_id);
       }
       inClause.$in.push(_id);
     });
-
     condition._id = inClause;
-
   }
-
   return condition;
 }
 
