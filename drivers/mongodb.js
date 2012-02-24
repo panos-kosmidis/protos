@@ -7,7 +7,8 @@ var _ = require('underscore'),
     slice = Array.prototype.slice,
     Db = mongodb.Db,
     Server = mongodb.Server,
-    ObjectID = mongodb.ObjectID;
+    ObjectID = mongodb.ObjectID,
+    Collection = mongodb.Collection;
 
 function MongoDB(app, config) {
 
@@ -68,6 +69,9 @@ function MongoDB(app, config) {
             if (self.storage != null) {
               enableCollectionCache.call(self, client);
               self.setCachePrefix(config.cachePrefix || null);
+            } else {
+              // Use native count method for __count
+              Collection.prototype.__count = Collection.prototype.count;
             }
             
             corejs.done(app); // Flush async queue
@@ -420,16 +424,16 @@ MongoDB.prototype.queryAll = function(o, callback) {
       collection = o.collection || '',
       fields = o.fields || {};
 
-  this.client.collection(collection, function(err, collection) {
-    if (err) callback.call(self, err);
-    else {
-      var cdata = {};
-      self.addCacheData(o, cdata);
-      collection.__find(cdata, fields, function(err, docs) {
-        callback.call(self, err, docs);
-      });
-    }
-  });
+  // Performing a find with {} returns all records
+  // Passing only cache data to find, will result on an empty object
+  var cdata = {};
+  self.addCacheData(o, cdata);
+
+  this.queryWhere({
+    collection: collection,
+    fields: fields,
+    condition: cdata
+  }, callback);
 };
 
 
@@ -765,29 +769,6 @@ function enableCollectionCache(client) {
       collectionCache = {},
       _collection = client.collection;
 
-  // Find method that supports caching
-  var __find = function() {
-    var args = slice.call(arguments, 0),
-        callback = args.pop();
-    args.push(function(err, cursor) {
-      if (err) callback.call(self, err);
-      else {
-        cursor.toArray(function(err, docs) {
-          callback.call(self, err, docs);
-        });
-      }
-    });
-    this.find.apply(this, args);
-  }
-  
-  // Count method that supports caching
-  var __count = function(cdata, callback) {
-    // This function is overridden, and the cdata var is used for caching
-    this.count(function(err, count) {
-      callback.call(self, err, count);
-    });
-  }
-      
   // Override client.collection to support cache
   client.collection = function() {
     var args = slice.call(arguments, 0),
@@ -796,7 +777,7 @@ function enableCollectionCache(client) {
     
     if (cname in collectionCache) {
       // Collection is cached
-      console.log('Returning cached collection: ' + cname);
+      app.debug('Returning cached collection: ' + cname);
       callback(null, collectionCache[cname]);
     }  else {
       // Collection not cached
@@ -804,10 +785,8 @@ function enableCollectionCache(client) {
         if (err) {
           callback(err, null);
         } else {
-          console.log('Generating new cache for collection: ' + cname);
-          // Find method that supports caching
-          collection.__find = __find;
-          // Count method that supports caching
+          app.debug('Generating new cache for collection: ' + cname);
+          // Enable caching with Collection::__count
           collection.__count = __count;
           // Cache collection object
           collectionCache[cname] = collection; 
@@ -850,6 +829,41 @@ function constructIdCondition(_id) {
     condition._id = inClause;
   }
   return condition;
+}
+
+/**
+  Count method that supports caching
+  
+  @param {object} cdata: Cache data
+  @param {function} callback
+  @public
+ */
+
+function __count(cdata, callback) {
+  // This function is overridden, and the cdata var is used for caching
+  this.count(function(err, count) {
+    callback.call(self, err, count);
+  });
+}
+
+/**
+  Quick find method without cursors
+  
+ */
+
+Collection.prototype.__find = function() {
+  var self = this,
+      args = slice.call(arguments, 0),
+      callback = args.pop();
+  args.push(function(err, cursor) {
+    if (err) callback.call(self, err);
+    else {
+      cursor.toArray(function(err, docs) {
+        callback.call(self, err, docs);
+      });
+    }
+  });
+  this.find.apply(this, args);
 }
 
 module.exports = MongoDB ;

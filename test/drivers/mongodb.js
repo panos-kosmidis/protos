@@ -102,7 +102,7 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
               }
               
               multi.exec(function(err, results) {
-                promise.emit('success', err || results)
+                promise.emit('success', err || results);
               });
             }
           });
@@ -117,77 +117,31 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     }
    }
   
-}).export(module);
-
-return;
-
-
-vows.addBatch({
-
-  'mongodb::insertInto': {
+}).addBatch({
+  
+  'MongoDB::insertInto': {
     
     topic: function() {
       var promise = new EventEmitter();
-      mongodb.insertInto({
-        collection: 'users',
+
+      // Insert user 1
+      multi.insertInto({
+        collection: config.collection,
         values: {
-          user: 'user4',
-          pass: 'pass4'
+          _id: 1,
+          user: 'user1',
+          pass: 'pass1'
         }
-      }, function(err, results) {
-        promise.emit('success', err || results);
-      });
-      return promise;
-    },
-    
-    'Inserts records into the database': function(results) {
-      assert.strictEqual(results[0].user, 'user4');
-      assert.strictEqual(results[0].pass, 'pass4');
-    }
-  }
-  
-}).addBatch({
-
-  'mongodb::updateById': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.updateById({
-        _id: 1,
-        collection: 'users',
-        values: {pass: 'p111'}
       });
       
-      multi.updateById({
-        _id: [2, 3],
-        collection: 'users',
-        values: {pass: 'p232323'}
-      });
-
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Updates values correctly': function(results) {
-      assert.strictEqual(results[0], 1);
-      assert.strictEqual(results[1], 2);
-    }
-  }
-}).addBatch({
-
-  'mongodb::updateWhere': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.updateWhere({
-        collection: 'users',
-        condition: {user: 'user2'},
-        values: {pass: 'p22222'}
+      // Insert user 2
+      multi.insertInto({
+        collection: config.collection,
+        values: {
+          _id: 2,
+          user: 'user2',
+          pass: 'pass2'
+        }
       });
       
       multi.exec(function(err, results) {
@@ -197,347 +151,34 @@ vows.addBatch({
       return promise;
     },
     
-    'Updates values correctly': function(results) {
-      assert.strictEqual(results[0], 1);
-    }
-  }
-}).addBatch({
-
-  'mongodb::deleteById': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.deleteById({
-        _id: 1,
-        collection: 'users'
-      });
-      
-      multi.deleteById({
-        _id: [2, 3],
-        collection: 'users'
-      });
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Deleted values correctly': function(results) {
-      assert.strictEqual(results[0], 1);
-      assert.strictEqual(results[1], 2);
-    }
-  }
-}).addBatch({
-
-  'mongodb::deleteWhere': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.deleteWhere({
-        collection: 'users',
-        condition: {user: 'user4'}
-      });
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Deleted values correctly': function(results) {
-      assert.strictEqual(results[0], 1);
-    }
-  }
-}).addBatch({
-
-  'mongodb::queryById': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.queryById({
-        _id: 5,
-        collection: 'users',
-        fields: {'user': 1}
-      });
-
-      multi.queryById({
-        _id: [6, 7],
-        collection: 'users',
-        fields: {'user': 1}
-      });
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Queried values correctly': function(results) {
-      var result1 = results[0],
-          result2 = results[1];
-      assert.strictEqual(result1[0].user, 'user5');
-      assert.strictEqual(result2[0].user, 'user6');
-      assert.strictEqual(result2[1].user, 'user7');
-    }
-  }
-}).addBatch({
-
-  'mongodb::queryWhere': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.queryWhere({
-        collection: 'users',
-        condition: {'user': 'user5'},
-        fields: {'user': 1, 'pass': 1}
-      });
-
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Queried values correctly': function(results) {
-      assert.strictEqual(results[0][0].user, 'user5');
-      assert.strictEqual(results[0][0].pass, 'pass5');
-    }
-  }
-}).addBatch({
-
-  'mongodb::queryAll': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.queryAll({
-        collection: 'users',
-        fields: {'user': 1, 'pass': 1}
-      });
-
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Queried values correctly': function(results) {
-      assert.strictEqual(results[0].length, 3);
-      assert.strictEqual(results[0][0].user, 'user5');
-      assert.strictEqual(results[0][0].pass, 'pass5');
-    }
-  }
-}).addBatch({
-
-  'mongodb::recordExists': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.recordExists({
-        collection: 'users',
-        condition: {'user': 'user5'},
-        fields: {'user': 1, 'pass': 1}
-      });
-
-      multi.recordExists({
-        collection: 'users',
-        condition: {'user': 'userxxxx5'},
-        fields: {'user': 1, 'pass': 1}
-      });
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Verify record exists or not': function(results) {
-      // First query with user name 'user5' which exists
-      assert.strictEqual(results[0][0], true);
-      assert.strictEqual(results[0][1][0].user, 'user5');
-      assert.strictEqual(results[0][1][0].pass, 'pass5');
-
-      // Second query with user name 'userxxxxx5' which does not exists
-      assert.strictEqual(results[1][0], false);
-    }
-  }
-}).addBatch({
-
-  'mongodb::idExists': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.idExists({
-        collection: 'users',
-        _id: 5,
-        fields: {'user': 1, 'pass': 1}
-      });
-
-      multi.idExists({
-        collection: 'users',
-        _id: 999,
-        fields: {'user': 1, 'pass': 1}
-      });
-
-      multi.idExists({
-        collection: 'users',
-        _id: [6, 7],
-        fields: {'user': 1, 'pass': 1}
-      });
-
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Verify id exists or not': function(results) {
-      // First query with _id 5 which exists
-      assert.strictEqual(results[0][0], true);
-      assert.strictEqual(results[0][1][0].user, 'user5');
-      assert.strictEqual(results[0][1][0].pass, 'pass5');
-
-      // Second query with _id 999 which does not exists
-      assert.strictEqual(results[1][0], false);
-
-      // Third query with _id 6 and 7  which exists
-      assert.strictEqual(results[2][0], true);
-      assert.strictEqual(results[2][1][0].user, 'user6');
-      assert.strictEqual(results[2][1][0].pass, 'pass6');
-      assert.strictEqual(results[2][1][1].user, 'user7');
-      assert.strictEqual(results[2][1][1].pass, 'pass7');
-    }
-  }
-}).addBatch({
-
-  'mongodb::countRows': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.countRows({
-        collection: 'users'
-      });
-
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Verify count rows is correct': function(results) {
-      assert.strictEqual(results[0], 3);
-    }
-  }
-}).addBatch({
-  'mongodb::removeRecords': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-
-      multi.removeRecords({
-        collection: 'users'
-      });
-
-      multi.countRows({
-        collection: 'users'
-      });
-
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Removed all rows correctly': function(results) {
-      assert.strictEqual(results[0], 3);
-
-      // After deleting number of rows should be 0
-      assert.strictEqual(results[1], 0);
-    }
-  }
-}).addBatch({
-  'Model API Compliance': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      model = new TestModel();
-      model.prepare(app);
-      multi = model.multi(); // Override multi
-      mongodb.storage = app.getResource('storages/redis'); // Manually set cache storage
-      mongodb.setCacheFunc(mongodb.client, 'find'); // Manually set cache function
-      promise.emit('success', model);
-      return promise;
-    },
-    
-    'Created testing model': function(model) {
-      assert.instanceOf(model, TestModel);
-    }
-    
-  }
-  
-}).addBatch({
-  
-  'Model API: insert': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      multi.insert({user: 'user1', pass: 'pass1'}, {cacheInvalidate: ['api_get', 'api_getall']});
-      multi.insert({user: 'user2', pass: 'pass2'});
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Inserts new models + invalidates caches': function(results) {
-      // Validate the mongodb id using regular expression?
+    "Inserts records into the database": function(results) {
       var r1 = results[0],
-          r2 = results[1],
-          idRegex = /^[a-f0-9]{24}$/;
-
-      assert.isTrue(idRegex.test(r1));
-      assert.isTrue(idRegex.test(r2));
-
-      userId1 = r1;
-      userId2 = r2;
+          r2 = results[1];
+      assert.deepEqual(r1, [{_id: 1, user: 'user1', pass: 'pass1'}]);
+      assert.deepEqual(r2, [{_id: 2, user: 'user2', pass: 'pass2'}]);
     }
     
   }
-  
+
 }).addBatch({
   
-  'Model API: get': {
+  'MongoDB::queryWhere': {
     
     topic: function() {
       var promise = new EventEmitter();
       
-      // object + caching
-      //multi.get({user: 'user1'}, {cacheID: 'api_get', cacheTimeout: 3600});
+      // Query user 1
+      multi.queryWhere({
+        collection: config.collection,
+        condition: {user: 'user1'}
+      });
       
-      // string 
-      multi.get(userId1.toString());
-      
-      // array
-      multi.get([userId1.toString(),userId2.toString()]);
+      // Query user1, user2
+      multi.queryWhere({
+        collection: config.collection,
+        fields: {pass: 1},
+        condition: {user: {$in: ['user1', 'user2']}}
+      });
       
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
@@ -546,33 +187,32 @@ vows.addBatch({
       return promise;
     },
     
-    'Returns valid results + caches data': function(results) {
-      var q1 = results[0],
-          q2 = results[1][0],
-          q3 = results[1][1];
-      var expected1 = { user: 'user1', pass: 'pass1' },
-          expected2 = { user: 'user2', pass: 'pass2' };
-      assert.strictEqual(q1.user, expected1.user);
-      assert.strictEqual(q1.pass, expected1.pass);
-      assert.strictEqual(q2.user, expected1.user);
-      assert.strictEqual(q2.pass, expected1.pass);
-      assert.strictEqual(q3.user, expected2.user);
+    "Returns valid results": function(results) {
+      var r1 = results[0],
+          r2 = results[1];
+      assert.deepEqual(r1, [{_id: 1, user: 'user1', pass: 'pass1'}]);
+      assert.deepEqual(r2, [{_id: 1, pass: 'pass1' }, { _id: 2, pass: 'pass2'}]);
     }
     
   }
-  
+
 }).addBatch({
   
-  'Model API: getAll': {
+  'MongoDB::queryAll': {
     
     topic: function() {
       var promise = new EventEmitter();
       
-      // getall
-      multi.getAll();
+      // Query all
+      multi.queryAll({
+        collection: config.collection
+      });
       
-      // getall + invalidate
-      multi.getAll({cacheID: 'api_getall', cacheTimeout: 3600});
+      // Query all + fields
+      multi.queryAll({
+        collection: config.collection,
+        fields: {pass: 1}
+      });
       
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
@@ -581,72 +221,73 @@ vows.addBatch({
       return promise;
     },
     
-    'Returns valid results + caches data': function(results) {
-      var q1 = results[0],
-          q2 = results[1];
-      var expected1 = { user: 'user1', pass: 'pass1' },
-          expected2 = { user: 'user2', pass: 'pass2' };
-      assert.strictEqual(q1[0].user, expected1.user);
-      assert.strictEqual(q1[0].pass, expected1.pass);
-      assert.strictEqual(q1[1].user, expected2.user);
-      assert.strictEqual(q1[1].pass, expected2.pass);
-      assert.strictEqual(q2[0].user, expected1.user);
-      assert.strictEqual(q2[0].pass, expected1.pass);
-      assert.strictEqual(q2[1].user, expected2.user);
-      assert.strictEqual(q2[1].pass, expected2.pass);
+    "Returns valid results": function(results) {
+      var r1 = results[0],
+          r2 = results[1];
+      assert.deepEqual(r1[0], {_id: 1, user: 'user1', pass: 'pass1'});
+      assert.deepEqual(r1[1], {_id: 2, user: 'user2', pass: 'pass2'});
+      assert.deepEqual(r1[2], {_id: 3, user: 'user3', pass: 'pass3'});
+      assert.deepEqual(r1[3], {_id: 4, user: 'user4', pass: 'pass4'});
+      assert.deepEqual(r1[4], {_id: 5, user: 'user5', pass: 'pass5'});
+      assert.deepEqual(r1[5], {_id: 6, user: 'user6', pass: 'pass6'});
+      assert.deepEqual(r2[0], {_id: 1, pass: 'pass1'});
+      assert.deepEqual(r2[1], {_id: 2, pass: 'pass2'});
+      assert.deepEqual(r2[2], {_id: 3, pass: 'pass3'});
+      assert.deepEqual(r2[3], {_id: 4, pass: 'pass4'});
+      assert.deepEqual(r2[4], {_id: 5, pass: 'pass5'});
+      assert.deepEqual(r2[5], {_id: 6, pass: 'pass6'});
     }
-    
+
   }
   
-}).addBatch({
-  
-  'Model API: save': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      // save + caching
-      multi.save({_id: userId1.toString(), user: '__user1', pass: '__pass1'}, {cacheInvalidate: ['api_get', 'api_getall']});
-      
-      // save
-      multi.save({_id: userId1.toString(), user: '__user1__', pass: '__pass1__'});
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Updates model data + invalidates caches': function(results) {
-      assert.deepEqual(results, ['OK', 'OK']);
-    }
-    
-  }
-  
-}).addBatch({
-  
-  'Model API: delete': {
-  
-    topic: function() {
-      var promise = new EventEmitter();
-
-      // integer + invalidate
-      multi.delete(userId1.toString(), {cacheInvalidate: ['api_get', 'api_getall']});
-
-      // array
-      multi.delete([userId1.toString(), userId2.toString()]);
-
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-
-      return promise;
-    },
-
-    'Properly deletes from database + invalidates caches': function(results) {
-      assert.deepEqual(results, ['OK', ['OK', 'OK'] ]);
-    }
-    
-  }
 }).export(module);
+
+/*
+}).addBatch({
+  
+  'MongoDB::{method}': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    "success": function(results) {
+      var r = results[0];
+      console.exit(r);
+    }
+    
+  }
+  
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
