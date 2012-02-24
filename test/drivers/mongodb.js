@@ -6,7 +6,9 @@ var app = require('../fixtures/bootstrap'),
     colorize = corejs.util.colorize,
     mongodb = require('mongodb'),
     Db = mongodb.Db,
+    Cursor = mongodb.Cursor,
     Server = mongodb.Server,
+    ObjectID = mongodb.ObjectID,
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
 
@@ -18,6 +20,8 @@ var config = app.config.database.mongodb;
 
 //Local variables for testing
 var userId1, userId2;
+
+var oid = ObjectID('4de6abd5da558a49fc5eef29');
 
 // Cache Events
 var c = '0;36';
@@ -97,12 +101,21 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
               // Remove everything before starting the test
               multi.remove({});
               
-              for (var i=1; i <= 6; i++) {
-                multi.save({_id: i, user: 'user'+i, pass: 'pass'+i});
-              }
+              // Should get an empty array
+              multi.find();
               
               multi.exec(function(err, results) {
-                promise.emit('success', err || results);
+                if (err) throw err;
+                else {
+                  var cursor = results.pop();
+                  cursor.toArray(function(err, docs) {
+                    if (err) throw err;
+                    else {
+                      results.push(docs);
+                      promise.emit('success', results);
+                    }
+                  });
+                }
               });
             }
           });
@@ -112,8 +125,8 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
       return promise;
     },
     
-    'Inserted 6 test records': function(results) {
-      assert.deepEqual(results, ['OK', 'OK', 'OK', 'OK', 'OK', 'OK', 'OK']);
+    'Cleaned up collection': function(results) {
+      assert.deepEqual(results, ['OK', []]);
     }
    }
   
@@ -144,6 +157,17 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
         }
       });
       
+      // Insert user 3 (with oid)
+      
+      multi.insertInto({
+        collection: config.collection,
+        values: {
+          _id: ObjectID('4de6abd5da558a49fc5eef29'),
+          name: 'user3',
+          pass: 'pass3'
+        }
+      })
+      
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
       });
@@ -153,9 +177,11 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     
     "Inserts records into the database": function(results) {
       var r1 = results[0],
-          r2 = results[1];
+          r2 = results[1],
+          r3 = results[2];
       assert.deepEqual(r1, [{_id: 1, user: 'user1', pass: 'pass1'}]);
       assert.deepEqual(r2, [{_id: 2, user: 'user2', pass: 'pass2'}]);
+      assert.equal(util.inspect(r3), util.inspect([{ _id: oid, name: 'user3', pass: 'pass3' }]));
     }
     
   }
@@ -167,13 +193,13 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      // Query user 1
+      // condition + collection
       multi.queryWhere({
         collection: config.collection,
         condition: {user: 'user1'}
       });
       
-      // Query user1, user2
+      // condition + collection + fields
       multi.queryWhere({
         collection: config.collection,
         fields: {pass: 1},
@@ -226,18 +252,101 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
           r2 = results[1];
       assert.deepEqual(r1[0], {_id: 1, user: 'user1', pass: 'pass1'});
       assert.deepEqual(r1[1], {_id: 2, user: 'user2', pass: 'pass2'});
-      assert.deepEqual(r1[2], {_id: 3, user: 'user3', pass: 'pass3'});
-      assert.deepEqual(r1[3], {_id: 4, user: 'user4', pass: 'pass4'});
-      assert.deepEqual(r1[4], {_id: 5, user: 'user5', pass: 'pass5'});
-      assert.deepEqual(r1[5], {_id: 6, user: 'user6', pass: 'pass6'});
+      assert.equal(util.inspect(r1[2]), util.inspect({_id: oid, name: 'user3', pass: 'pass3'}));
       assert.deepEqual(r2[0], {_id: 1, pass: 'pass1'});
       assert.deepEqual(r2[1], {_id: 2, pass: 'pass2'});
-      assert.deepEqual(r2[2], {_id: 3, pass: 'pass3'});
-      assert.deepEqual(r2[3], {_id: 4, pass: 'pass4'});
-      assert.deepEqual(r2[4], {_id: 5, pass: 'pass5'});
-      assert.deepEqual(r2[5], {_id: 6, pass: 'pass6'});
+      assert.equal(util.inspect(r2[2]), util.inspect({_id: oid, pass: 'pass3'}));
     }
 
+  }
+  
+}).addBatch({
+  
+  'MongoDB::queryById': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+
+      // id (int) + collection
+      multi.queryById({
+        collection: config.collection,
+        _id: 1
+      });
+      
+      // id (string) + collection
+      multi.queryById({
+        collection: config.collection,
+        _id: '4de6abd5da558a49fc5eef29'
+      });
+      
+      // id (oid) + collection
+      multi.queryById({
+        collection: config.collection,
+        _id: oid
+      });
+      
+      // id (object) + collection
+      multi.queryById({
+        collection: config.collection,
+        _id: {$lt: 2}
+      });
+      
+      // id (array) + collection + fields
+      multi.queryById({
+        collection: config.collection,
+        fields: {pass: 1},
+        _id: [1, 2, '4de6abd5da558a49fc5eef29', oid, 99, '3de5abd4da447a40ab4dde18', ObjectID('3de5abd4da447a40ab4dde18')]
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    "Returns valid results": function(results) {
+      var r1 = results[0],
+          r2 = results[1],
+          r3 = results[2],
+          r4 = results[3],
+          r5 = results[4];
+      assert.deepEqual(r1, [{_id: 1, user: 'user1', pass: 'pass1'}]);
+      assert.equal(util.inspect(r2), util.inspect([{_id: oid, name: 'user3', pass: 'pass3'}]));
+      assert.equal(util.inspect(r3), util.inspect([{_id: oid, name: 'user3', pass: 'pass3'}]));
+      assert.deepEqual(r4, [{_id: 1, user: 'user1', pass: 'pass1'}]);
+      assert.deepEqual(r5[0], {_id: 1, pass: 'pass1'});
+      assert.deepEqual(r5[1], {_id: 2, pass: 'pass2'});
+      assert.deepEqual(util.inspect(r5[2]), util.inspect({_id: oid, pass: 'pass3'}));
+    }
+
+  }
+  
+}).addBatch({
+  
+  'MongoDB::idExists': {
+    
+    topic: function() {
+      process.exit();
+      var promise = new EventEmitter();
+      
+      multi.idExists({
+        collection: config.collection,
+        _id: [1,2,99]
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    "success": function(results) {
+      var r = results[0];
+      console.exit(r);
+    }
+    
   }
   
 }).export(module);

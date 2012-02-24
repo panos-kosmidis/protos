@@ -308,54 +308,6 @@ MongoDB.prototype.deleteWhere = function(o, callback) {
   });
 }
 
-
-/**
-  Queries fields by ID
-
-  Provides: [err, docs]
-
-  Cache: Store / {cacheID, cacheTimeout}
-
-  @example
-      mongodb.queryById({
-        _id: 1,
-        collection: 'users',
-        fields: {'user': 1, 'pass': 1}
-      }, function(err, docs) {
-        console.log([err, docs]);
-      });
-
-      mongodb.queryById({
-        _id: [1, 2],
-        collection: 'users',
-        fields: {'user': 1, 'pass': 1}
-      }, function(err, docs) {
-        console.log([err, docs]);
-      });
-
-  @param {object} o
-  @param {function} callback
-  @public
- */
-
-MongoDB.prototype.queryById = function(o, callback) {
-  var self = this,
-      collection = o.collection || '',
-      fields = o.fields || {},
-      condition = constructIdCondition(o._id);
-
-  this.client.collection(collection, function(err, collection) {
-    if (err) callback.call(self, err);
-    else {
-      self.addCacheData(o, condition);
-      collection.__find(condition, fields, function(err, docs) {
-        callback.call(self, err, docs);
-      });
-    }
-  });
-};
-
-
 /**
   Performs a SELECT ... WHERE ... query
 
@@ -398,6 +350,51 @@ MongoDB.prototype.queryWhere = function(o, callback) {
   });
 };
 
+/**
+  Queries fields by ID
+
+  Provides: [err, docs]
+
+  Cache: Store / {cacheID, cacheTimeout}
+
+  @example
+      mongodb.queryById({
+        _id: 1,
+        collection: 'users',
+        fields: {'user': 1, 'pass': 1}
+      }, function(err, docs) {
+        console.log([err, docs]);
+      });
+
+      mongodb.queryById({
+        _id: [1, 2],
+        collection: 'users',
+        fields: {'user': 1, 'pass': 1}
+      }, function(err, docs) {
+        console.log([err, docs]);
+      });
+
+  @param {object} o
+  @param {function} callback
+  @public
+ */
+
+MongoDB.prototype.queryById = function(o, callback) {
+  var self = this,
+      collection = o.collection || '',
+      fields = o.fields || {},
+      condition = constructIdCondition(o._id);
+  
+  this.client.collection(collection, function(err, collection) {
+    if (err) callback.call(self, err);
+    else {
+      self.addCacheData(o, condition);
+      collection.__find(condition, fields, function(err, docs) {
+        callback.call(self, err, docs);
+      });
+    }
+  });
+};
 
 /**
   Queries all the entries from a collection
@@ -484,31 +481,9 @@ MongoDB.prototype.recordExists = function(o, callback) {
 /**
   Performs a query by ID, returning an object with the found ID's.
 
-  Provides: [err, exists]
-
-  This function's behavior varies depending on input:
-
-  a) If id is int: exists is boolean
-  b) If id is array: exists is object
+  Provides: [err, results]
 
   Cache: Store / {cacheID, cacheTimeout}
-
-  @example
-      mongodb.recordExists({
-        collection: 'users',
-        _id: 5,
-        fields: {'user': 1, 'pass': 1}
-      }, function(err, exists, docs) {
-        console.log([err, exists, docs]);
-      });
-
-      mongodb.recordExists({
-        collection: 'users',
-        _id: [6, 7],
-        fields: {'user': 1, 'pass': 1}
-      }, function(err, exists, docs) {
-        console.log([err, exists, docs]);
-      });
 
   @param {object} o
   @param {function} callback
@@ -516,9 +491,19 @@ MongoDB.prototype.recordExists = function(o, callback) {
  */
 
 MongoDB.prototype.idExists = function(o, callback) {
-  // No need to transfer cache keys, since `o` is passed unmodified
-  o.condition = constructIdCondition(o._id);
-  this.recordExists(o, callback);
+  var self = this,
+      collection = o.collection || '',
+      fields = o.fields || {};
+  this.queryWhere({
+    collection: collection,
+    fields: fields,
+    _id: o._id
+  }, function(err, docs) {
+    if (err) callback.call(self, err);
+    else {
+      console.exit(docs);
+    }
+  });
 };
 
 /**
@@ -812,23 +797,24 @@ function enableCollectionCache(client) {
 */
 
 function constructIdCondition(_id) {
-  var condition = {},
-      inClause = {};
-  if (typeof _id === 'number') {
-    condition._id = _id;
-  } else if(typeof _id === 'string') {
-    condition._id = new ObjectID(_id);
-  } else if(util.isArray(_id)) {
-    inClause.$in = [];
-    _id.forEach(function(_id) {
-      if(typeof _id === 'string') {
-        _id = new ObjectID(_id);
+  if (typeof _id === 'number' || _id instanceof ObjectID || _id.constructor === Object) {
+    // Number or ObjectID/Object instance » Return as is
+    return {_id: _id};
+  } else if (typeof _id === 'string') {
+    // String » Convert to Object ID
+    return {_id: new ObjectID(_id)};
+  } else if (_id instanceof Array) {
+    // Array » Return $in condition
+    for (var id, $in=[], i=0; i < _id.length; i++) {
+      id = _id[i];
+      if (typeof id == 'number' || id instanceof ObjectID) {
+        $in.push(id);
+      } else if (typeof id == 'string') {
+        $in.push(new ObjectID(id));
       }
-      inClause.$in.push(_id);
-    });
-    condition._id = inClause;
+    }
+    return {_id: {$in: $in}};
   }
-  return condition;
 }
 
 /**
