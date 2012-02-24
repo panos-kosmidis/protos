@@ -7,6 +7,12 @@
     "database": "test_db",
     "table": "test_table"
   },
+  "mongodb": {
+    "host": "localhost",
+    "port": "27017",
+    "database": "test_db",
+    "collection": "test_collection"
+  },
   "redis": {
     "host": "localhost",
     "port": "6379",
