@@ -493,15 +493,32 @@ MongoDB.prototype.recordExists = function(o, callback) {
 MongoDB.prototype.idExists = function(o, callback) {
   var self = this,
       collection = o.collection || '',
-      fields = o.fields || {};
-  this.queryWhere({
+      fields = o.fields || {},
+      _id = o._id;
+      
+  this.queryById({
     collection: collection,
     fields: fields,
-    _id: o._id
+    _id: _id
   }, function(err, docs) {
-    if (err) callback.call(self, err);
+    if (err) callback.call(self, err, {});
     else {
-      console.exit(docs);
+      var out = {}, doc, id, i;
+      
+      // Store found docs
+      for (i=0; i < docs.length; i++) {
+        doc = docs[i];
+        out[doc._id.toString()] = doc;
+      }
+      
+      // Set missing docs as null
+      for (i=0; i < _id.length; i++) {
+        var id = _id[i];
+        if (! (id in out)) out[id] = null;
+      }
+      
+      callback.call(self, null, out);
+      
     }
   });
 };

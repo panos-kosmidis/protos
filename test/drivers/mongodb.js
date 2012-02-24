@@ -327,13 +327,43 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
   'MongoDB::idExists': {
     
     topic: function() {
-      process.exit();
       var promise = new EventEmitter();
+      
+      // MongoDB::idExists uses queryById, so we can pass an array of items,
+      // the other data types have been tested in the previous test case
       
       multi.idExists({
         collection: config.collection,
-        _id: [1,2,99]
+        _id: [1, 2, 99, oid, '3de5abd4da447a40ab4dde18']
       });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    "Returns valid results": function(results) {
+      var r = results[0],
+          expected = "\
+{ '1': { _id: 1, user: 'user1', pass: 'pass1' },\n\
+  '2': { _id: 2, user: 'user2', pass: 'pass2' },\n\
+  '99': null,\n\
+  '4de6abd5da558a49fc5eef29': { _id: 4de6abd5da558a49fc5eef29, name: 'user3', pass: 'pass3' },\n\
+  '3de5abd4da447a40ab4dde18': null }";
+      
+      assert.equal(expected, util.inspect(r));
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MongoDB::{method}': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
       
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
