@@ -54,6 +54,7 @@ function MySQL(app, config) {
       // Set caching function
       if (self.storage != null) {
         self.cacheClientMethods('query');
+        self.setCachePrefix(config.cachePrefix || null);
       }
       
     }
