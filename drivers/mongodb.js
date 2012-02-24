@@ -15,17 +15,20 @@ function MongoDB(app, config) {
     host: 'localhost',
     port: 27017,
     database: 'db_name',
-    collection: 'test',
     cachePrefix: null,
     storage: 'redis'
     } */
 
     var self = this;
 
-    config = config || {};
-    config.host = config.host || 'localhost';
-    config.port = config.port || 27017;
-
+    config = corejs.extend({
+      host: 'localhost',
+      port: 27017,
+      database: 'default',
+      cachePrefix: null,
+      storage: null
+    }, config || {});
+    
     this.className = this.constructor.name;
     this.app = app;
     this.config = config;

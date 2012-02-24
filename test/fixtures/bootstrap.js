@@ -21,8 +21,13 @@ if (module.parent.id == '.') {
 CoreJS.configure('autoCurl', false);
 
 CoreJS.on('pre_init', function(app) {
+  
+  // Convert port to int, otherwise mongodb client complains...
+  testConfig.mongodb.port = parseInt(testConfig.mongodb.port, 10);
+  
   app.config.database.default = 'mysql';
   app.config.database.mysql = testConfig.mysql;
+  app.config.database.mongodb = testConfig.mongodb;
   app.config.storage.redis = testConfig.redis;
 });
 
@@ -35,7 +40,7 @@ var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton';
 
 var corejs = CoreJS.bootstrap(testSkeleton, {
       server: {
-        port: (global.listenPort || 8080)
+        port: 8000
       },
       events: {
         init: function(app) {
@@ -45,8 +50,6 @@ var corejs = CoreJS.bootstrap(testSkeleton, {
     });
     
 var app = corejs.app;
-
-if (global.listenPort) delete global.listenPort;
 
 app.logging = false;
 
