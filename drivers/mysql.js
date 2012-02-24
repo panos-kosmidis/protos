@@ -15,6 +15,7 @@ function MySQL(app, config) {
     password: 'db_password',
     database: 'db_name',
     debug: false,
+    cachePrefix: null,
     storage: 'redis'
   } */
   

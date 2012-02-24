@@ -20,7 +20,7 @@
     "download": "http://cloud.github.com/downloads/emberjs/ember.js/ember-0.9.5.min.js"
   },
   
-  "knowckout": {
+  "knockout": {
     "name": "Knockout JavaScript library",
     "version": "2.0.0",
     "website": "http://knockoutjs.com/",

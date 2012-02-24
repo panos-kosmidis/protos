@@ -16,6 +16,7 @@ function MongoDB(app, config) {
     port: 27017,
     database: 'db_name',
     collection: 'test',
+    cachePrefix: null,
     storage: 'redis'
     } */
 
@@ -63,7 +64,7 @@ function MongoDB(app, config) {
             // Set caching function
             if (self.storage != null) {
               enableCollectionCache.call(self, client);
-              self.setCachePrefix();
+              self.setCachePrefix(config.cachePrefix || null);
             }
             
             corejs.done(app); // Flush async queue
