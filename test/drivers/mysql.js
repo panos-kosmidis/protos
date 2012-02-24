@@ -465,58 +465,6 @@ vows.describe('drivers/mysql.js').addBatch({
   
 }).addBatch({
   
-  'MySQL::recordExists': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-     
-      // condition + table
-      multi.recordExists({
-        condition: 'id=99',
-        table: table
-      });
-      
-      // condition + params + table
-      multi.recordExists({
-        condition: 'id=?',
-        params: [1],
-        table: table
-      });
-      
-      // condition + params + table + columns
-      multi.recordExists({
-        condition: 'id=?',
-        params: [2],
-        table: table,
-        columns: 'id, pass'
-      });
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-     
-      return promise;
-    },
-    
-    'Returns valid results': function(results) {
-      var q1 = results[0],
-          q2 = results[1],
-          q3 = results[2];
-      assert.strictEqual(q1.length, 2);
-      assert.isFalse(q1[0]);
-      assert.strictEqual(q1[1].length, 0);
-      assert.strictEqual(q2.length, 2);
-      assert.isTrue(q2[0]);
-      assert.deepEqual(q2[1], [{id: 1, user: 'username', pass: 'password' }]);
-      assert.strictEqual(q3.length, 2);
-      assert.isTrue(q3[0]);
-      assert.deepEqual(q3[1], [{id: 2, pass: 'pass1'}]);
-    }
-    
-  }
-  
-}).addBatch({
-  
   'MySQL::updateWhere': {
     
     topic: function() {

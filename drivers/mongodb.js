@@ -126,6 +126,56 @@ MongoDB.prototype.insertInto = function(o, callback) {
 }
 
 /**
+  Performs an UPDATE ... WHERE ... query
+
+  Provides: [err, count]
+
+  Cache: Invalidate / {cacheInvalidate}
+
+  @example
+      mongodb.updateWhere({
+        collection: 'users',
+        condition: {user: 'butu5},
+        values: {pass: 'p1234'}
+      }, function(err, count) {
+        console.log([err, count]);
+      });
+
+  @param {object} o 
+  @param {function} callback
+  @public
+ */
+
+MongoDB.prototype.updateWhere = function(o, callback) {
+  var self = this,
+      collection = o.collection || '',
+      condition = o.condition,
+      multi = (typeof o.multi == 'undefined') ? true : (o.multi || false), // Ensure boolean
+      values = o.values || '';
+      
+  if (!o.condition) {
+    callback.call(self, new Error("MongoDB::queryWhere: 'condition' is missing"));
+    return;
+  }
+  
+  this.client.collection(collection, function(err, collection) {
+    if (err) callback.call(self, err);
+    else {
+      collection.count(condition, function(err, count) {
+        if (err) callback.call(self, err);
+        else {
+          self.addCacheData(o, condition);
+          collection.update(condition, {$set: values}, {multi: multi, upsert: false}, function(err) {
+            // Note: upsert is set to false, to provide predictable results
+            callback.call(self, err);
+          });
+        }
+      });
+    }
+  });
+}
+
+/**
   Updates records by ID
 
   Provides: [err, info]
@@ -160,46 +210,43 @@ MongoDB.prototype.updateById = function(o, callback) {
       values = o.values || '',
       condition = constructIdCondition(o._id);
 
-  this.client.collection(collection, function(err, collection) {
-    collection.count(condition, function(err, count) {
-      if (err) callback.call(self, err);
-      else {
-        self.addCacheData(o, condition);
-        collection.update(condition, {$set: values}, {multi: true}, function(err, doc) {
-          callback.call(self, err, count);
-        });
-      }
-    });
-  });
+  // this.client.collection(collection, function(err, collection) {
+  //     collection.count(condition, function(err, count) {
+  //       if (err) callback.call(self, err);
+  //       else {
+  //         self.addCacheData(o, condition);
+  //         collection.update(condition, {$set: values}, {multi: false}, function(err, doc) {
+  //           callback.call(self, err, count);
+  //         });
+  //       }
+  //     });
+  //   });
 }
 
-
 /**
-  Performs an UPDATE ... WHERE ... query
+  Performs a DELETE ... WHERE ... query
 
   Provides: [err, count]
 
   Cache: Invalidate / {cacheInvalidate}
 
   @example
-      mongodb.updateWhere({
+      mongodb.deleteWhere({
         collection: 'users',
-        condition: {user: 'butu5},
-        values: {pass: 'p1234'}
+        condition: {user: 'butu5}
       }, function(err, count) {
         console.log([err, count]);
       });
 
-  @param {object} o 
+  @param {object} o
   @param {function} callback
   @public
  */
 
-MongoDB.prototype.updateWhere = function(o, callback) {
+MongoDB.prototype.deleteWhere = function(o, callback) {
   var self = this,
       collection = o.collection || '',
-      condition = o.condition || '',
-      values = o.values || '';
+      condition = o.condition || {};
 
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
@@ -208,7 +255,7 @@ MongoDB.prototype.updateWhere = function(o, callback) {
         if (err) callback.call(self, err);
         else {
           self.addCacheData(o, condition);
-          collection.update(condition, {$set: values}, function(err, doc) {
+          collection.remove(condition, function(err, doc) {
             callback.call(self, err, count);
           });
         }
@@ -216,7 +263,6 @@ MongoDB.prototype.updateWhere = function(o, callback) {
     }
   });
 }
-
 
 /**
   Deletes records by ID
@@ -249,48 +295,6 @@ MongoDB.prototype.deleteById = function(o, callback) {
   var self = this, 
       collection = o.collection || '',
       condition = constructIdCondition(o._id);
-
-  this.client.collection(collection, function(err, collection) {
-    if (err) callback.call(self, err);
-    else {
-      collection.count(condition, function(err, count) {
-        if (err) callback.call(self, err);
-        else {
-          self.addCacheData(o, condition);
-          collection.remove(condition, function(err, doc) {
-            callback.call(self, err, count);
-          });
-        }
-      });
-    }
-  });
-}
-
-
-/**
-  Performs a DELETE ... WHERE ... query
-
-  Provides: [err, count]
-
-  Cache: Invalidate / {cacheInvalidate}
-
-  @example
-      mongodb.deleteWhere({
-        collection: 'users',
-        condition: {user: 'butu5}
-      }, function(err, count) {
-        console.log([err, count]);
-      });
-
-  @param {object} o
-  @param {function} callback
-  @public
- */
-
-MongoDB.prototype.deleteWhere = function(o, callback) {
-  var self = this,
-      collection = o.collection || '',
-      condition = o.condition || {};
 
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
@@ -433,51 +437,6 @@ MongoDB.prototype.queryAll = function(o, callback) {
   }, callback);
 };
 
-
-/**
-  Checks if a record exists
-
-  Provides: [err, exists, docs]
-  exists -> boolean
-
-  Cache: Store / {cacheID, cacheTimeout}
-
-  @example
-      mongodb.recordExists({
-        collection: 'users',
-        condition: {'user': 'butu5},
-        fields: {'user': 1, 'pass': 1}
-      }, function(err, exists, docs) {
-        console.log([err, exists, docs]);
-      });
-
-  @param {object} o
-  @param {function} callback
-  @public
- */
-
-MongoDB.prototype.recordExists = function(o, callback) {
-  var self = this,
-      collection = o.collection || '',
-      fields = o.fields || {},
-      condition = o.condition || {};
-
-  this.client.collection(collection, function(err, collection) {
-    if (err) callback.call(self, err);
-    else {
-      self.addCacheData(o, condition);
-      collection.__find(condition, fields, function(err, docs) {
-        if (docs.length === 0) {
-          callback.call(self, err, false, null);
-        } else {
-          callback.call(self, err, true, docs);
-        }
-      });
-    }
-  });
-};
-
-
 /**
   Performs a query by ID, returning an object with the found ID's.
 
@@ -524,7 +483,7 @@ MongoDB.prototype.idExists = function(o, callback) {
 };
 
 /**
-  Counts rows in a collection
+  Counts items in a collection
 
   Provides: [err, count]
 
@@ -542,7 +501,7 @@ MongoDB.prototype.idExists = function(o, callback) {
   @public
  */
 
-MongoDB.prototype.countRows = function(o, callback) {
+MongoDB.prototype.count = function(o, callback) {
   var self = this,
       collection = o.collection || '';
 
@@ -553,45 +512,6 @@ MongoDB.prototype.countRows = function(o, callback) {
       self.addCacheData(o, cdata);
       collection.__count(cdata, function(err, count) {
         callback.call(self, err, count);
-      });
-    }
-  });
-}
-
-
-/**
-  Remove all records in a collection
-
-  Provides: [err, count]
-
-  Cache: Invalidate / {cacheInvalidate}
-
-  @example
-    db.removeRecords({collection: 'users'}, function(err, count) {
-      console.log([err, count]);
-    });
-
-  @param {object} o
-  @param {function} callback
-  @public
- */
-
-MongoDB.prototype.removeRecords = function(o, callback) {
-  var self = this,
-      collection = o.collection || '';
-
-  this.client.collection(collection, function(err, collection) {
-    if (err) callback.call(self, err);
-    else {
-      collection.count(function(err, count) {
-        if (err) callback.call(self, err);
-        else {
-          var cdata = {};
-          self.addCacheData(o, cdata);
-          collection.remove({}, function(err, docs) {
-            callback.call(self, err, count);
-          });
-        }
       });
     }
   });

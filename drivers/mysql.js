@@ -599,57 +599,6 @@ MySQL.prototype.idExists = function(o, callback) {
   this.queryById.apply(this, args);
 }
 
-/**
-  Checks if a record exists
-
-  Provides: [err, exists, found]
-
-  Cache: Store / {cacheID, cacheTimeout}
-  
-  @example
-
-    db.recordExists({
-      condition: 'id=?',
-      params: [1],
-      table: 'users'
-    }, callback);
-  
-  @param {object} o
-  @param {function} callback
-  @public
- */
-
-MySQL.prototype.recordExists = function(o, callback) {
-  var args, 
-      self = this,
-      condition = o.condition || '',
-      params = o.params || [],
-      table = o.table || '',
-      columns = o.columns || '*',
-      appendSql = o.appendSql || '';
-  
-  if (!util.isArray(params)) params = [params];
-  
-  args = [o]; // Passing unmodified `o`
-  
-  args.push(function(err, results, fields) {
-    if (err) {
-      callback.call(self, err, null, null);
-    } else {
-      if (results.length === 0) {
-        callback.call(self, err, false, results);
-      } else {
-        callback.call(self, err, true, results);
-      }
-    }
-  });
-  
-  // No need to transfer cache keys, since `o` is passed unmodified
-    
-  this.queryWhere.apply(this, args);
-}
-
-
 MySQL.prototype.__modelMethods = {
   
   /** Model API insert */

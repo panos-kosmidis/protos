@@ -324,6 +324,31 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
   
 }).addBatch({
   
+  'MongoDB::count': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      multi.count({
+        collection: config.collection
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    "Returns correct count": function(results) {
+      var r = results[0];
+      assert.strictEqual(r, 3);
+    }
+    
+  }
+  
+}).addBatch({
+  
   'MongoDB::idExists': {
     
     topic: function() {
@@ -360,21 +385,86 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
   
 }).addBatch({
   
-  'MongoDB::{method}': {
+  'MongoDB::updateWhere': {
     
     topic: function() {
       var promise = new EventEmitter();
       
+      // Update a single matched item, should only update id 1
+      multi.updateWhere({
+        collection: config.collection,
+        condition: {_id: 1},
+        values: {
+          user: 'USER-1',
+          pass: 'PASS-1',
+          howdy: 99
+        }
+      });
+      
+      // Limit update to a single item, should only update id 2
+      multi.updateWhere({
+        collection: config.collection,
+        condition: {_id: {$in: [2, oid]}},
+        multi: false,
+        values: {
+          user: 'USER-2',
+          pass: 'PASS-2',
+        }
+      });
+      
+      // Get all items, Should confirm that only id's 1 & 2 were updated 
+      multi.queryAll({
+        collection: config.collection,
+      });
+      
+      // Update multiple items, should update id's 1 & 2
+      multi.updateWhere({
+        collection: config.collection,
+        condition: {_id: {$in: [1,2]}},
+        values: {
+          user: 'USER',
+          pass: 'PASS',
+        }
+      })
+      
+      // Get all items, Should confirm that id's 1 & 2 were updated
+      multi.queryAll({
+        collection: config.collection
+      })
+      
+      // Should throw error if no condition is set
+      multi.updateWhere({
+        collection: config.collection
+      });
+      
       multi.exec(function(err, results) {
-        promise.emit('success', err || results);
+        promise.emit('success', [err, results]);
       });
       
       return promise;
     },
     
-    "success": function(results) {
-      var r = results[0];
-      console.exit(r);
+    "Updates values correctly": function(topic) {
+      var results = topic[1],
+          expected = "\
+[ 'OK',\n\
+  'OK',\n\
+  [ { _id: 1, howdy: 99, pass: 'PASS-1', user: 'USER-1' },\n\
+    { _id: 2, pass: 'PASS-2', user: 'USER-2' },\n\
+    { _id: 4de6abd5da558a49fc5eef29, name: 'user3', pass: 'pass3' } ],\n\
+  'OK',\n\
+  [ { _id: 1, howdy: 99, pass: 'PASS', user: 'USER' },\n\
+    { _id: 2, pass: 'PASS', user: 'USER' },\n\
+    { _id: 4de6abd5da558a49fc5eef29, name: 'user3', pass: 'pass3' } ],\n\
+  null ]";
+      
+      assert.equal(expected, util.inspect(results));
+    },
+    
+    "Properly reports errors": function(topic) {
+      var err = topic[0].pop();
+      assert.instanceOf(err, Error);
+      assert.equal(err.toString(), "Error: MongoDB::queryWhere: 'condition' is missing");
     }
     
   }
