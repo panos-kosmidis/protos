@@ -38,15 +38,11 @@ app.on('mongodb_cache_invalidate', function(invalidated) {
 });
 
 // Test Model
-function TestModel(app) {
+function TestModel() {
 
   this.driver = 'mongodb';
 
-  this.properties = {
-    id    : {type: 'integer'},
-    user  : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},
-    pass  : {type: 'string', required: true, validates: 'alnum_underscores'},
-  }
+  this.properties = app.globals.commonModelProps;
 
 }
 

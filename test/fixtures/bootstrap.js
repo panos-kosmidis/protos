@@ -160,4 +160,11 @@ app.createEngineBatch = function(className, engine, testUrl, __module__) {
   
 }
 
+// Common model properties
+app.globals.commonModelProps = {
+  id    : {type: 'integer'},
+  user  : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},
+  pass  : {type: 'string', required: true, validates: 'alnum_underscores'},
+}
+
 module.exports = app;
