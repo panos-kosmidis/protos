@@ -43,7 +43,7 @@ var corejs = CoreJS.bootstrap(testSkeleton, {
         port: 8000
       },
       events: {
-        init: function(app) {
+        pre_init: function(app) {
           app.__initBootstrapEvent = true;
         }
       }
