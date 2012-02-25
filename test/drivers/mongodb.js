@@ -158,7 +158,6 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
       });
       
       // Insert user 3 (with oid)
-      
       multi.insertInto({
         collection: config.collection,
         values: {
@@ -166,22 +165,35 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
           name: 'user3',
           pass: 'pass3'
         }
-      })
+      });
+      
+      // Insert without values (error)
+      multi.insertInto({
+        collection: config.collection
+      });
       
       multi.exec(function(err, results) {
-        promise.emit('success', err || results);
+        promise.emit('success', [err, results]);
       });
       
       return promise;
     },
     
-    "Inserts records into the database": function(results) {
-      var r1 = results[0],
+    "Inserts records into the database": function(topic) {
+      var results = topic[1],
+          r1 = results[0],
           r2 = results[1],
-          r3 = results[2];
+          r3 = results[2],
+          r4 = results[3];
       assert.deepEqual(r1, [{_id: 1, user: 'user1', pass: 'pass1'}]);
       assert.deepEqual(r2, [{_id: 2, user: 'user2', pass: 'pass2'}]);
       assert.equal(util.inspect(r3), util.inspect([{ _id: oid, name: 'user3', pass: 'pass3' }]));
+    },
+    
+    "Properly reports errors": function(topic) {
+      var err = topic[0].pop();
+      assert.instanceOf(err, Error);
+      assert.equal(err.toString(), "Error: MongoDB::insertInto: 'values' is missing");
     }
     
   }
@@ -206,18 +218,30 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
         condition: {user: {$in: ['user1', 'user2']}}
       });
       
+      // No condition provided (error)
+      multi.queryWhere({
+        collection: config.collection,
+      });
+      
       multi.exec(function(err, results) {
-        promise.emit('success', err || results);
+        promise.emit('success', [err, results]);
       });
       
       return promise;
     },
     
-    "Returns valid results": function(results) {
-      var r1 = results[0],
+    "Returns valid results": function(topic) {
+      var results = topic[1],
+          r1 = results[0],
           r2 = results[1];
       assert.deepEqual(r1, [{_id: 1, user: 'user1', pass: 'pass1'}]);
       assert.deepEqual(r2, [{_id: 1, pass: 'pass1' }, { _id: 2, pass: 'pass2'}]);
+    },
+    
+    "Properly reports errors": function(topic) {
+      var err = topic[0].pop();
+      assert.instanceOf(err, Error);
+      assert.equal(err.toString(), "Error: MongoDB::queryWhere: 'condition' is missing");
     }
     
   }
@@ -298,15 +322,21 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
         _id: [1, 2, '4de6abd5da558a49fc5eef29', oid, 99, '3de5abd4da447a40ab4dde18', ObjectID('3de5abd4da447a40ab4dde18')]
       });
       
+      // Missing id (error)
+      multi.queryById({
+        collection: config.collection
+      });
+      
       multi.exec(function(err, results) {
-        promise.emit('success', err || results);
+        promise.emit('success', [err, results]);
       });
       
       return promise;
     },
     
-    "Returns valid results": function(results) {
-      var r1 = results[0],
+    "Returns valid results": function(topic) {
+      var results = topic[1],
+          r1 = results[0],
           r2 = results[1],
           r3 = results[2],
           r4 = results[3],
@@ -318,6 +348,12 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
       assert.deepEqual(r5[0], {_id: 1, pass: 'pass1'});
       assert.deepEqual(r5[1], {_id: 2, pass: 'pass2'});
       assert.deepEqual(util.inspect(r5[2]), util.inspect({_id: oid, pass: 'pass3'}));
+    },
+    
+    "Properly reports errors": function(topic) {
+      var err = topic[0].pop();
+      assert.instanceOf(err, Error);
+      assert.equal(err.toString(), "Error: MongoDB::queryById: '_id' is missing");
     }
 
   }
@@ -362,15 +398,21 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
         _id: [1, 2, 99, oid, '3de5abd4da447a40ab4dde18']
       });
       
+      // Missing _id (error)
+      multi.idExists({
+        collection: config.collection
+      });
+      
       multi.exec(function(err, results) {
-        promise.emit('success', err || results);
+        promise.emit('success', [err, results]);
       });
       
       return promise;
     },
     
-    "Returns valid results": function(results) {
-      var r = results[0],
+    "Returns valid results": function(topic) {
+      var results = topic[1],
+          r = results[0],
           expected = "\
 { '1': { _id: 1, user: 'user1', pass: 'pass1' },\n\
   '2': { _id: 2, user: 'user2', pass: 'pass2' },\n\
@@ -379,6 +421,12 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
   '3de5abd4da447a40ab4dde18': null }";
       
       assert.equal(expected, util.inspect(r));
+    },
+    
+    "Properly reports errors": function(topic) {
+      var err = topic[0].pop();
+      assert.instanceOf(err, Error);
+      assert.equal(err.toString(), "Error: MongoDB::idExists: '_id' is missing");
     }
     
   }
@@ -466,6 +514,273 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
       assert.instanceOf(err, Error);
       assert.equal(err.toString(), "Error: MongoDB::queryWhere: 'condition' is missing");
     }
+
+  }
+  
+}).addBatch({
+  
+  'MongoDB::updateById': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // Should update 1
+      multi.updateById({
+        collection: config.collection,
+        _id: 1,
+        multi: false,
+        values: {
+          user: '_USER_',
+          pass: '_PASS_'
+        }
+      });
+      
+      // Verify that item 1 was updated
+      multi.queryAll({
+        collection: config.collection
+      });
+      
+      // Should only update item 1
+      multi.updateById({
+        collection: config.collection,
+        _id: [1, 2],
+        multi: false,
+        values: {
+          user: 'USER***',
+          pass: 'PASS***'
+        }
+      });
+      
+      // Should not update anything
+      multi.updateById({
+        collection: config.collection,
+        _id: [99, 100, 101]
+      });
+      
+      // Verify that a single item was updated
+      multi.queryAll({
+        collection: config.collection
+      });
+      
+      // Missing _id (error)
+      multi.updateById({
+        collection: config.collection
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', [err, results]);
+      });
+      
+      return promise;
+    },
+    
+    "Updates values correctly": function(topic) {
+      var results = topic[1],
+          r1 = results[0],
+          r2 = results[1];
+          
+      // Should update 1
+      assert.equal(r1, 'OK');
+      
+      // Verify that item 1 was updated
+      var expected2 = [{ _id: 1, howdy: 99, pass: '_PASS_', user: '_USER_' },
+        { _id: 2, pass: 'PASS', user: 'USER' },
+        { _id: oid, name: 'user3', pass: 'pass3' }];
+      
+      assert.equal(JSON.stringify(r2), JSON.stringify(expected2));
+      
+      var r3 = results[2],
+          r4 = results[3];
+      
+      // Should only update item 1
+      assert.equal(r3, 'OK');
+      
+      // Should not update anything
+      assert.equal(r4, 'OK');
+      
+      var r5 = results[4];
+      
+      // Verify that a single item was updated
+      var expected5 = JSON.stringify([{_id: 1, howdy: 99, pass: 'PASS***', user: 'USER***' },
+        { _id: 2, pass: 'PASS', user: 'USER' },
+        { _id: oid, name: 'user3', pass: 'pass3'}]);
+      
+      assert.equal(JSON.stringify(r5).length, expected5.length);
+      assert.isTrue(expected5.indexOf(JSON.stringify(r5[0])) >= 0);
+      assert.isTrue(expected5.indexOf(JSON.stringify(r5[1])) >= 0);
+      assert.isTrue(expected5.indexOf(JSON.stringify(r5[2])) >= 0);
+      
+      var r6 = results[5];
+      
+      // Error, should be null
+      assert.isNull(r6);
+      
+    },
+    
+    "Properly reports errors": function(topic) {
+      var err = topic[0].pop();
+      assert.instanceOf(err, Error);
+      assert.equal(err.toString(), "Error: MongoDB::updateById: '_id' is missing");
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MongoDB::deleteWhere': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // Should delete item #1, but not 99 (does not exist)
+      multi.deleteWhere({
+        collection: config.collection,
+        condition: {_id: {$in: [1, 99]}}
+      });
+      
+      // An empty condition should remove all entries
+      multi.deleteWhere({
+        collection: config.collection,
+        condition: {}
+      });
+      
+      // Verify that all records were deleted
+      multi.queryAll({
+        collection: config.collection
+      });
+      
+      // No condition (error)
+      multi.deleteWhere({
+        collection: config.collection,
+      });
+      
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', [err, results]);
+      });
+      
+      return promise;
+    },
+    
+    "Properly deletes values": function(topic) {
+      var results = topic[1];
+          r1 = results[0],
+          r2 = results[1],
+          r3 = results[2];
+      assert.deepEqual([r1, r2], ['OK', 'OK']);
+      assert.deepEqual(r3, []);
+    },
+    
+    "Properly returns errors": function(topic) {
+      var err = topic[0].pop();
+      assert.instanceOf(err, Error);
+      assert.equal(err.toString(), "Error: MongoDB::deleteWhere: 'condition' is missing");
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'MongoDB::deleteById': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // Insert user 1
+      multi.insertInto({
+        collection: config.collection,
+        values: {
+          _id: 1,
+          user: "user1",
+          pass: "pass1"
+        }
+      });
+      
+      // Insert user 2
+      multi.insertInto({
+        collection: config.collection,
+        values: {
+          _id: 2,
+          user: "user2",
+          pass: "pass2"
+        }
+      });
+      
+      // Insert user 3
+      multi.insertInto({
+        collection: config.collection,
+        values: {
+          _id: 3,
+          user: "user3",
+          pass: "pass3"
+        }
+      });
+      
+      // Attempt to delete non-existent users
+      multi.deleteById({
+        collection: config.collection,
+        _id: [99, 100, 101]
+      });
+      
+      // Verify that no entries have been removed
+      multi.queryAll({
+        collection: config.collection
+      });
+      
+      // Delete user 1
+      multi.deleteById({
+        collection: config.collection,
+        _id: 1
+      });
+      
+      // Delete users 2 & 3
+      multi.deleteById({
+        collection: config.collection,
+        _id: [2, 3]
+      });
+      
+      // Verify that entries 1, 2 and 3 have been removed
+      multi.queryAll({
+        collection: config.collection
+      });
+      
+      // No id provided (error)
+      multi.deleteById({
+        collection: config.collection
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', [err, results]);
+      });
+      
+      return promise;
+    },
+    
+    "Properly deletes values": function(topic) {
+      var results = topic[1],
+          r1 = results[0],
+          r2 = results[1],
+          r3 = results[2],
+          r4 = results[3];
+      assert.deepEqual(r1, [{_id: 1, user: 'user1', pass: 'pass1'}]);
+      assert.deepEqual(r2, [{_id: 2, user: 'user2', pass: 'pass2'}]);
+      assert.deepEqual(r3, [{_id: 3, user: 'user3', pass: 'pass3'}]);
+      assert.equal(r4, 'OK');
+
+      var r5 = results[4],
+          expected5 = [ { _id: 1, user: 'user1', pass: 'pass1' },
+        { _id: 2, user: 'user2', pass: 'pass2' },
+        { _id: 3, user: 'user3', pass: 'pass3' } ];
+
+      assert.equal(JSON.stringify(r5), JSON.stringify(expected5));
+
+    },
+    
+    "Properly reports errors": function(topic) {
+      var err = topic[0].pop();
+      assert.instanceOf(err, Error);
+      assert.equal(err.toString(), "Error: MongoDB::deleteById: '_id' is missing");
+    }
     
   }
   
@@ -494,7 +809,6 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
   }
   
 */
-
 
 
 

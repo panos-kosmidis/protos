@@ -111,8 +111,13 @@ util.inherits(MongoDB, corejs.lib.driver);
 
 MongoDB.prototype.insertInto = function(o, callback) {
   var self = this,
-      collection = o.collection || '',
-      values = o.values || {};
+      collection = o.collection,
+      values = o.values;
+  
+  if (!values) {
+    callback.call(self, new Error("MongoDB::insertInto: 'values' is missing"));
+    return;
+  }
 
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
@@ -122,7 +127,7 @@ MongoDB.prototype.insertInto = function(o, callback) {
         callback.call(self, err, docs);
       });
     }
-  })
+  });
 }
 
 /**
@@ -151,7 +156,7 @@ MongoDB.prototype.updateWhere = function(o, callback) {
       collection = o.collection || '',
       condition = o.condition,
       multi = (typeof o.multi == 'undefined') ? true : (o.multi || false), // Ensure boolean
-      values = o.values || '';
+      values = o.values || {};
       
   if (!o.condition) {
     callback.call(self, new Error("MongoDB::queryWhere: 'condition' is missing"));
@@ -167,7 +172,7 @@ MongoDB.prototype.updateWhere = function(o, callback) {
           self.addCacheData(o, condition);
           collection.update(condition, {$set: values}, {multi: multi, upsert: false}, function(err) {
             // Note: upsert is set to false, to provide predictable results
-            callback.call(self, err);
+            callback.call(self, err || null);
           });
         }
       });
@@ -207,20 +212,25 @@ MongoDB.prototype.updateWhere = function(o, callback) {
 MongoDB.prototype.updateById = function(o, callback) {
   var self = this, 
       collection = o.collection || '',
-      values = o.values || '',
-      condition = constructIdCondition(o._id);
-
-  // this.client.collection(collection, function(err, collection) {
-  //     collection.count(condition, function(err, count) {
-  //       if (err) callback.call(self, err);
-  //       else {
-  //         self.addCacheData(o, condition);
-  //         collection.update(condition, {$set: values}, {multi: false}, function(err, doc) {
-  //           callback.call(self, err, count);
-  //         });
-  //       }
-  //     });
-  //   });
+      values = o.values || {};
+      
+  if (typeof o._id == 'undefined') {
+    callback.call(self, new Error("MongoDB::updateById: '_id' is missing"));
+    return;
+  }
+  
+  var condition = constructIdCondition(o._id);
+  
+  // Enable caching on method
+  self.addCacheData(o, condition);
+  
+  this.updateWhere({
+    collection: collection,
+    condition: condition,
+    multi: o.multi,
+    values: values
+  }, callback);
+  
 }
 
 /**
@@ -246,19 +256,20 @@ MongoDB.prototype.updateById = function(o, callback) {
 MongoDB.prototype.deleteWhere = function(o, callback) {
   var self = this,
       collection = o.collection || '',
-      condition = o.condition || {};
-
+      condition = o.condition;
+      
+  if (!condition) {
+    callback.call(self, new Error("MongoDB::deleteWhere: 'condition' is missing"));
+    return;
+  }
+  
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
     else {
-      collection.count(condition, function(err, count) {
+      self.addCacheData(o, condition);
+      collection.remove(condition, function(err) {
         if (err) callback.call(self, err);
-        else {
-          self.addCacheData(o, condition);
-          collection.remove(condition, function(err, doc) {
-            callback.call(self, err, count);
-          });
-        }
+        else callback.call(self, null);
       });
     }
   });
@@ -293,23 +304,22 @@ MongoDB.prototype.deleteWhere = function(o, callback) {
 
 MongoDB.prototype.deleteById = function(o, callback) {
   var self = this, 
-      collection = o.collection || '',
-      condition = constructIdCondition(o._id);
-
-  this.client.collection(collection, function(err, collection) {
-    if (err) callback.call(self, err);
-    else {
-      collection.count(condition, function(err, count) {
-        if (err) callback.call(self, err);
-        else {
-          self.addCacheData(o, condition);
-          collection.remove(condition, function(err, doc) {
-            callback.call(self, err, count);
-          });
-        }
-      });
-    }
-  });
+      collection = o.collection || '';
+      
+  if (!o._id) {
+    callback.call(self, new Error("MongoDB::deleteById: '_id' is missing"));
+    return;
+  }
+  
+  var condition = constructIdCondition(o._id);
+  
+  // Enable caching on method
+  self.addCacheData(o, condition);
+  
+  this.deleteWhere({
+    collection: collection,
+    condition: condition
+  }, callback);
 }
 
 /**
@@ -337,8 +347,13 @@ MongoDB.prototype.queryWhere = function(o, callback) {
   var self = this,
       collection = o.collection || '',
       fields = o.fields || {},
-      condition = o.condition || {},
-      _id = condition._id;
+      condition = o.condition,
+      _id = (condition && condition._id);
+      
+  if (!condition) {
+    callback.call(self, new Error("MongoDB::queryWhere: 'condition' is missing"));
+    return;
+  }
 
   // If _id is passed other conditions will be ignored
   if (_id != null) condition = constructIdCondition(_id);
@@ -386,8 +401,14 @@ MongoDB.prototype.queryWhere = function(o, callback) {
 MongoDB.prototype.queryById = function(o, callback) {
   var self = this,
       collection = o.collection || '',
-      fields = o.fields || {},
-      condition = constructIdCondition(o._id);
+      fields = o.fields || {};
+  
+  if (typeof o._id == 'undefined') {
+    callback.call(self, new Error("MongoDB::queryById: '_id' is missing"));
+    return;
+  }
+    
+  var condition = constructIdCondition(o._id);
   
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
@@ -428,6 +449,8 @@ MongoDB.prototype.queryAll = function(o, callback) {
   // Performing a find with {} returns all records
   // Passing only cache data to find, will result on an empty object
   var cdata = {};
+  
+  // Enable caching on method
   self.addCacheData(o, cdata);
 
   this.queryWhere({
@@ -455,11 +478,21 @@ MongoDB.prototype.idExists = function(o, callback) {
       fields = o.fields || {},
       _id = o._id;
       
-  this.queryById({
+  if (typeof _id == 'undefined') {
+    callback.call(self, new Error("MongoDB::idExists: '_id' is missing"));
+    return;
+  }
+  
+  var args = {
     collection: collection,
     fields: fields,
     _id: _id
-  }, function(err, docs) {
+  }
+  
+  // Enable caching on method
+  self.addCacheData(o, args);
+  
+  this.queryById(args, function(err, docs) {
     if (err) callback.call(self, err, {});
     else {
       var out = {}, doc, id, i;
