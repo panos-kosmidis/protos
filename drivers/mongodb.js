@@ -721,6 +721,7 @@ MongoDB.prototype.__modelMethods = {
 
 function enableCollectionCache(client) {
   var self = this,
+      app = self.app,
       collectionCache = {},
       _collection = client.collection;
 

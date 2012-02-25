@@ -40,7 +40,7 @@ app.on('mongodb_cache_invalidate', function(invalidated) {
 // Test Model
 function TestModel() {
 
-  this.driver = 'mongodb';
+  this.driver = 'mongodb:cache';
 
   this.properties = app.globals.commonModelProps;
 
@@ -799,6 +799,36 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
       var err = topic[0].pop();
       assert.instanceOf(err, Error);
       assert.equal(err.toString(), "Error: MongoDB::deleteById: '_id' is missing");
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Model API Compliance': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      model = new TestModel();
+      model.prepare(app);
+      model.context = config.collection;
+      multi = model.multi();
+      mongodb = app.getResource('drivers/mongodb:cache');
+      storageMulti = mongodb.storage.multi();
+      
+      // Remove all records before running subsequent tests
+      mongodb.deleteWhere({
+        collection: config.collection,
+        condition: {}
+      }, function(err, ok) {
+        promise.emit('success', err || model);
+      });
+      
+      return promise;
+    },
+    
+    "Created testing model": function(model) {
+      assert.instanceOf(model, TestModel);
     }
     
   }
