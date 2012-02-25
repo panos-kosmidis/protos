@@ -413,14 +413,20 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     "Returns valid results": function(topic) {
       var results = topic[1],
           r = results[0],
-          expected = "\
-{ '1': { _id: 1, user: 'user1', pass: 'pass1' },\n\
-  '2': { _id: 2, user: 'user2', pass: 'pass2' },\n\
-  '99': null,\n\
-  '4de6abd5da558a49fc5eef29': { _id: 4de6abd5da558a49fc5eef29, name: 'user3', pass: 'pass3' },\n\
-  '3de5abd4da447a40ab4dde18': null }";
+          expected = { 
+            '1': { _id: 1, user: 'user1', pass: 'pass1' },
+            '2': { _id: 2, user: 'user2', pass: 'pass2' },
+            '99': null,
+            '4de6abd5da558a49fc5eef29': { _id: oid, name: 'user3', pass: 'pass3' },
+            '3de5abd4da447a40ab4dde18': null };
       
-      assert.equal(expected, util.inspect(r));
+      assert.isTrue(r.constructor === Object);
+      assert.equal(Object.keys(r).length, 5);
+      assert.deepEqual(r['1'], expected['1']);
+      assert.deepEqual(r['2'], expected['2']);
+      assert.equal(r['99'], expected['99']);
+      assert.equal(JSON.stringify(r['4de6abd5da558a49fc5eef29']), JSON.stringify(expected['4de6abd5da558a49fc5eef29']));
+      assert.deepEqual(r['3de5abd4da447a40ab4dde18'], expected['3de5abd4da447a40ab4dde18']);
     },
     
     "Properly reports errors": function(topic) {
@@ -494,19 +500,28 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     
     "Updates values correctly": function(topic) {
       var results = topic[1],
-          expected = "\
-[ 'OK',\n\
-  'OK',\n\
-  [ { _id: 1, howdy: 99, pass: 'PASS-1', user: 'USER-1' },\n\
-    { _id: 2, pass: 'PASS-2', user: 'USER-2' },\n\
-    { _id: 4de6abd5da558a49fc5eef29, name: 'user3', pass: 'pass3' } ],\n\
-  'OK',\n\
-  [ { _id: 1, howdy: 99, pass: 'PASS', user: 'USER' },\n\
-    { _id: 2, pass: 'PASS', user: 'USER' },\n\
-    { _id: 4de6abd5da558a49fc5eef29, name: 'user3', pass: 'pass3' } ],\n\
-  null ]";
+          r1 = results[0],
+          r2 = results[1],
+          r3 = results[2],
+          r4 = results[3],
+          r5 = results[4],
+          r6 = results[5];
+          
+      assert.deepEqual([r1, r2, r4, r6], ['OK', 'OK', 'OK', null]);
       
-      assert.equal(expected, util.inspect(results));
+      var expected3 = JSON.stringify(r3);
+      
+      assert.equal(JSON.stringify(r3).length, expected3.length);
+      assert.isTrue(expected3.indexOf(JSON.stringify(r3[0])) >= 0);
+      assert.isTrue(expected3.indexOf(JSON.stringify(r3[1])) >= 0);
+      assert.isTrue(expected3.indexOf(JSON.stringify(r3[2])) >= 0);
+      
+      var expected5 = JSON.stringify(r5);
+      
+      assert.equal(JSON.stringify(r5).length, expected5.length);
+      assert.isTrue(expected5.indexOf(JSON.stringify(r5[0])) >= 0);
+      assert.isTrue(expected5.indexOf(JSON.stringify(r5[1])) >= 0);
+      assert.isTrue(expected5.indexOf(JSON.stringify(r5[2])) >= 0);
     },
     
     "Properly reports errors": function(topic) {
@@ -583,11 +598,15 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
       assert.equal(r1, 'OK');
       
       // Verify that item 1 was updated
-      var expected2 = [{ _id: 1, howdy: 99, pass: '_PASS_', user: '_USER_' },
+      var expected2 = JSON.stringify([{ _id: 1, howdy: 99, pass: '_PASS_', user: '_USER_' },
         { _id: 2, pass: 'PASS', user: 'USER' },
-        { _id: oid, name: 'user3', pass: 'pass3' }];
+        { _id: oid, name: 'user3', pass: 'pass3' }]);
       
-      assert.equal(JSON.stringify(r2), JSON.stringify(expected2));
+      assert.isArray(r2);
+      assert.equal(r2.length, 3);
+      assert.isTrue(expected2.indexOf(JSON.stringify(r2[0])) >= 0);
+      assert.isTrue(expected2.indexOf(JSON.stringify(r2[1])) >= 0);
+      assert.isTrue(expected2.indexOf(JSON.stringify(r2[2])) >= 0);
       
       var r3 = results[2],
           r4 = results[3];
@@ -768,12 +787,15 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
       assert.equal(r4, 'OK');
 
       var r5 = results[4],
-          expected5 = [ { _id: 1, user: 'user1', pass: 'pass1' },
+          expected5 = JSON.stringify([{ _id: 1, user: 'user1', pass: 'pass1' },
         { _id: 2, user: 'user2', pass: 'pass2' },
-        { _id: 3, user: 'user3', pass: 'pass3' } ];
+        { _id: 3, user: 'user3', pass: 'pass3' }]);
 
-      assert.equal(JSON.stringify(r5), JSON.stringify(expected5));
-
+        assert.isArray(r5);
+        assert.equal(r5.length, 3);
+        assert.isTrue(expected5.indexOf(JSON.stringify(r5[0])) >= 0);
+        assert.isTrue(expected5.indexOf(JSON.stringify(r5[1])) >= 0);
+        assert.isTrue(expected5.indexOf(JSON.stringify(r5[2])) >= 0);
     },
     
     "Properly reports errors": function(topic) {
