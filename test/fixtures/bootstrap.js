@@ -2,7 +2,9 @@
 // Sample test case:
 // https://gist.github.com/1738905
 
-var env, path = require('path'),
+var env, 
+    _ = require('underscore'),
+    path = require('path'),
     vows = require('vows'),
     assert = require('assert'),
     rootPath = path.resolve(__dirname, '../../'),
@@ -25,9 +27,18 @@ CoreJS.on('pre_init', function(app) {
   // Convert port to int, otherwise mongodb client complains...
   testConfig.mongodb.port = parseInt(testConfig.mongodb.port, 10);
   
-  app.config.database.default = 'mysql';
-  app.config.database.mysql = testConfig.mysql;
-  app.config.database.mongodb = testConfig.mongodb;
+  app.config.database.default = 'mysql:nocache';
+  
+  app.config.database.mysql = {
+    nocache: testConfig.mysql,
+    cache: _.extend({storage: 'redis'}, testConfig.mysql)
+  }
+  
+  app.config.database.mongodb = {
+   nocache: testConfig.mongodb,
+   cache: _.extend({storage: 'redis'}, testConfig.mongodb)
+  }
+  
   app.config.storage.redis = testConfig.redis;
 });
 

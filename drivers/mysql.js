@@ -54,7 +54,7 @@ function MySQL(app, config) {
       
       // Set caching function
       if (self.storage != null) {
-        self.cacheClientMethods('query');
+        self.cacheClientMethods(self.client, 'query');
         self.setCachePrefix(config.cachePrefix || null);
       }
       
@@ -298,7 +298,7 @@ MySQL.prototype.insertInto = function(o, callback) {
       self = this,
       table = o.table || '',
       values = o.values || {};
-  
+      
   if (util.isArray(values)) {
     params = corejs.util.strRepeat('?, ', values.length).replace(regex.endingComma, '');
     args = ["INSERT INTO " + table + " VALUES(" + params + ")", values];
@@ -613,6 +613,7 @@ MySQL.prototype.__modelMethods = {
     this.__validateProperties(o);
 
     // Save data into the database
+    
     this.driver.insertInto(_.extend({
       table: this.context,
       values: o

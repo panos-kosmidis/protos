@@ -12,11 +12,11 @@ app.logging = true;
 
 var mysql, multi, model, storageMulti;
 
-var config = app.config.database.mysql,
+var config = app.config.database.mysql.nocache,
     client = createClient(config),
     mclient = new Multi(client);
 
-var table = app.config.database.mysql.table;
+var table = config.table;
 
 // Test table
 var createTable = util.format('\
@@ -44,7 +44,7 @@ app.on('mysql_cache_invalidate', function(invalidated) {
 // Test Model
 function TestModel(app) {
 
-  this.driver = 'mysql';
+  this.driver = 'mysql:cache';
 
   this.properties = {
     id    : {type: 'integer'},
@@ -62,7 +62,7 @@ vows.describe('drivers/mysql.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      app.getResource('drivers/mysql', function(driver) {
+      app.getResource('drivers/mysql:nocache', function(driver) {
         mysql = driver;
         multi = mysql.multi();
         
@@ -79,7 +79,7 @@ vows.describe('drivers/mysql.js').addBatch({
     },
 
     'Sets config': function() {
-      assert.strictEqual(mysql.config.host, app.config.database.mysql.host);
+      assert.strictEqual(mysql.config.host, app.config.database.mysql.nocache.host);
     },
     
     'Sets client': function() {
@@ -648,19 +648,23 @@ vows.describe('drivers/mysql.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      // Reset table ID's, disregard previous operations
-      mclient.query('DROP TABLE IF EXISTS ' + table);
+      
+      // Prepare model for tests
+      model = new TestModel();
+      model.prepare(app);
+      model.context = config.table;
+      multi = model.multi();
+      mysql = app.getResource('drivers/mysql:cache');
+      storageMulti = mysql.storage.multi();
+      
+      // Start with a clean table
+      mclient.query('DROP TABLE ' + table);
       mclient.query(createTable);
+      
       mclient.exec(function(err, results) {
-        model = new TestModel();
-        model.prepare(app);
-        model.context = table; // Override context
-        multi = model.multi(); // Override multi
-        mysql.storage = app.getResource('storages/redis'); // Manually set cache storage
-        mysql.cacheClientMethods(mysql.client, 'query'); // Manually set cache function
-        storageMulti = mysql.storage.multi();
-        promise.emit('success', err || model);
+        promise.emit('success', model);
       });
+      
       return promise;
     },
     
@@ -685,6 +689,7 @@ vows.describe('drivers/mysql.js').addBatch({
       });
       
       return promise;
+
     },
     
     'Inserts new models + invalidates caches': function(results) {

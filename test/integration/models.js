@@ -43,7 +43,7 @@ vows.describe('Models').addBatch({
 
     'Initialized test model': function(topic) {
       model = topic;
-      table = app.config.database.mysql.table;
+      table = app.config.database.mysql.nocache.table;
       model.context = table;
       mysql = model.driver;
       

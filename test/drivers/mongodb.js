@@ -16,7 +16,7 @@ app.logging = true;
 
 var mongodb, multi, model, storageMulti;
 
-var config = app.config.database.mongodb;
+var config = app.config.database.mongodb.nocache;
 
 //Local variables for testing
 var userId1, userId2;
@@ -60,24 +60,25 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      app.getResource('drivers/mongodb', function(driver) {
+      app.getResource('drivers/mongodb:nocache', function(driver) {
         mongodb = driver;
         multi = mongodb.multi();
         promise.emit('success');
       });
+      
       return promise;
     },
     
     'Sets db': function() {
-      assert.instanceOf(mongodb.db, require('mongodb').Db);
+      assert.instanceOf(mongodb.db, Db);
     },
 
     'Sets config': function() {
-      assert.strictEqual(mongodb.config.host, app.config.database.mongodb.host);
+      assert.strictEqual(mongodb.config.host, app.config.database.mongodb.nocache.host);
     },
     
     'Sets client': function() {
-      assert.instanceOf(mongodb.client, require('mongodb').Db);
+      assert.instanceOf(mongodb.client, Db);
     }
     
   }
