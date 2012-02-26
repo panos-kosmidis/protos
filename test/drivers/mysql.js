@@ -60,7 +60,7 @@ util.inherits(TestModel, corejs.lib.model);
 
 var modelBatch = new ModelBatch();
     
-vows.describe('drivers/mysql.js').addBatch({
+var batch = vows.describe('drivers/mysql.js').addBatch({
   
   'Integrity Checks': {
     
@@ -862,15 +862,11 @@ vows.describe('drivers/mysql.js').addBatch({
     
   }
   
-})
+});
 
-// Model API Compliance tests
+// Model API Tests
+modelBatch.forEach(function(test) {
+  batch = batch.addBatch(test);
+});
 
-.addBatch(modelBatch.insert)
-.addBatch(modelBatch.get)
-.addBatch(modelBatch.getAll)
-.addBatch(modelBatch.save)
-.addBatch(modelBatch.delete)
-.addBatch(modelBatch.cache)
-
-.export(module);
+batch.export(module);

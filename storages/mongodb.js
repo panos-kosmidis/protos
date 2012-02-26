@@ -78,16 +78,7 @@ function MongoStorage(app, config) {
 
 util.inherits(MongoStorage, corejs.lib.storage);
 
-MongoStorage.prototype.options = {};
-
-
 /** Storage API get */
-
-/*
-
-  {key: 'hkey', value: {}}
-
-*/
 
 MongoStorage.prototype.get = function(key, callback) {
   var self = this;
@@ -108,11 +99,11 @@ MongoStorage.prototype.get = function(key, callback) {
     
   // If key is an array » return object with key/values
   } else if (key instanceof Array) {
-      for (var doc, i=0; i < key.length; i++) {  
-        key[i] = 'k' + key[i];
+      for (var doc, keys=key, inArr=[], i=0; i < key.length; i++) {  
+        inArr.push('k' + key[i]);
       }
       
-      self.collection.find({key: {$in: key}}, {key: 1, value: 1, _id: 0}, function(err, cursor) {
+      self.collection.find({key: {$in: inArr}}, {key: 1, value: 1, _id: 0}, function(err, cursor) {
         var out = {};
         cursor.toArray(function(err, docs) {
           if (err) callback.call(self, err);
@@ -121,6 +112,12 @@ MongoStorage.prototype.get = function(key, callback) {
               doc = docs[i];
               out[doc.key.slice(1)] = doc.value;
             }
+            
+            for (i=0; i < keys.length; i++) {
+              key = keys[i];
+              if (! (key in out)) out[key] = null;
+            }
+            
             callback.call(self, null, out);
           }
         });
@@ -214,8 +211,6 @@ MongoStorage.prototype.setHash = function(key, object, callback) {
       self = this,
       _key = 'h' + key;
       
-  app.debugLog = true;
-  
   self.collection.find({key: _key}, {_id: 1}, function(err, cursor) {
     cursor.toArray(function(err, docs) {
       if (err) callback.call(self, err);
@@ -348,7 +343,8 @@ MongoStorage.prototype.rename = function(oldkey, newkey, callback) {
 /** Storage API expire */
 
 MongoStorage.prototype.expire = function(key, timeout, callback) {
-  callback.call(this, new Error("MongoStorage: MongoDB does not support key expiration"));
+  this.app.log("MongoStorage: MongoDB does not support key expiration");
+  callback.call(this, null);
 }
   
 module.exports = MongoStorage;

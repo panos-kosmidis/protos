@@ -1,22 +1,20 @@
 
-var app = require('../fixtures/bootstrap'),
+var _ = require('underscore'),
+    app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
     StorageBatch = require('../fixtures/storage-batch'),
     EventEmitter = require('events').EventEmitter;
+    
+var storageBatch = new StorageBatch('MongoStorage');
 
-var redisStore;
-
-var storageBatch = new StorageBatch('RedisStorage');
-
-var batch = vows.describe('storages/redis.js').addBatch({
+var batch = vows.describe('storages/mongodb.js').addBatch({
   
   'Integrity Checks': {
     
     topic: function() {
       var promise = new EventEmitter();
-      app.getResource('storages/redis', function(storage) {
-        redisStore = storage;
+      app.getResource('storages/mongodb', function(storage) {
         storageBatch.storage = storage;
         promise.emit('success', storage);
       });
@@ -24,7 +22,6 @@ var batch = vows.describe('storages/redis.js').addBatch({
     },
 
     'Created storage instance': function(storage) {
-      assert.equal(storage.className, 'RedisStorage');
       assert.instanceOf(storage, corejs.lib.storage);
     }
     

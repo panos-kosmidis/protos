@@ -40,6 +40,7 @@ CoreJS.on('pre_init', function(app) {
   }
   
   app.config.storage.redis = testConfig.redis;
+  app.config.storage.mongodb = testConfig.mongodb;
 });
 
 CoreJS.on('bootstrap_config', function(bootstrap) {

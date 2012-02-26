@@ -214,6 +214,16 @@ function ModelBatch() {
     data = testData[model.driver.className];
   });
   
+  // Attach to current batch
+  instance.forEach = function(callback) {
+    var keys = Object.keys(this);
+    for (var test, key, i=0; i < keys.length; i++) {
+      var key = keys[i],
+          item = this[key];
+      if (typeof item == 'object') callback(item);
+    }
+  }
+  
   return instance;
 }
 

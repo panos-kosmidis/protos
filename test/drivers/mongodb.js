@@ -55,7 +55,7 @@ util.inherits(TestModel, corejs.lib.model);
 
 var modelBatch = new ModelBatch();
 
-vows.describe('drivers/mongodb.js').addBatch({
+var batch = vows.describe('drivers/mongodb.js').addBatch({
   
   'Integrity Checks': {
     
@@ -999,13 +999,11 @@ vows.describe('drivers/mongodb.js').addBatch({
     
   }
   
-})
+});
 
-.addBatch(modelBatch.insert)
-.addBatch(modelBatch.get)
-.addBatch(modelBatch.getAll)
-.addBatch(modelBatch.save)
-.addBatch(modelBatch.delete)
-.addBatch(modelBatch.cache)
+// Model API Tests
+modelBatch.forEach(function(test) {
+  batch = batch.addBatch(test);
+});
 
-.export(module);
+batch.export(module);
