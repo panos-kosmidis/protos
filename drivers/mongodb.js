@@ -91,17 +91,13 @@ util.inherits(MongoDB, corejs.lib.driver);
 /**
   Inserts values into a collection
 
-  Provides:  [err, docs]
-
-  Cache: Invalidate / {cacheInvalidate}
-
   @example
 
-    db.insertInto({
+    mongodb.insertInto({
       collection: 'users',
       values: {user: 'hello', pass: 'passme'}
     }, function(err, docs) {
-      console.exit([err, docs]);
+      console.log([err, docs]);
     });
 
   @param {object} o 
@@ -131,22 +127,19 @@ MongoDB.prototype.insertInto = function(o, callback) {
 }
 
 /**
-  Performs an UPDATE ... WHERE ... query
-
-  Provides: [err, count]
-
-  Cache: Invalidate / {cacheInvalidate}
+  Updates items where condition is satisfied
 
   @example
       mongodb.updateWhere({
         collection: 'users',
-        condition: {user: 'butu5},
-        values: {pass: 'p1234'}
-      }, function(err, count) {
-        console.log([err, count]);
+        condition: {user: 'user1},
+        multi: true,
+        values: {pass: 'pass1'}
+      }, function(err) {
+        console.log(err);
       });
 
-  @param {object} o 
+  @param {object} o
   @param {function} callback
   @public
  */
@@ -181,28 +174,25 @@ MongoDB.prototype.updateWhere = function(o, callback) {
 }
 
 /**
-  Updates records by ID
-
-  Provides: [err, info]
-
-  Cache: Invalidate / {cacheInvalidate}
+  Updates items by ID
 
   @example
-      mongodb.updateById({
-        _id: 1,
-        collection: 'users',
-        values: {pass: 'p1234'}
-      }, function(err, count) {
-        console.log([err, count]);
-      });
+  
+    mongodb.updateById({
+      _id: 1,
+      collection: 'users',
+      values: {pass: 'pass1'}
+    }, function(err) {
+      console.log(err);
+    });
 
-      mongodb.updateById({
-        _id: [1, 2],
-        collection: 'users',
-        values: {pass: 'p1234'}
-      }, function(err, count) {
-        console.log([err, count]);
-      });
+    mongodb.updateById({
+      _id: [1, 2],
+      collection: 'users',
+      values: {pass: 'pass1'}
+    }, function(err) {
+      console.log(err);
+    });
 
   @param {object} o
   @param {function} callback
@@ -234,19 +224,16 @@ MongoDB.prototype.updateById = function(o, callback) {
 }
 
 /**
-  Performs a DELETE ... WHERE ... query
-
-  Provides: [err, count]
-
-  Cache: Invalidate / {cacheInvalidate}
+  Deletes items where condition is satisfied
 
   @example
-      mongodb.deleteWhere({
-        collection: 'users',
-        condition: {user: 'butu5}
-      }, function(err, count) {
-        console.log([err, count]);
-      });
+  
+    mongodb.deleteWhere({
+      collection: 'users',
+      condition: {user: 'user1}
+    }, function(err) {
+      console.log(err);
+    });
 
   @param {object} o
   @param {function} callback
@@ -283,19 +270,20 @@ MongoDB.prototype.deleteWhere = function(o, callback) {
   Cache: Invalidate / {cacheInvalidate}
 
   @example
-      mongodb.deleteById({
-        _id: 1,
-        collection: 'users'
-      }, function(err, count) {
-        console.log([err, count]);
-      });
+  
+    mongodb.deleteById({
+      _id: 1,
+      collection: 'users'
+    }, function(err) {
+      console.log(err);
+    });
 
-      mongodb.deleteById({
-        _id: [1, 2],
-        collection: 'users'
-      }, function(err, count) {
-        console.log([err, count]);
-      });
+    mongodb.deleteById({
+      _id: [1, 2],
+      collection: 'users'
+    }, function(err) {
+      console.log(err);
+    });
 
   @param {object} o 
   @param {function} callback
@@ -323,20 +311,17 @@ MongoDB.prototype.deleteById = function(o, callback) {
 }
 
 /**
-  Performs a SELECT ... WHERE ... query
-
-  Provides: [err, docs]
-
-  Cache: Store / {cacheID, cacheTimeout}
+  Queries documents where condition is satisfied
 
   @example
-      mongodb.queryWhere({
-        collection: 'users',
-        condition: {'user': 'butu5},
-        fields: {'user': 1, 'pass': 1}
-      }, function(err, docs) {
-        console.log([err, docs]);
-      });
+  
+    mongodb.queryWhere({
+      collection: 'users',
+      condition: {'user': 'user1},
+      fields: {'user': 1, 'pass': 1}
+    }, function(err, docs) {
+      console.log([err, docs]);
+    });
 
   @param {object} o
   @param {function} callback
@@ -370,28 +355,25 @@ MongoDB.prototype.queryWhere = function(o, callback) {
 };
 
 /**
-  Queries fields by ID
-
-  Provides: [err, docs]
-
-  Cache: Store / {cacheID, cacheTimeout}
+  Queries documents by ID
 
   @example
-      mongodb.queryById({
-        _id: 1,
-        collection: 'users',
-        fields: {'user': 1, 'pass': 1}
-      }, function(err, docs) {
-        console.log([err, docs]);
-      });
+  
+    mongodb.queryById({
+      _id: 1,
+      collection: 'users',
+      fields: {'user': 1, 'pass': 1}
+    }, function(err, docs) {
+      console.log([err, docs]);
+    });
 
-      mongodb.queryById({
-        _id: [1, 2],
-        collection: 'users',
-        fields: {'user': 1, 'pass': 1}
-      }, function(err, docs) {
-        console.log([err, docs]);
-      });
+    mongodb.queryById({
+      _id: [1, 2],
+      collection: 'users',
+      fields: {'user': 1, 'pass': 1}
+    }, function(err, docs) {
+      console.log([err, docs]);
+    });
 
   @param {object} o
   @param {function} callback
@@ -422,19 +404,16 @@ MongoDB.prototype.queryById = function(o, callback) {
 };
 
 /**
-  Queries all the entries from a collection
-
-  Provides: [err, docs]
-
-  Cache: Store / {cacheID, cacheTimeout}
+  Queries all documents in a collection
 
   @example
-      mongodb.queryAll({
-        collection: 'users',
-        fields: {'user': 1, 'pass': 1}
-      }, function(err, docs) {
-        console.log([err, docs]);
-      });
+
+    mongodb.queryAll({
+      collection: 'users',
+      fields: {'user': 1, 'pass': 1}
+    }, function(err, docs) {
+      console.log([err, docs]);
+    });
 
   @param {object} o
   @param {function} callback
@@ -459,12 +438,26 @@ MongoDB.prototype.queryAll = function(o, callback) {
 };
 
 /**
-  Performs a query by ID, returning an object with the found ID's.
+  Queries documents by ID, returning an object with the ID's as keys,
+  which contain the document (if found), or null if the document is not found.
 
-  Provides: [err, results]
-
-  Cache: Store / {cacheID, cacheTimeout}
-
+  @example
+  
+    mongodb.idExists({
+      _id: 1,
+      collection: 'users'
+    }, function(err, docs) {
+      console.log([err, docs]);
+    });
+    
+    mongodb.idExists({
+      _id: [1, 2],
+      collection: 'users',
+      fields: {user: 1, pass: 1}
+    }, function(err, docs) {
+      console.log([err, docs]);
+    });
+  
   @param {object} o
   @param {function} callback
   @public
@@ -514,18 +507,15 @@ MongoDB.prototype.idExists = function(o, callback) {
 };
 
 /**
-  Counts items in a collection
-
-  Provides: [err, count]
-
-  Cache: Store / {cacheID, cacheTimeout}
+  Counts all documents in a collection
 
   @example
-      mongodb.countRows({
-        collection: 'users'
-      }, function(err, count) {
-        console.log([err, count]);
-      });
+
+    mongodb.count({
+      collection: 'users'
+    }, function(err, count) {
+      console.log([err, count]);
+    });
 
   @param {object} o
   @param {function} callback
@@ -549,8 +539,10 @@ MongoDB.prototype.count = function(o, callback) {
 }
 
 /**
-  Convert `_id` to `id` when generating model objects,
-  to conform with the Model API
+  Converts `_id` to `id` when generating model objects,
+  to conform with the Model API.
+  
+  Used internally by the model.
   
   @private
  */
@@ -561,6 +553,8 @@ MongoDB.prototype.idFilter = function(o) {
     delete o._id;
   }
 }
+
+// Model methods. See lib/driver.js for Model API docs
 
 MongoDB.prototype.__modelMethods = {
 
