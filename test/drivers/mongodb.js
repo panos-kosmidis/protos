@@ -13,8 +13,6 @@ var app = require('../fixtures/bootstrap'),
     ModelBatch = require('../fixtures/model-batch'),
     EventEmitter = require('events').EventEmitter;
 
-app.logging = true;
-
 var mongodb, multi, model, storageMulti;
 
 var config = app.config.database.mongodb.nocache;

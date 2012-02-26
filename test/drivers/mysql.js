@@ -9,8 +9,6 @@ var app = require('../fixtures/bootstrap'),
     createClient = require('mysql').createClient,
     EventEmitter = require('events').EventEmitter;
 
-app.logging = true;
-
 var mysql, multi, model, storageMulti, modelBatch;
 
 var config = app.config.database.mysql.nocache,
@@ -28,18 +26,25 @@ CREATE TABLE IF NOT EXISTS %s (\n\
   PRIMARY KEY (id)\n\
 )', table);
 
+// Cache Compliance
+
+var cacheCompliance = [];
+
 // Cache Events
 var c = '0;36';
 app.on('mysql_cache_store', function(cacheID, cache) {
-  console.log('    ✓ %s', colorize('Stored cache for ' + cacheID, c));
+  cacheCompliance.push({sto: cacheID});
+  // console.log('    ✓ %s', colorize('Stored cache: ' + cacheID, c));
 });
 
 app.on('mysql_cache_use', function(cacheID, cache) {
-  console.log('    ✓ %s', colorize('Using cacheID' + cacheID, c));
+  cacheCompliance.push({use: cacheID});
+  // console.log('    ✓ %s', colorize('Using cache: ' + cacheID, c));
 });
 
 app.on('mysql_cache_invalidate', function(invalidated) {
-  console.log('    ✓ %s', colorize('Invalidated ' + invalidated.join(', '), c));
+  cacheCompliance.push({inv: invalidated});
+  // console.log('    ✓ %s', colorize('Invalidated cache: ' + invalidated.join(', '), c));
 });
 
 // Test Model
@@ -643,6 +648,186 @@ vows.describe('drivers/mysql.js').addBatch({
   
 }).addBatch({
   
+  'Cache API Compliance': {
+    
+    topic: function() {
+      var promise = new EventEmitter(),
+          multi = app.getResource('drivers/mysql:cache').multi();
+      
+      // Cache invalidate
+      multi.__exec({
+        sql: 'SHOW TABLES',
+        cacheInvalidate: ['cache1', 'cache2', 'cache3']
+      });
+      
+      // Cache invalidate
+      multi.insertInto({
+        table: table,
+        values: {
+          user: 'user1',
+          pass: 'pass1'
+        },
+        cacheInvalidate: ['cache4', 'cache5', 'cache6']
+      });
+      
+      // Cache store
+      multi.query({
+        sql: 'SHOW TABLES',
+        cacheID: 'cache1'
+      });
+      
+      // Cache use
+      multi.query({
+        sql: 'SHOW TABLES',
+        cacheID: 'cache1'
+      });
+      
+      // Cache store
+      multi.queryWhere({
+        table: table,
+        condition: 'user=?',
+        params: 1,
+        cacheID: 'cache2'
+      });
+      
+      // Cache use
+      multi.queryWhere({
+        table: table,
+        condition: 'user=?',
+        params: 1,
+        cacheID: 'cache2'
+      });
+      
+      // Cache store
+      multi.queryAll({
+        table: table,
+        cacheID: 'cache3'
+      });
+      
+      // Cache use
+      multi.queryAll({
+        table: table,
+        cacheID: 'cache3'
+      });
+      
+      // Cache store
+      multi.queryById({
+        table: table,
+        id: 1,
+        cacheID: 'cache4'
+      });
+      
+      // Cache use
+      multi.queryById({
+        table: table,
+        id: 1,
+        cacheID: 'cache4'
+      });
+      
+      // Cache store
+      multi.countRows({
+        table: table,
+        cacheID: 'cache5'
+      });
+      
+      // Cache use
+      multi.countRows({
+        table: table,
+        cacheID: 'cache5'
+      });
+      
+      // Cache store
+      multi.idExists({
+        table: table,
+        id: 1,
+        cacheID: 'cache6'
+      });
+      
+      // Cache use
+      multi.idExists({
+        table: table,
+        id: 1,
+        cacheID: 'cache6'
+      });
+      
+      // Cache invalidate
+      multi.updateWhere({
+        condition: 'id=?',
+        params: 1,
+        table: table,
+        values: {
+          user: 'user1',
+          pass: 'pass1'
+        },
+        cacheInvalidate: ['cache1', 'cache2']
+      });
+      
+      // Cache invalidate
+      multi.updateById({
+        table: table,
+        id: 1,
+        values: {
+          user: 'USER1',
+          pass: 'PASS1'
+        },
+        cacheInvalidate: ['cache3', 'cache4']
+      });
+      
+      // Cache invalidate
+      multi.deleteWhere({
+        table: table,
+        condition: 'id=?',
+        params: 1,
+        cacheInvalidate: 'cache5'
+      });
+      
+      // Cache invalidate
+      multi.deleteById({
+        table: table,
+        id: 1,
+        cacheInvalidate: 'cache6'
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success');
+      });
+      
+      return promise;
+    },
+    
+    "All driver methods support cache operations": function() {
+      var expected = [ 
+        { inv: [ 'cache1', 'cache2', 'cache3' ] },
+        { inv: [ 'cache4', 'cache5', 'cache6' ] },
+        { sto: 'cache1' },
+        { use: 'cache1' },
+        { sto: 'cache2' },
+        { use: 'cache2' },
+        { sto: 'cache3' },
+        { use: 'cache3' },
+        { sto: 'cache4' },
+        { use: 'cache4' },
+        { sto: 'cache5' },
+        { use: 'cache5' },
+        { sto: 'cache6' },
+        { use: 'cache6' },
+        { inv: [ 'cache1', 'cache2' ] },
+        { inv: [ 'cache3', 'cache4' ] },
+        { inv: [ 'cache5' ] },
+        { inv: [ 'cache6' ] } ];
+        
+      assert.deepEqual(cacheCompliance, expected);
+      
+      // Reset cache compliance
+      while (cacheCompliance.pop() !== undefined);
+      
+      app.globals.cacheCompliance = cacheCompliance;
+    }
+    
+  }
+  
+}).addBatch({
+  
   'Model API Compliance': {
     
     topic: function() {
@@ -686,5 +871,6 @@ vows.describe('drivers/mysql.js').addBatch({
 .addBatch(modelBatch.getAll)
 .addBatch(modelBatch.save)
 .addBatch(modelBatch.delete)
+.addBatch(modelBatch.cache)
 
 .export(module);
