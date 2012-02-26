@@ -70,21 +70,17 @@ function MySQL(app, config) {
 util.inherits(MySQL, corejs.lib.driver);
 
 /**
-  Performs a manual SQL Query
+  Queries rows from a table
 
-  Provides [err, results, fields]
-
-  Cache: Store / {cacheID, cacheTimeout}
-  
   @example
   
-    db.query({
+    mysql.query({
       sql: 'SELECT * FROM table WHERE id=? AND user=?',
       params: [id, user],
       appendSql: ''
     }, function(err, results, fields) {
-      callback.call(err, results, fields);
-    })
+      console.log([err, results, fields]);
+    });
 
   @param {object} o
   @param {function} callback
@@ -107,18 +103,14 @@ MySQL.prototype.query = function(o, callback) {
 }
 
 /**
-  Performs a query that returns no results. Usually affecting tables/rows
+  Executes a query that is not expected to provide any results
 
-  Provides: [err, info]
-
-  Cache: Invalidate / {cacheInvalidate}
-  
   @example
 
-    db.exec({
+    mysql.exec({
       sql: 'SHOW TABLES',
     }, function(err, info) {
-      console.exit([err, info]);
+      console.log([err, info]);
     });
 
   @param {object} o
@@ -145,20 +137,16 @@ MySQL.prototype.exec = function(o, callback) {
 }
 
 /**
-  Performs a SELECT ... WHERE ... query
-
-  Provides: [err, results, fields]
-
-  Cache: Store / {cacheID, cacheTimeout}
+  Queries rows when condition is satisfied
 
   @example
 
-    db.queryWhere({
+    mysql.queryWhere({
       condition: 'id=?',
       params: [1],
       table: 'users'
     }, function(err, results, fields) {
-      console.exit([err, results, fields]);
+      console.log([err, results, fields]);
     });
 
   @param {object} o
@@ -191,19 +179,15 @@ MySQL.prototype.queryWhere = function(o, callback) {
 }
 
 /**
-  Queries all entries from a table. Optionally fetches specific columns
-
-  Provides: [err, results, fields]
-
-  Cache: Store / {cacheID, cacheTimeout}
-
+  Queries all rows in a table
+  
   @example
 
-    db.queryAll({
+    mysql.queryAll({
       columns: 'user, pass',
       table: 'users'
     }, function(err, results, fields) {
-      console.exit([err, results, fields]);
+      console.log([err, results, fields]);
     });
 
   @param {object} o
@@ -232,17 +216,13 @@ MySQL.prototype.queryAll = function(o, callback) {
 /**
   Queries fields by ID
 
-  Provides: [err, results, fields]
-
-  Cache: Store / {cacheID, cacheTimeout}
-  
   @example
 
-    db.queryById({
+    mysql.queryById({
       id: [1,3],
       table: 'users'
     }, function(err, results, fields) {
-      console.exit([err, results, fields]);
+      console.log([err, results, fields]);
     });
   
   @param {object} o
@@ -275,17 +255,13 @@ MySQL.prototype.queryById = function(o, callback) {
 /**
   Inserts values into a table
 
-  Provides:  [err, info]
-
-  Cache: Invalidate / {cacheInvalidate}
-  
   @example
 
-    db.insertInto({
+    mysql.insertInto({
       table: 'users',
       values: {user: 'hello', pass: 'passme'}
     }, function(err, info) {
-      console.exit([err, info]);
+      console.log([err, info]);
     });
 
   @param {object} o
@@ -326,17 +302,13 @@ MySQL.prototype.insertInto = function(o, callback) {
 /**
   Deletes records by ID
 
-  Provides: [err, info]
-
-  Cache: Invalidate / {cacheInvalidate}
-  
   @example
 
-    db.deleteById({
+    mysql.deleteById({
       id: 4,
       table: 'users'
     }, function(err, info) {
-      console.exit([err, info]);
+      console.log([err, info]);
     });
 
   @param {object} o
@@ -365,20 +337,16 @@ MySQL.prototype.deleteById = function(o, callback) {
 }
 
 /**
-  Performs a DELETE ... WHERE ... query
-  
-  Provides: [err, info]
-
-  Cache: Invalidate / {cacheInvalidate}
+  Deletes rows where condition is satisfied
   
   @example
 
-    db.deleteWhere({
+    mysql.deleteWhere({
       condition: 'id=?',
       params: [5],
       table: 'users'
     }, function(err, info) {
-      console.exit([err, info]);
+      console.log([err, info]);
     });
 
   @param {object} o
@@ -409,19 +377,15 @@ MySQL.prototype.deleteWhere = function(o, callback) {
 
 /**
   Updates records by ID
-
-  Provides: [err, info]
-
-  Cache: Invalidate / {cacheInvalidate}
   
   @example
 
-    db.updateById({
+    mysql.updateById({
       id: 1,
       table: 'users',
       values: {user: 'ernie'}
     }, function(err, info) {
-      console.exit([err, info]);
+      console.log([err, info]);
     });
 
   @param {object} o
@@ -452,21 +416,17 @@ MySQL.prototype.updateById = function(o, callback) {
 }
 
 /**
-  Performs an UPDATE ... WHERE ... query
-  
-  Provides: [err, info]
-
-  Cache: Invalidate / {cacheInvalidate}
+  Updates rows where condition is satisfied
   
   @example
 
-    db.updateWhere({
+    mysql.updateWhere({
       condition: 'id=?',
       params: [1],
       table: 'users',
       values: {user: 'ernie'}
     }, function(err, info) {
-      console.exit([err, info]);
+      console.log([err, info]);
     });
   
   @param {object} o
@@ -508,13 +468,13 @@ MySQL.prototype.updateWhere = function(o, callback) {
 /**
   Counts rows in a table
 
-  Provides: [err, count]
-
-  Cache: Store / {cacheID, cacheTimeout}
-  
   @example
 
-    db.countRows({table: 'users'}, callback);
+    mysql.countRows({
+      table: table
+    }, function(err, count) {
+      console.log([err, count]);
+    });
 
   @param {object} o
   @param {function} callback
@@ -539,18 +499,17 @@ MySQL.prototype.countRows = function(o, callback) {
 }
 
 /**
-  Performs a query by ID, returning an object with the found ID's.
+  Queries rows by ID, returning an object with the ID's as keys,
+  which contain the row (if found), or null if the row is not found.
 
-  Provides: [err, results]
-
-  Cache: Store / {cacheID, cacheTimeout}
-  
   @example
 
-    db.idExists({
+    mysql.idExists({
       id: [1,2],
       table: 'users'
-    }, callback);
+    }, function(err, results) {
+      console.log([err, results]);
+    });
 
   @param {object} o
   @param {function} callback
@@ -598,6 +557,8 @@ MySQL.prototype.idExists = function(o, callback) {
   
   this.queryById.apply(this, args);
 }
+
+// Model methods. See lib/driver.js for Model API docs
 
 MySQL.prototype.__modelMethods = {
   

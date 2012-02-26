@@ -835,4 +835,4 @@ Collection.prototype.__find = function() {
   this.find.apply(this, args);
 }
 
-module.exports = MongoDB ;
+module.exports = MongoDB;
