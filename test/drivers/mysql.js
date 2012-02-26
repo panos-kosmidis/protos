@@ -4,13 +4,14 @@ var app = require('../fixtures/bootstrap'),
     util = require('util'),
     assert = require('assert'),
     colorize = corejs.util.colorize,
+    ModelBatch = require('../fixtures/model-batch'),
     Multi = require('multi'),
     createClient = require('mysql').createClient,
     EventEmitter = require('events').EventEmitter;
 
 app.logging = true;
 
-var mysql, multi, model, storageMulti;
+var mysql, multi, storageMulti, modelBatch;
 
 var config = app.config.database.mysql.nocache,
     client = createClient(config),
@@ -52,6 +53,9 @@ function TestModel() {
 
 util.inherits(TestModel, corejs.lib.model);
 
+var model = new TestModel(),
+    modelBatch = new ModelBatch();
+    
 vows.describe('drivers/mysql.js').addBatch({
   
   'Integrity Checks': {
@@ -645,13 +649,14 @@ vows.describe('drivers/mysql.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      // Prepare model for tests
-      model = new TestModel();
+      // Prepare model (initialize)
       model.prepare(app);
+      
+      // Override model context (not using className to detect context)
       model.context = config.table;
-      multi = model.multi();
-      mysql = app.getResource('drivers/mysql:cache');
-      storageMulti = mysql.storage.multi();
+      
+      // Set modelBatch's closure vars (setter, does not conflict with vows)
+      modelBatch.model = model;
       
       // Start with a clean table
       mclient.query('DROP TABLE ' + table);
@@ -670,167 +675,14 @@ vows.describe('drivers/mysql.js').addBatch({
     
   }
   
-}).addBatch({
-  
-  'Model API: insert': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      multi.insert({user: 'user1', pass: 'pass1'}, {cacheInvalidate: ['api_get', 'api_getall']});
-      multi.insert({user: 'user2', pass: 'pass2'});
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
+})
 
-    },
-    
-    'Inserts new models + invalidates caches': function(results) {
-      assert.deepEqual(results, [1, 2]);
-    }
-    
-  }
-  
-}).addBatch({
-  
-  'Model API: get': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      // object + caching
-      multi.get({user: 'user1'}, {cacheID: 'api_get', cacheTimeout: 3600});
-      
-      // integer
-      multi.get(1);
-      
-      // array
-      multi.get([1,2]);
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Returns valid results + caches data': function(results) {
-      var q1 = results[0],
-          q2 = results[1],
-          q3 = results[2];
-      var expected1 = { id: 1, user: 'user1', pass: 'pass1' },
-          expected2 = { id: 2, user: 'user2', pass: 'pass2' };
-      assert.deepEqual(q1.__currentState, expected1);
-      assert.deepEqual(q2.__currentState, expected1);
-      assert.strictEqual(q3.length, 2);
-      assert.deepEqual(q3[0].__currentState, expected1);
-      assert.deepEqual(q3[1].__currentState, expected2);
-    }
-    
-  }
-  
-}).addBatch({
-  
-  'Model API: getAll': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      // getall
-      multi.getAll();
-      
-      // getall + invalidate
-      multi.getAll({cacheID: 'api_getall', cacheTimeout: 3600});
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Returns valid results + caches data': function(results) {
-      var q1 = results[0],
-          q2 = results[1];
-      var expected1 = { id: 1, user: 'user1', pass: 'pass1' },
-          expected2 = { id: 2, user: 'user2', pass: 'pass2' };
-      assert.deepEqual(q1, [expected1, expected2]);
-      assert.deepEqual(q2, [expected1, expected2]);
-    }
-    
-  }
-  
-}).addBatch({
-  
-  'Model API: save': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      // save + caching
-      multi.save({id: 1, user: '__user1', pass: '__pass1'}, {cacheInvalidate: ['api_get', 'api_getall']});
-      
-      // save
-      multi.save({id: 1, user: '__user1__', pass: '__pass1__'});
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    'Updates model data + invalidates caches': function(results) {
-      assert.deepEqual(results, ['OK', 'OK']);
-    }
-    
-  }
-  
-}).addBatch({
-  
-  'Model API: delete': {
-  
-    topic: function() {
-      var promise = new EventEmitter();
+// Model API Compliance tests
 
-      // integer + invalidate
-      multi.delete(2, {cacheInvalidate: ['api_get', 'api_getall']});
+.addBatch(modelBatch.insert)
+.addBatch(modelBatch.get)
+.addBatch(modelBatch.getAll)
+.addBatch(modelBatch.save)
+.addBatch(modelBatch.delete)
 
-      // array
-      multi.delete([1,2]);
-
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-
-      return promise;
-    },
-
-    'Properly deletes from database + invalidates caches': function(results) {
-      assert.deepEqual(results, ['OK', ['OK', 'OK'] ]);
-    }
-    
-  }
-  
-}).addBatch({
-  
-  'Cleanup': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      mysql.exec({sql: 'DROP TABLE IF EXISTS ' + table}, function(err) {
-        promise.emit('success', err);
-      });
-      return promise;
-    },
-    
-    'Removed test data': function(err) {
-      assert.isNull(err);
-    }
-    
-  }
-  
-}).export(module);
+.export(module);
