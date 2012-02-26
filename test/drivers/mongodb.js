@@ -22,22 +22,26 @@ var config = app.config.database.mongodb.nocache;
 //Local variables for testing
 var userId1, userId2;
 
-var oid = ObjectID('4de6abd5da558a49fc5eef29');
+var oid = new ObjectID('4de6abd5da558a49fc5eef29');
+
+// Expected cache compliance results
+var cacheCompliance = [];
 
 // Cache Events
 var c = '0;36';
 app.on('mongodb_cache_store', function(cacheID, cache) {
-  console.log('    ✓ %s', colorize('Stored cache for ' + cacheID, c));
+  cacheCompliance.push({sto: cacheID});
+  // console.log('    ✓ %s', colorize('Stored cache: ' + cacheID, c));
 });
 
 app.on('mongodb_cache_use', function(cacheID, cache) {
-  console.trace('This should not happen');
-  process.exit();
-  console.log('    ✓ %s', colorize('Using cacheID' + cacheID, c));
+  cacheCompliance.push({use: cacheID});
+  // console.log('    ✓ %s', colorize('Using cache: ' + cacheID, c));
 });
 
 app.on('mongodb_cache_invalidate', function(invalidated) {
-  console.log('    ✓ %s', colorize('Invalidated ' + invalidated.join(', '), c));
+  cacheCompliance.push({inv: invalidated});
+  // console.log('    ✓ %s', colorize('Invalidated cache: ' + invalidated.join(', '), c));
 });
 
 // Test Model
@@ -138,7 +142,7 @@ vows.describe('drivers/mongodb.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
 
-      // Insert user 1
+      // Insert user 1 + cache usage
       multi.insertInto({
         collection: config.collection,
         values: {
@@ -162,7 +166,7 @@ vows.describe('drivers/mongodb.js').addBatch({
       multi.insertInto({
         collection: config.collection,
         values: {
-          _id: ObjectID('4de6abd5da558a49fc5eef29'),
+          _id: new ObjectID('4de6abd5da558a49fc5eef29'),
           name: 'user3',
           pass: 'pass3'
         }
@@ -320,7 +324,7 @@ vows.describe('drivers/mongodb.js').addBatch({
       multi.queryById({
         collection: config.collection,
         fields: {pass: 1},
-        _id: [1, 2, '4de6abd5da558a49fc5eef29', oid, 99, '3de5abd4da447a40ab4dde18', ObjectID('3de5abd4da447a40ab4dde18')]
+        _id: [1, 2, '4de6abd5da558a49fc5eef29', oid, 99, '3de5abd4da447a40ab4dde18', new ObjectID('3de5abd4da447a40ab4dde18')]
       });
       
       // Missing id (error)
@@ -683,7 +687,7 @@ vows.describe('drivers/mongodb.js').addBatch({
     },
     
     "Properly deletes values": function(topic) {
-      var results = topic[1];
+      var results = topic[1],
           r1 = results[0],
           r2 = results[1],
           r3 = results[2];
@@ -809,6 +813,159 @@ vows.describe('drivers/mongodb.js').addBatch({
   
 }).addBatch({
   
+  'Cache API Compliance': {
+
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      var multi = app.getResource('drivers/mongodb:cache').multi();
+      
+      // Invalidate cache
+      multi.insertInto({
+        collection: config.collection,
+        values: {
+          _id: 1,
+          user: 'user1',
+          pass: 'pass1'
+        },
+        cacheInvalidate: ['cache1', 'cache2', 'cache3', 'cache4', 'cache5']
+      });
+      
+      // Store cache
+      multi.queryWhere({
+        collection: config.collection,
+        condition: {_id: 1},
+        cacheID: 'cache1'
+      });
+      
+      // Use cache
+      multi.queryWhere({
+        collection: config.collection,
+        condition: {_id: 1},
+        cacheID: 'cache1'
+      });
+      
+      // Store cache
+      multi.queryAll({
+        collection: config.collection,
+        cacheID: 'cache2'
+      });
+       
+      // Use cache
+      multi.queryAll({
+        collection: config.collection,
+        cacheID: 'cache2'
+      });
+      
+      // Store cache
+      multi.queryById({
+        collection: config.collection,
+        _id: 1,
+        cacheID: 'cache3'
+      });      
+      
+      // Use cache
+      multi.queryById({
+        collection: config.collection,
+        _id: 1,
+        cacheID: 'cache3'
+      });
+      
+      // Store cache
+      multi.count({
+        collection: config.collection,
+        cacheID: 'cache4'
+      });
+      
+      // Use cache
+      multi.count({
+        collection: config.collection,
+        cacheID: 'cache4'
+      });
+      
+      // Store cache
+      multi.idExists({
+        collection: config.collection,
+        _id: 1,
+        cacheID: 'cache5'
+      });
+      
+      // Use Cache
+      multi.idExists({
+        collection: config.collection,
+        _id: 1,
+        cacheID: 'cache5'
+      });
+      
+      // Invalidate cache
+      multi.updateWhere({
+        collection: config.collection,
+        condition: {_id: 1},
+        values: {
+          user: 'USER1',
+          pass: 'PASS1'
+        },
+        cacheInvalidate: 'cache1'
+      });
+      
+      // Invalidate cache
+      multi.updateById({
+        collection: config.collection,
+        _id: 1,
+        cacheInvalidate: 'cache2'
+      });
+      
+      // Invalidate cache
+      multi.deleteWhere({
+        collection: config.collection,
+        condition: {_id: 1},
+        cacheInvalidate: 'cache3'
+      });
+      
+      // Invalidate cache
+      multi.deleteById({
+        collection: config.collection,
+        _id: 1,
+        cacheInvalidate: 'cache4'
+      });
+      
+      multi.exec(function(err, results) {
+        promise.emit('success');
+      });
+      
+      return promise;
+    },
+
+    "All driver methods support cache operations": function() {
+      var expected = [
+      { inv: [ 'cache1', 'cache2', 'cache3', 'cache4', 'cache5' ] },
+      { sto: 'cache1' },
+      { use: 'cache1' },
+      { sto: 'cache2' },
+      { use: 'cache2' },
+      { sto: 'cache3' },
+      { use: 'cache3' },
+      { sto: 'cache4' },
+      { use: 'cache4' },
+      { sto: 'cache5' },
+      { use: 'cache5' },
+      { inv: [ 'cache1' ] },
+      { inv: [ 'cache2' ] },
+      { inv: [ 'cache3' ] },
+      { inv: [ 'cache4' ] } ];
+      
+      assert.deepEqual(cacheCompliance, expected);
+      
+      // Empty cacheCompliance array
+      while (cacheCompliance.pop() !== undefined);
+      
+      app.globals.cacheCompliance = cacheCompliance;
+    }
+
+  }
+  
+}).addBatch({
+  
   'Model API Compliance': {
     
     topic: function() {
@@ -825,7 +982,6 @@ vows.describe('drivers/mongodb.js').addBatch({
       model.context = config.collection;
       
       // Set modelBatch's closure vars (setter)
-      
       modelBatch.model = model;
       
       // Cleanup collection
@@ -852,54 +1008,6 @@ vows.describe('drivers/mongodb.js').addBatch({
 .addBatch(modelBatch.getAll)
 .addBatch(modelBatch.save)
 .addBatch(modelBatch.delete)
+.addBatch(modelBatch.cache)
 
 .export(module);
-
-/*
-}).addBatch({
-  
-  'MongoDB::{method}': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      multi.exec(function(err, results) {
-        promise.emit('success', err || results);
-      });
-      
-      return promise;
-    },
-    
-    "success": function(results) {
-      var r = results[0];
-      console.exit(r);
-    }
-    
-  }
-  
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

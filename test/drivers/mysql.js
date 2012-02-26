@@ -649,7 +649,7 @@ vows.describe('drivers/mysql.js').addBatch({
       var promise = new EventEmitter();
       
       // Create model
-      model = new TestModel(),
+      model = new TestModel();
       
       // Prepare model (initialize)
       model.prepare(app);

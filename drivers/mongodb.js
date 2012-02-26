@@ -503,7 +503,7 @@ MongoDB.prototype.idExists = function(o, callback) {
       
       // Set missing docs as null
       for (i=0; i < _id.length; i++) {
-        var id = _id[i];
+        id = _id[i];
         if (! (id in out)) out[id] = null;
       }
       
@@ -818,6 +818,7 @@ function convertMongoID(o) {
 
 function __count(cdata, callback) {
   // This function is overridden, and the cdata var is used for caching
+  var self = this;
   this.count(function(err, count) {
     callback.call(self, err, count);
   });
