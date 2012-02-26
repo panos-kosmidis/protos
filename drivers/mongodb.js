@@ -118,7 +118,7 @@ MongoDB.prototype.insertInto = function(o, callback) {
     callback.call(self, new Error("MongoDB::insertInto: 'values' is missing"));
     return;
   }
-
+  
   this.client.collection(collection, function(err, collection) {
     if (err) callback.call(self, err);
     else {
@@ -562,7 +562,10 @@ MongoDB.prototype.__modelMethods = {
 
     // Validate, throw error on failure
     this.__validateProperties(o);
-
+    
+    // Convert `id` to `_id`
+    convertMongoID(o);
+    
     // Save data into the database
     this.driver.insertInto(_.extend({
       collection: this.context,
@@ -785,6 +788,19 @@ function constructIdCondition(_id) {
       }
     }
     return {_id: {$in: $in}};
+  }
+}
+
+/**
+  Converts an 'id' param to an _id param
+  
+  @private
+ */
+ 
+function convertMongoID(o) {
+  if ('id' in o) {
+    o._id = o.id;
+    delete o.id;
   }
 }
 

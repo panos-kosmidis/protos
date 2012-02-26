@@ -11,7 +11,7 @@ var app = require('../fixtures/bootstrap'),
 
 app.logging = true;
 
-var mysql, multi, storageMulti, modelBatch;
+var mysql, multi, model, storageMulti, modelBatch;
 
 var config = app.config.database.mysql.nocache,
     client = createClient(config),
@@ -53,8 +53,7 @@ function TestModel() {
 
 util.inherits(TestModel, corejs.lib.model);
 
-var model = new TestModel(),
-    modelBatch = new ModelBatch();
+var modelBatch = new ModelBatch();
     
 vows.describe('drivers/mysql.js').addBatch({
   
@@ -649,13 +648,16 @@ vows.describe('drivers/mysql.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
+      // Create model
+      model = new TestModel(),
+      
       // Prepare model (initialize)
       model.prepare(app);
       
       // Override model context (not using className to detect context)
       model.context = config.table;
       
-      // Set modelBatch's closure vars (setter, does not conflict with vows)
+      // Set modelBatch's closure vars (setter)
       modelBatch.model = model;
       
       // Start with a clean table
@@ -663,7 +665,7 @@ vows.describe('drivers/mysql.js').addBatch({
       mclient.query(createTable);
       
       mclient.exec(function(err, results) {
-        promise.emit('success', model);
+        promise.emit('success', err || model);
       });
       
       return promise;

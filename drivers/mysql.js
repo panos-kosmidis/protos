@@ -613,7 +613,6 @@ MySQL.prototype.__modelMethods = {
     this.__validateProperties(o);
 
     // Save data into the database
-    
     this.driver.insertInto(_.extend({
       table: this.context,
       values: o

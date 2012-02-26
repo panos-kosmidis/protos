@@ -2,9 +2,22 @@
 var assert = require('assert'),
     EventEmitter = require('events').EventEmitter;
 
+var testData = {
+  MySQL: { // pkey constraint, need auto_increment
+    insert: [
+      {user: 'user1', pass: 'pass1'},
+      {user: 'user2', pass: 'pass2'}]
+  },
+  MongoDB: {
+    insert: [ // mongodb is more flexible when it comes to id's
+      {id: 1, user: 'user1', pass: 'pass1'},
+      {id: 2, user: 'user2', pass: 'pass2'}]
+  }
+}
+
 function ModelBatch() {
   
-  var model, multi;
+  var data, model, multi;
   
   var instance = {
     
@@ -15,8 +28,8 @@ function ModelBatch() {
         topic: function() {
           var promise = new EventEmitter();
           
-          multi.insert({user: 'user1', pass: 'pass1'}, {cacheInvalidate: ['api_get', 'api_getall']});
-          multi.insert({user: 'user2', pass: 'pass2'});
+          multi.insert(data.insert[0], {cacheInvalidate: ['api_get', 'api_getall']});
+          multi.insert(data.insert[1]);
 
           multi.exec(function(err, results) {
             promise.emit('success', err || results);
@@ -169,6 +182,7 @@ function ModelBatch() {
   instance.__defineSetter__('model', function(m) {
     model = m;
     multi = model.multi();
+    data = testData[model.driver.className];
   });
   
   return instance;

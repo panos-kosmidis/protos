@@ -10,6 +10,7 @@ var app = require('../fixtures/bootstrap'),
     Server = mongodb.Server,
     ObjectID = mongodb.ObjectID,
     Multi = require('multi'),
+    ModelBatch = require('../fixtures/model-batch'),
     EventEmitter = require('events').EventEmitter;
 
 app.logging = true;
@@ -30,6 +31,8 @@ app.on('mongodb_cache_store', function(cacheID, cache) {
 });
 
 app.on('mongodb_cache_use', function(cacheID, cache) {
+  console.trace('This should not happen');
+  process.exit();
   console.log('    ✓ %s', colorize('Using cacheID' + cacheID, c));
 });
 
@@ -48,6 +51,7 @@ function TestModel() {
 
 util.inherits(TestModel, corejs.lib.model);
 
+var modelBatch = new ModelBatch();
 
 vows.describe('lib/drivers/mongodb.js').addBatch({
   
@@ -127,7 +131,7 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     }
    }
   
-}).addBatch({
+})/*.addBatch({
   
   'MongoDB::insertInto': {
     
@@ -803,20 +807,28 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     
   }
   
-}).addBatch({
+})*/.addBatch({
   
   'Model API Compliance': {
     
     topic: function() {
-      var promise = new EventEmitter();
-      model = new TestModel();
-      model.prepare(app);
-      model.context = config.collection;
-      multi = model.multi();
-      mongodb = app.getResource('drivers/mongodb:cache');
-      storageMulti = mongodb.storage.multi();
       
-      // Remove all records before running subsequent tests
+      var promise = new EventEmitter();
+      
+      // Create model
+      model = new TestModel();
+      
+      // Prepare model (initialize)
+      model.prepare(app);
+      
+      // Override model context (not using className to detect context)
+      model.context = config.collection;
+      
+      // Set modelBatch's closure vars (setter)
+      
+      modelBatch.model = model;
+      
+      // Cleanup collection
       mongodb.deleteWhere({
         collection: config.collection,
         condition: {}
@@ -833,7 +845,11 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     
   }
   
-}).export(module);
+})
+
+.addBatch(modelBatch.insert)
+
+.export(module);
 
 /*
 }).addBatch({
