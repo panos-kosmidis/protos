@@ -53,7 +53,7 @@ util.inherits(TestModel, corejs.lib.model);
 
 var modelBatch = new ModelBatch();
 
-vows.describe('lib/drivers/mongodb.js').addBatch({
+vows.describe('drivers/mongodb.js').addBatch({
   
   'Integrity Checks': {
     
@@ -131,7 +131,7 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     }
    }
   
-})/*.addBatch({
+}).addBatch({
   
   'MongoDB::insertInto': {
     
@@ -807,7 +807,7 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
     
   }
   
-})*/.addBatch({
+}).addBatch({
   
   'Model API Compliance': {
     
@@ -848,6 +848,10 @@ vows.describe('lib/drivers/mongodb.js').addBatch({
 })
 
 .addBatch(modelBatch.insert)
+.addBatch(modelBatch.get)
+.addBatch(modelBatch.getAll)
+.addBatch(modelBatch.save)
+.addBatch(modelBatch.delete)
 
 .export(module);
 

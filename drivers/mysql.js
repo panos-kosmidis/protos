@@ -744,7 +744,7 @@ MySQL.prototype.__modelMethods = {
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
-    if (typeof id == 'number') {
+    if (typeof id == 'number' || id instanceof Array) {
       
       // Remove entry from database
       this.driver.deleteById(_.extend({
@@ -754,23 +754,6 @@ MySQL.prototype.__modelMethods = {
       }, cdata), function(err, results) {
         callback.call(self, err);
       });
-      
-    } else if (util.isArray(id)) {
-      
-      // Remove multiple entries
-      var i, arr = id,
-          multi = this.multi();
-      
-      for (i=0; i < arr.length; i++) {
-        id = arr[i];
-        multi.delete(id);
-      }
-      
-      multi.exec(function(err, results) {
-        callback.call(self, err, results);
-      })
-      
-      return;
       
     } else {
       

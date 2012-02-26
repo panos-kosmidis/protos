@@ -169,7 +169,7 @@ function ModelBatch() {
         },
 
         'Properly deletes from database + invalidates caches': function(results) {
-          assert.deepEqual(results, ['OK', ['OK', 'OK'] ]);
+          assert.deepEqual(results, ['OK', 'OK']);
         }
 
       }

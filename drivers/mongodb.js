@@ -311,15 +311,15 @@ MongoDB.prototype.deleteById = function(o, callback) {
     return;
   }
   
-  var condition = constructIdCondition(o._id);
+  var args = {
+    collection: collection,
+    condition: constructIdCondition(o._id)
+  }
   
   // Enable caching on method
-  self.addCacheData(o, condition);
+  self.addCacheData(o, args);
   
-  this.deleteWhere({
-    collection: collection,
-    condition: condition
-  }, callback);
+  this.deleteWhere(args, callback);
 }
 
 /**
@@ -446,18 +446,16 @@ MongoDB.prototype.queryAll = function(o, callback) {
       collection = o.collection || '',
       fields = o.fields || {};
 
-  // Performing a find with {} returns all records
-  // Passing only cache data to find, will result on an empty object
-  var cdata = {};
-  
-  // Enable caching on method
-  self.addCacheData(o, cdata);
-
-  this.queryWhere({
+  var args = {
     collection: collection,
     fields: fields,
-    condition: cdata
-  }, callback);
+    condition: {}
+  }
+  
+  // Enable caching on method
+  self.addCacheData(o, args);
+  
+  this.queryWhere(args, callback);
 };
 
 /**
@@ -550,6 +548,20 @@ MongoDB.prototype.count = function(o, callback) {
   });
 }
 
+/**
+  Convert `_id` to `id` when generating model objects,
+  to conform with the Model API
+  
+  @private
+ */
+ 
+MongoDB.prototype.idFilter = function(o) {
+  if ('_id' in o) {
+    o.id = o._id;
+    delete o._id;
+  }
+}
+
 MongoDB.prototype.__modelMethods = {
 
   /** Model API insert */
@@ -582,8 +594,7 @@ MongoDB.prototype.__modelMethods = {
   /** Model API get */
 
   get: function(o, cdata, callback) {
-    var self = this,
-        options = {};
+    var self = this;
 
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
@@ -615,12 +626,15 @@ MongoDB.prototype.__modelMethods = {
       return;
 
     }
-
-    options.collection = this.context;
-    options.condition= o;
-    options.fields = {};
-
-    this.driver.queryWhere(options, function(err, docs) {
+    
+    // TODO: automatically detect which fields should be retrieved based
+    // on this.properties
+    
+    this.driver.queryWhere(_.extend({
+      collection: this.context,
+      condition: o,
+      fields: {}
+    }, cdata), function(err, docs) {
       if (err) callback.call(self, err, null);
       else {
         if (docs.length === 0) callback.call(self, null, null);
@@ -662,9 +676,16 @@ MongoDB.prototype.__modelMethods = {
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
-    // Update data. Validation has already been performed by ModelObject
-    var _id = o._id; 
-    delete o._id;
+    // Note: Validation has already been performed by ModelObject
+    
+    var _id = o.id;
+    delete o.id;
+    
+    if (typeof _id == 'undefined') {
+      callback.call(this, new Error("Unable to update model object without ID"));
+      return;
+    }
+     
     this.driver.updateById(_.extend({
       _id: _id,
       collection: this.context,
@@ -683,32 +704,15 @@ MongoDB.prototype.__modelMethods = {
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
-    if (typeof id == 'string') {
+    if (typeof id == 'number' || id instanceof String || id instanceof Array) {
 
-      // Remove entry from database
       this.driver.deleteById(_.extend({
-        _id: id,
         collection: this.context,
-      }, cdata), function(err, docs) {
+        _id: id
+      }, cdata), function(err) {
         callback.call(self, err);
       });
-
-    } else if (util.isArray(id)) {
-
-      // Remove multiple entries
-      var i, arr = id,
-      multi = this.multi();
-
-      for (i=0; i < arr.length; i++) {
-        id = arr[i];
-        multi.delete(id);
-      }
-
-      multi.exec(function(err, docs) {
-        callback.call(self, err, docs);
-      })
-      return;
-
+      
     } else {
       callback.call(self, new Error(util.format("%s: Wrong value for `id` parameter", this.className)));
     }
