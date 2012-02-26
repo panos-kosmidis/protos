@@ -130,14 +130,15 @@ MongoDB.prototype.insertInto = function(o, callback) {
   Updates items where condition is satisfied
 
   @example
-      mongodb.updateWhere({
-        collection: 'users',
-        condition: {user: 'user1},
-        multi: true,
-        values: {pass: 'pass1'}
-      }, function(err) {
-        console.log(err);
-      });
+  
+    mongodb.updateWhere({
+      collection: 'users',
+      condition: {user: 'user1},
+      multi: true,
+      values: {pass: 'pass1'}
+    }, function(err) {
+      console.log(err);
+    });
 
   @param {object} o
   @param {function} callback
@@ -264,10 +265,6 @@ MongoDB.prototype.deleteWhere = function(o, callback) {
 
 /**
   Deletes records by ID
-
-  Provides: [err, count]
-
-  Cache: Invalidate / {cacheInvalidate}
 
   @example
   
