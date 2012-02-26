@@ -3,7 +3,6 @@
 
 module.exports = {
 
-/*
   default: 'mongodb',
   
   mysql: {
@@ -22,6 +21,5 @@ module.exports = {
    collection: 'test_collection',
    storage: 'redis'
   }
-*/
 
 }
