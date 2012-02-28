@@ -1,9 +1,5 @@
 # CoreJS [![Build Status](https://secure.travis-ci.org/corejs/corejs.png)](http://travis-ci.org/corejs/corejs)
 
-Getting everything ready for public release, scheduled for March 1st on [corejs.org](http://corejs.org).
-
-You can see the planned features & enhancements by visiting the [Issues page](https://github.com/corejs/corejs/issues).
-
 ## Status: alpha
 
 ## About
