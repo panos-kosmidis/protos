@@ -1,7 +1,7 @@
 
 function UsersModel(app) {
   
-  this.driver = 'mongodb';
+  this.driver = 'mysql';
   
   this.properties = {
     user    : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},

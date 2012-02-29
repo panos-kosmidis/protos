@@ -74,8 +74,11 @@ vows.describe('Models').addBatch({
         id INTEGER AUTO_INCREMENT NOT NULL,\n\
         user VARCHAR(255),\n\
         pass VARCHAR(255),\n\
-        status VARCHAR(255),\n\
+        friends INT,\n\
+        valid BOOLEAN,\n\
         date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\
+        object TEXT,\n\
+        array TEXT,\n\
         PRIMARY KEY (id)\n\
       )', table);
       
@@ -110,7 +113,10 @@ vows.describe('Models').addBatch({
       var promise = new EventEmitter(),
           multi = model.multi();
       
-      multi.insert({user: 'ernie', pass: 'abcde12345', 'status': 'enabled'});
+      multi.insert({
+        user: 'ernie',
+        pass: 'abc123'
+      });
       
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
@@ -155,7 +161,11 @@ vows.describe('Models').addBatch({
       var promise = new EventEmitter();
       
       // An error should be thrown if data fails to validate according to custom validation
-      model.insert({user: 'ernie', pass: 'abcde12345', 'status': 'blah'}, function(err, user) {
+      model.insert({
+        user: 'ernie',
+        pass: 'abc1234',
+        friends: 'BAD VALUE'
+      }, function(err, user) {
         promise.emit('success', err || user);
       });
       
@@ -164,7 +174,7 @@ vows.describe('Models').addBatch({
     
     "Should throw an error if field can't validate": function(topic) {
       assert.instanceOf(topic, Error);
-      assert.equal(topic.toString(), "Error: UsersModel: Unable to validate 'status': blah");
+      assert.equal(topic.toString(), "Error: UsersModel: Unable to validate 'friends': BAD VALUE");
     }
     
   }
@@ -177,7 +187,7 @@ vows.describe('Models').addBatch({
       var promise = new EventEmitter();
       
       // An error should be thrown if required file is missing
-      model.insert({user: 'ernie', pass: 'abcde12345'}, function(err, user) {
+      model.insert({user: 'ernie'}, function(err, user) {
         promise.emit('success', err || user);
       });
       
@@ -186,7 +196,7 @@ vows.describe('Models').addBatch({
     
     "Should throw an error if required field is missing": function(topic) {
       assert.instanceOf(topic, Error);
-      assert.equal(topic.toString(), "Error: UsersModel: 'status' is required");
+      assert.equal(topic.toString(), "Error: UsersModel: 'pass' is required");
     }
     
   }
@@ -198,7 +208,15 @@ vows.describe('Models').addBatch({
     topic: function() {
       var promise = new EventEmitter();
 
-      model.new({user: 'node', pass: 'javascript', status: 'enabled'}, function(err, instance) {
+      model.new({
+        user: 'node', 
+        pass: 'javascript', 
+        friends: 1024,
+        valid: false,
+        date: new Date('Wed Feb 29 1975 12:34:38 GMT-0400 (AST)'),
+        object: {apple: 'green', banana: 'yellow', number: 33, array: [1,2,3]},
+        array: [1,2,3]
+      }, function(err, instance) {
         user = instance;
         promise.emit('success', err || instance);
       });
@@ -207,6 +225,7 @@ vows.describe('Models').addBatch({
     },
 
     'Returns instances of ModelObject': function(user) {
+      console.exit(user);
       assert.equal(user.constructor.name, 'ModelObject');
     },
     

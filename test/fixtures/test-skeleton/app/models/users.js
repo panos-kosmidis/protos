@@ -2,17 +2,19 @@
 function UsersModel(app) {
   
   this.validation = {
-    'status': function(data) {
-      return (/^(enabled|disabled|onhold)$/).test(data);
+    'friends': function(data) {
+      return (typeof data == 'number');
     }
   }
   
   this.properties = {
-    id      : {type: 'integer'},
     user    : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},
     pass    : {type: 'string', required: true, validates: 'password'},
-    status  : {type: 'string', required: true, validates: 'status'},
-    date    : {type: 'timestamp', validates: 'timestamp'}
+    friends : {type: 'integer', validates: 'friends', default: 0},
+    valid   : {type: 'boolean', default: true},
+    date    : {type: 'timestamp', validates: 'timestamp', default: function() { return new Date(); }},
+    object  : {type: 'object', default: {a: 1, b: 2, c: 3}},
+    array   : {type: 'array', default: [1,2,3,4]}
   }
 
 }

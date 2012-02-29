@@ -573,6 +573,9 @@ MySQL.prototype.__modelMethods = {
     // Validate, throw error on failure
     this.validateProperties(o);
 
+    // Convert object types to strings
+    this.convertTypes(o);
+
     // Set model defaults
     this.setDefaults(o);
 
