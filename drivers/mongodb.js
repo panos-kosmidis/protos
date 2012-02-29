@@ -566,6 +566,9 @@ MongoDB.prototype.__modelMethods = {
     // Validate, throw error on failure
     this.validateProperties(o);
     
+    // Set model defaults
+    this.setDefaults(o);
+    
     // Convert `id` to `_id`
     convertMongoID(o);
     
@@ -590,7 +593,7 @@ MongoDB.prototype.__modelMethods = {
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
-    if (typeof o == 'number' || typeof o == 'string') { 
+    if (typeof o == 'number' || typeof o == 'string' || o instanceof ObjectID) { 
       // If `o` is number: Convert to object
       o = {_id: o};
     } else if (o instanceof Array) {
@@ -606,8 +609,8 @@ MongoDB.prototype.__modelMethods = {
       });
       return;
 
-    } else if (o instanceof Object) {
-
+    } else if (o.constructor === Object) {
+      
       // IF `o` is object: Validate without checking required fields
       this.propertyCheck(o);
 
