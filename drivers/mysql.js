@@ -571,7 +571,7 @@ MySQL.prototype.__modelMethods = {
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
     
     // Validate, throw error on failure
-    this.__validateProperties(o);
+    this.validateProperties(o);
 
     // Save data into the database
     this.driver.insertInto(_.extend({
@@ -612,7 +612,7 @@ MySQL.prototype.__modelMethods = {
     } else if (typeof o == 'object') {
       
       // IF `o` is object: Validate without checking required fields
-      this.__propertyCheck(o);
+      this.propertyCheck(o);
       
     } else {
       
@@ -648,7 +648,7 @@ MySQL.prototype.__modelMethods = {
       else {
         if (results.length === 0) callback.call(self, null, null);
         else {
-          var model = self.__createModel(results[0]);
+          var model = self.createModel(results[0]);
           callback.call(self, null, model);
         }
       }
@@ -669,7 +669,7 @@ MySQL.prototype.__modelMethods = {
       if (err) callback.call(self, err, null);
       else {
         for (var i=0; i < results.length; i++) {
-          models.push(self.__createModel(results[i]));
+          models.push(self.createModel(results[i]));
         }
         callback.call(self, null, models);
       }

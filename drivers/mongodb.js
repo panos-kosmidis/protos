@@ -564,7 +564,7 @@ MongoDB.prototype.__modelMethods = {
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
     // Validate, throw error on failure
-    this.__validateProperties(o);
+    this.validateProperties(o);
     
     // Convert `id` to `_id`
     convertMongoID(o);
@@ -609,7 +609,7 @@ MongoDB.prototype.__modelMethods = {
     } else if (o instanceof Object) {
 
       // IF `o` is object: Validate without checking required fields
-      this.__propertyCheck(o);
+      this.propertyCheck(o);
 
     } else {
 
@@ -630,7 +630,7 @@ MongoDB.prototype.__modelMethods = {
       else {
         if (docs.length === 0) callback.call(self, null, null);
         else {
-          var model = self.__createModel(docs[0]);
+          var model = self.createModel(docs[0]);
           callback.call(self, null, model);
         }
       }
@@ -651,7 +651,7 @@ MongoDB.prototype.__modelMethods = {
       if (err) callback.call(self, err, null);
       else {
         for (var i=0; i < docs.length; i++) {
-          models.push(self.__createModel(docs[i]));
+          models.push(self.createModel(docs[i]));
         }
         callback.call(self, null, models);
       }
