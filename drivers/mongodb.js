@@ -675,16 +675,16 @@ MongoDB.prototype.__modelMethods = {
 
     // Note: Validation has already been performed by ModelObject
     
-    var _id = o.id;
-    delete o.id;
+    // Convert `id` to `_id`
+    convertMongoID(o);
     
-    if (typeof _id == 'undefined') {
+    if (typeof o._id == 'undefined') {
       callback.call(this, new Error("Unable to update model object without ID"));
       return;
     }
      
     this.driver.updateById(_.extend({
-      _id: _id,
+      _id: o._id,
       collection: this.context,
       values: o
     }, cdata), function(err, docs) {
@@ -701,7 +701,7 @@ MongoDB.prototype.__modelMethods = {
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
-    if (typeof id == 'number' || id instanceof String || id instanceof Array) {
+    if (typeof id == 'number' || id instanceof String || id instanceof Array || id instanceof ObjectID) {
 
       this.driver.deleteById(_.extend({
         collection: this.context,
