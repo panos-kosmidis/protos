@@ -4,7 +4,6 @@
 module.exports = {
 
 /*
-
   default: 'mongodb',
   
   mysql: {
@@ -20,7 +19,6 @@ module.exports = {
    port: 27017,
    database: 'myapp'
   }
-
 */
 
 }
