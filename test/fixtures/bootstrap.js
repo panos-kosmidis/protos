@@ -118,8 +118,6 @@ function engineCompatibility(buffer, __engine__) {
 
 // Automate engine tests
 
-// engines = ['swig'];
-
 app.addEnginePartials = function(current, data, repl) {
   app.logging = true;
   var buf = engines.map(function(engine) {
