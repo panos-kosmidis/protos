@@ -573,6 +573,9 @@ MySQL.prototype.__modelMethods = {
     // Validate, throw error on failure
     this.validateProperties(o);
 
+    // Set model defaults
+    this.setDefaults(o);
+
     // Save data into the database
     this.driver.insertInto(_.extend({
       table: this.context,
@@ -718,6 +721,7 @@ MySQL.prototype.__modelMethods = {
       
     } else {
       
+      console.log(id);
       callback.call(self, new Error(util.format("%s: Wrong value for `id` parameter", this.className)));
       
     }
