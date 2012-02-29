@@ -1,21 +1,10 @@
 
 function UsersModel(app) {
   
-  this.driver = 'mysql';
-  
   this.properties = {
-    user    : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},
-    pass    : {type: 'string', required: true, validates: 'password'},
-    friends : {type: 'integer', default: 0},
-    valid   : {type: 'boolean', default: true},
-    date    : {type: 'timestamp', validates: 'timestamp', default: function() { return new Date(); }},
-    object  : {type: 'object', default: {a: 1, b: 2, c: 3}},
-    array   : {type: 'array', default: [1,2,3,4]}
+    user    : {type: 'string', required: true, validates: 'alpha_underscores'},
+    pass    : {type: 'string', required: true, validates: 'password'}
   }
-  
-  this.hasOne = ['company', 'website'];
-  
-  this.hasMany = ['groups', 'products'];
   
 }
 

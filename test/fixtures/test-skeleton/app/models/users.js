@@ -8,7 +8,7 @@ function UsersModel(app) {
   }
   
   this.properties = {
-    user    : {type: 'string', unique: true, required: true, validates: 'alnum_underscores'},
+    user    : {type: 'string', required: true, validates: 'alnum_underscores'},
     pass    : {type: 'string', required: true, validates: 'password'},
     friends : {type: 'integer', validates: 'friends', default: 0},
     valid   : {type: 'boolean', default: true},
