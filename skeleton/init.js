@@ -4,6 +4,7 @@ function Initialize(app) {
   // app.usersModel.create({
   //   user: 'ernie',
   //   pass: 'passme',
+  //   date: new Date(0),
   //   object: {msg: 'ernie', code: 99}
   // }, function(err, model) {
   //   console.exit(err || model);

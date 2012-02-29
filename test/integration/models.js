@@ -213,7 +213,7 @@ vows.describe('Models').addBatch({
         pass: 'javascript', 
         friends: 1024,
         valid: false,
-        date: new Date('Wed Feb 29 1975 12:34:38 GMT-0400 (AST)'),
+        date: new Date(0), // epoch
         object: {apple: 'green', banana: 'yellow', number: 33, array: [1,2,3]},
         array: [1,2,3]
       }, function(err, instance) {
@@ -225,7 +225,6 @@ vows.describe('Models').addBatch({
     },
 
     'Returns instances of ModelObject': function(user) {
-      console.exit(user);
       assert.equal(user.constructor.name, 'ModelObject');
     },
     
@@ -234,8 +233,16 @@ vows.describe('Models').addBatch({
     },
     
     'Properly typecasts instance properties': function(user) {
-      assert.typeOf(user.id, 'number');
+      assert.strictEqual(user.id, 2);
+      assert.strictEqual(user.user, 'node');
+      assert.strictEqual(user.pass, 'javascript');
+      assert.strictEqual(user.friends, 1024);
+      assert.strictEqual(user.valid, false);
       assert.instanceOf(user.date, Date);
+      assert.isTrue(user.date.toUTCString().indexOf('Thu, 01 Jan 1970 ') === 0);
+      assert.deepEqual(user.object, {apple: 'green', banana: 'yellow', number: 33, array: [1,2,3]});
+      assert.deepEqual(user.array, [1,2,3]);
+      assert.equal(Object.keys(user).length, 8);
     }
 
   }
@@ -247,15 +254,23 @@ vows.describe('Models').addBatch({
     topic: function() {
       var promise = new EventEmitter();
 
-      user.pass = 'new-password';
-      user.status = 'onhold';
+      user.user = 'NODE';
+      user.friends++;
+      user.valid = !user.valid;
+      user.date = new Date(1330529734000); // Wed Feb 29 2012 15:35:34 AST
+      user.object.apple = 'GREEN';
+      user.object.newval = 'NEW';
+      user.object.number--;
+      user.object.array.push(24);
+      user.array.pop();
+      user.array.push(99);
       
       user.save(function(err) {
         if (err) promise.emit('success', err);
         else {
-          model.get({user: 'node'}, function(err, m) {
+          model.get({user: 'NODE'}, function(err, m) {
             user = m;
-            promise.emit('success', err || m);
+            promise.emit('success');
           });
         }
       })
@@ -263,9 +278,17 @@ vows.describe('Models').addBatch({
       return promise;
     },
 
-    'Properly syncs data into the database': function(m) {
-      assert.equal(m.pass, 'new-password');
-      assert.equal(m.status, 'onhold');
+    'Properly syncs data into the database': function() {
+      assert.strictEqual(user.id, 2);
+      assert.strictEqual(user.user, 'NODE');
+      assert.strictEqual(user.pass, 'javascript');
+      assert.strictEqual(user.friends, 1025);
+      assert.strictEqual(user.valid, true);
+      assert.instanceOf(user.date, Date);
+      assert.isTrue(user.date.toUTCString().indexOf('Wed, 29 Feb 2012 ') === 0);
+      assert.deepEqual(user.object, {apple: 'GREEN', banana: 'yellow', number: 32, array: [1,2,3,24], newval: 'NEW'});
+      assert.deepEqual(user.array, [1,2,99]);
+      assert.equal(Object.keys(user).length, 8);
     }
 
   }
@@ -280,7 +303,7 @@ vows.describe('Models').addBatch({
       user.delete(function(err) {
         if (err) promise.emit('success', err);
         else {
-          model.get({user: 'node'}, function(err, m) {
+          model.get({user: 'NODE'}, function(err, m) {
             promise.emit('success', err || m);
           });
         }
@@ -303,21 +326,21 @@ vows.describe('Models').addBatch({
       var mod = eventObjects.create;
       assert.isNotNull(mod);
       assert.equal(mod.constructor.name, 'ModelObject');
-      assert.equal(mod.user, 'node');
+      assert.equal(mod.user, 'NODE');
     },
     
     "Emits the 'save' event": function() {
       var mod = eventObjects.save;
       assert.isNotNull(mod);
       assert.equal(mod.constructor.name, 'ModelObject');
-      assert.equal(mod.user, 'node');
+      assert.equal(mod.user, 'NODE');
     },
     
     "Emits the 'delete' event": function() {
       var mod = eventObjects.delete;
       assert.isNotNull(mod);
       assert.equal(mod.constructor.name, 'ModelObject');
-      assert.equal(mod.user, 'node');
+      assert.equal(mod.user, 'NODE');
     },
     
   }
