@@ -49,8 +49,7 @@ vows.describe('Models').addBatch({
       
       assert.isTrue(model instanceof corejs.lib.model);
       assert.equal(model.className, 'UsersModel');
-      assert.isTrue(model.driver instanceof corejs.lib.driver)
-      assert.equal(model.driver.className, 'MySQL');
+      assert.isTrue(model.driver instanceof corejs.lib.driver);
     },
     
     'Alternative shortcut set (app.xxxModel)': function() {
@@ -74,8 +73,11 @@ vows.describe('Models').addBatch({
         id INTEGER AUTO_INCREMENT NOT NULL,\n\
         user VARCHAR(255),\n\
         pass VARCHAR(255),\n\
-        status VARCHAR(255),\n\
+        friends INT,\n\
+        valid BOOLEAN,\n\
         date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n\
+        object TEXT,\n\
+        array TEXT,\n\
         PRIMARY KEY (id)\n\
       )', table);
       
@@ -110,17 +112,20 @@ vows.describe('Models').addBatch({
       var promise = new EventEmitter(),
           multi = model.multi();
       
-      multi.insert({user: 'ernie', pass: 'abcde12345', 'status': 'enabled'});
+      multi.insert({
+        user: 'ernie',
+        pass: 'abc123'
+      });
       
       multi.exec(function(err, results) {
-        promise.emit('success', err || results);
+        promise.emit('success', err);
       });
       
       return promise;
     },
     
     'Properly inserts objects': function(topic) {
-      assert.deepEqual(topic, [1]);
+      assert.isNull(topic);
     }
     
   }
@@ -155,7 +160,11 @@ vows.describe('Models').addBatch({
       var promise = new EventEmitter();
       
       // An error should be thrown if data fails to validate according to custom validation
-      model.insert({user: 'ernie', pass: 'abcde12345', 'status': 'blah'}, function(err, user) {
+      model.insert({
+        user: 'ernie',
+        pass: 'abc1234',
+        friends: 'BAD VALUE'
+      }, function(err, user) {
         promise.emit('success', err || user);
       });
       
@@ -164,7 +173,7 @@ vows.describe('Models').addBatch({
     
     "Should throw an error if field can't validate": function(topic) {
       assert.instanceOf(topic, Error);
-      assert.equal(topic.toString(), "Error: UsersModel: Unable to validate 'status': blah");
+      assert.equal(topic.toString(), "Error: UsersModel: Unable to validate 'friends': BAD VALUE");
     }
     
   }
@@ -177,7 +186,7 @@ vows.describe('Models').addBatch({
       var promise = new EventEmitter();
       
       // An error should be thrown if required file is missing
-      model.insert({user: 'ernie', pass: 'abcde12345'}, function(err, user) {
+      model.insert({user: 'ernie'}, function(err, user) {
         promise.emit('success', err || user);
       });
       
@@ -186,7 +195,7 @@ vows.describe('Models').addBatch({
     
     "Should throw an error if required field is missing": function(topic) {
       assert.instanceOf(topic, Error);
-      assert.equal(topic.toString(), "Error: UsersModel: 'status' is required");
+      assert.equal(topic.toString(), "Error: UsersModel: 'pass' is required");
     }
     
   }
@@ -198,7 +207,15 @@ vows.describe('Models').addBatch({
     topic: function() {
       var promise = new EventEmitter();
 
-      model.new({user: 'node', pass: 'javascript', status: 'enabled'}, function(err, instance) {
+      model.new({
+        user: 'node', 
+        pass: 'javascript', 
+        friends: 1024,
+        valid: false,
+        date: new Date(0), // epoch
+        object: {apple: 'green', banana: 'yellow', number: 33, array: [1,2,3]},
+        array: [1,2,3]
+      }, function(err, instance) {
         user = instance;
         promise.emit('success', err || instance);
       });
@@ -215,8 +232,16 @@ vows.describe('Models').addBatch({
     },
     
     'Properly typecasts instance properties': function(user) {
-      assert.typeOf(user.id, 'number');
+      // assert.strictEqual(user.id, 2);
+      assert.strictEqual(user.user, 'node');
+      assert.strictEqual(user.pass, 'javascript');
+      assert.strictEqual(user.friends, 1024);
+      assert.strictEqual(user.valid, false);
       assert.instanceOf(user.date, Date);
+      assert.isTrue(user.date.toUTCString().indexOf('Thu, 01 Jan 1970 ') === 0);
+      assert.deepEqual(user.object, {apple: 'green', banana: 'yellow', number: 33, array: [1,2,3]});
+      assert.deepEqual(user.array, [1,2,3]);
+      assert.equal(Object.keys(user).length, 8);
     }
 
   }
@@ -228,15 +253,23 @@ vows.describe('Models').addBatch({
     topic: function() {
       var promise = new EventEmitter();
 
-      user.pass = 'new-password';
-      user.status = 'onhold';
+      user.user = 'NODE';
+      user.friends++;
+      user.valid = !user.valid;
+      user.date = new Date(1330529734000); // Wed Feb 29 2012 15:35:34 AST
+      user.object.apple = 'GREEN';
+      user.object.newval = 'NEW';
+      user.object.number--;
+      user.object.array.push(24);
+      user.array.pop();
+      user.array.push(99);
       
       user.save(function(err) {
         if (err) promise.emit('success', err);
         else {
-          model.get({user: 'node'}, function(err, m) {
+          model.get({user: 'NODE'}, function(err, m) {
             user = m;
-            promise.emit('success', err || m);
+            promise.emit('success');
           });
         }
       })
@@ -244,9 +277,17 @@ vows.describe('Models').addBatch({
       return promise;
     },
 
-    'Properly syncs data into the database': function(m) {
-      assert.equal(m.pass, 'new-password');
-      assert.equal(m.status, 'onhold');
+    'Properly syncs data into the database': function() {
+      // assert.strictEqual(user.id, 2);
+      assert.strictEqual(user.user, 'NODE');
+      assert.strictEqual(user.pass, 'javascript');
+      assert.strictEqual(user.friends, 1025);
+      assert.strictEqual(user.valid, true);
+      assert.instanceOf(user.date, Date);
+      assert.isTrue(user.date.toUTCString().indexOf('Wed, 29 Feb 2012 ') === 0);
+      assert.deepEqual(user.object, {apple: 'GREEN', banana: 'yellow', number: 32, array: [1,2,3,24], newval: 'NEW'});
+      assert.deepEqual(user.array, [1,2,99]);
+      assert.equal(Object.keys(user).length, 8);
     }
 
   }
@@ -257,14 +298,9 @@ vows.describe('Models').addBatch({
 
     topic: function() {
       var promise = new EventEmitter();
-
+      
       user.delete(function(err) {
-        if (err) promise.emit('success', err);
-        else {
-          model.get({user: 'node'}, function(err, m) {
-            promise.emit('success', err || m);
-          });
-        }
+        promise.emit('success', err);
       });
 
       return promise;
@@ -284,42 +320,22 @@ vows.describe('Models').addBatch({
       var mod = eventObjects.create;
       assert.isNotNull(mod);
       assert.equal(mod.constructor.name, 'ModelObject');
-      assert.equal(mod.user, 'node');
+      assert.equal(mod.user, 'NODE');
     },
     
     "Emits the 'save' event": function() {
       var mod = eventObjects.save;
       assert.isNotNull(mod);
       assert.equal(mod.constructor.name, 'ModelObject');
-      assert.equal(mod.user, 'node');
+      assert.equal(mod.user, 'NODE');
     },
     
     "Emits the 'delete' event": function() {
       var mod = eventObjects.delete;
       assert.isNotNull(mod);
       assert.equal(mod.constructor.name, 'ModelObject');
-      assert.equal(mod.user, 'node');
+      assert.equal(mod.user, 'NODE');
     },
-    
-  }
-  
-}).addBatch({
-  
-  'Cleanup': {
-    
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      mysql.exec({sql: 'DROP TABLE IF EXISTS ' + table}, function(err) {
-        promise.emit('success', err);
-      });
-      
-      return promise;
-    },
-    
-    'Removed test data': function(err) {
-      assert.isNull(err);
-    }
     
   }
   

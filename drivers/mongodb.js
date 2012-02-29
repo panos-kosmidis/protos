@@ -564,7 +564,13 @@ MongoDB.prototype.__modelMethods = {
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
     // Validate, throw error on failure
-    this.__validateProperties(o);
+    this.validateProperties(o);
+    
+    // Convert object types to strings
+    this.convertTypes(o);
+    
+    // Set model defaults
+    this.setDefaults(o);
     
     // Convert `id` to `_id`
     convertMongoID(o);
@@ -590,7 +596,7 @@ MongoDB.prototype.__modelMethods = {
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
-    if (typeof o == 'number' || typeof o == 'string') { 
+    if (typeof o == 'number' || typeof o == 'string' || o instanceof ObjectID) { 
       // If `o` is number: Convert to object
       o = {_id: o};
     } else if (o instanceof Array) {
@@ -606,10 +612,10 @@ MongoDB.prototype.__modelMethods = {
       });
       return;
 
-    } else if (o instanceof Object) {
-
+    } else if (o.constructor === Object) {
+      
       // IF `o` is object: Validate without checking required fields
-      this.__propertyCheck(o);
+      this.propertyCheck(o);
 
     } else {
 
@@ -630,7 +636,7 @@ MongoDB.prototype.__modelMethods = {
       else {
         if (docs.length === 0) callback.call(self, null, null);
         else {
-          var model = self.__createModel(docs[0]);
+          var model = self.createModel(docs[0]);
           callback.call(self, null, model);
         }
       }
@@ -651,7 +657,7 @@ MongoDB.prototype.__modelMethods = {
       if (err) callback.call(self, err, null);
       else {
         for (var i=0; i < docs.length; i++) {
-          models.push(self.__createModel(docs[i]));
+          models.push(self.createModel(docs[i]));
         }
         callback.call(self, null, models);
       }
@@ -669,16 +675,16 @@ MongoDB.prototype.__modelMethods = {
 
     // Note: Validation has already been performed by ModelObject
     
-    var _id = o.id;
-    delete o.id;
+    // Convert `id` to `_id`
+    convertMongoID(o);
     
-    if (typeof _id == 'undefined') {
+    if (typeof o._id == 'undefined') {
       callback.call(this, new Error("Unable to update model object without ID"));
       return;
     }
      
     this.driver.updateById(_.extend({
-      _id: _id,
+      _id: o._id,
       collection: this.context,
       values: o
     }, cdata), function(err, docs) {
@@ -695,7 +701,7 @@ MongoDB.prototype.__modelMethods = {
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
-    if (typeof id == 'number' || id instanceof String || id instanceof Array) {
+    if (typeof id == 'number' || id instanceof String || id instanceof Array || id instanceof ObjectID) {
 
       this.driver.deleteById(_.extend({
         collection: this.context,
