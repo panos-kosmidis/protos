@@ -26,6 +26,8 @@ app.usersModel.on('delete', function(err, mod) {
   eventObjects.delete = mod;
 });
 
+var tdate = 1330529734000; // Wed Feb 29 2012 15:35:34 AST
+
 vows.describe('Models').addBatch({
 
   'Preliminaries': {
@@ -238,7 +240,7 @@ vows.describe('Models').addBatch({
       assert.strictEqual(user.friends, 1024);
       assert.strictEqual(user.valid, false);
       assert.instanceOf(user.date, Date);
-      assert.isTrue(user.date.toUTCString().indexOf('Thu, 01 Jan 1970 ') === 0);
+      assert.equal(user.date.valueOf(), new Date(0).valueOf());
       assert.deepEqual(user.object, {apple: 'green', banana: 'yellow', number: 33, array: [1,2,3]});
       assert.deepEqual(user.array, [1,2,3]);
       assert.equal(Object.keys(user).length, 8);
@@ -256,7 +258,7 @@ vows.describe('Models').addBatch({
       user.user = 'NODE';
       user.friends++;
       user.valid = !user.valid;
-      user.date = new Date(1330529734000); // Wed Feb 29 2012 15:35:34 AST
+      user.date = new Date(tdate); 
       user.object.apple = 'GREEN';
       user.object.newval = 'NEW';
       user.object.number--;
@@ -284,7 +286,7 @@ vows.describe('Models').addBatch({
       assert.strictEqual(user.friends, 1025);
       assert.strictEqual(user.valid, true);
       assert.instanceOf(user.date, Date);
-      assert.isTrue(user.date.toUTCString().indexOf('Wed, 29 Feb 2012 ') === 0);
+      assert.equal(user.date.valueOf(), new Date(tdate).valueOf());
       assert.deepEqual(user.object, {apple: 'GREEN', banana: 'yellow', number: 32, array: [1,2,3,24], newval: 'NEW'});
       assert.deepEqual(user.array, [1,2,99]);
       assert.equal(Object.keys(user).length, 8);
