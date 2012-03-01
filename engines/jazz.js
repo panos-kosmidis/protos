@@ -17,7 +17,7 @@ function Jazz(app) {
 util.inherits(Jazz, corejs.lib.engine);
 
 Jazz.prototype.render = function(data) {
-  data = this.app.applyFilters('jazz_template', data);
+  data = this.app._applyFilters('jazz_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     tpl = jazz.compile(data);

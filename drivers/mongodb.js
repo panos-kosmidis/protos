@@ -60,7 +60,7 @@ function MongoDB(app, config) {
              
             // Set storage
             if (typeof config.storage == 'string') {
-              self.storage = app.getResource('storages/' + config.storage);
+              self.storage = app._getResource('storages/' + config.storage);
             } else if (config.storage instanceof corejs.lib.storage) {
               self.storage = config.storage;
             }
@@ -678,13 +678,17 @@ MongoDB.prototype.__modelMethods = {
     // Convert `id` to `_id`
     convertMongoID(o);
     
-    if (typeof o._id == 'undefined') {
+    // Get _id, and prepare update data
+    var _id = o._id;
+    delete o._id;
+    
+    if (typeof _id == 'undefined') {
       callback.call(this, new Error("Unable to update model object without ID"));
       return;
     }
      
     this.driver.updateById(_.extend({
-      _id: o._id,
+      _id: _id,
       collection: this.context,
       values: o
     }, cdata), function(err, docs) {

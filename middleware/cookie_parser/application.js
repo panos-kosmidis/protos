@@ -12,7 +12,7 @@ var app = corejs.app,
   @private
  */
 
-Application.prototype.loadCookies = function(req) {
+Application.prototype._loadCookies = function(req) {
   if (req.cookies != null) return;
   return req.cookies = getRequestCookies(req);
 }

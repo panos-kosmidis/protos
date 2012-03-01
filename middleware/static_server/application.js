@@ -16,7 +16,7 @@ var parseRange = corejs.util.parseRange;
   @private
  */
  
-Application.prototype.isStaticFileRequest = function(req, res) {
+Application.prototype._isStaticFileRequest = function(req, res) {
 
   var url = req.urlData.pathname;
 
@@ -38,7 +38,7 @@ Application.prototype.isStaticFileRequest = function(req, res) {
   @private
  */
 
-Application.prototype.serveStaticFile = function(path, req, res) {
+Application.prototype._serveStaticFile = function(path, req, res) {
 
   req.__handledRoute = true;
   

@@ -44,7 +44,7 @@ function MySQL(app, config) {
 
       // Assign storage
       if (typeof config.storage == 'string') {
-        self.storage = app.getResource('storages/' + config.storage);
+        self.storage = app._getResource('storages/' + config.storage);
       } else if (config.storage instanceof corejs.lib.storage) {
         self.storage = config.storage;
       }
@@ -691,9 +691,16 @@ MySQL.prototype.__modelMethods = {
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
     
-    // Update data. Validation has already been performed by ModelObject
+    // // Get id, and prepare update data
     id = o.id; 
     delete o.id;
+    
+    if (typeof id == 'undefined') {
+      callback.call(this, new Error(util.format("%s: Unable to update model object without ID", this.className)));
+      return;
+    }
+    
+    // Update data. Validation has already been performed by ModelObject
     this.driver.updateById(_.extend({
       id: id,
       table: this.context,

@@ -66,7 +66,7 @@ var batch = vows.describe('drivers/mysql.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      app.getResource('drivers/mysql:nocache', function(driver) {
+      app._getResource('drivers/mysql:nocache', function(driver) {
         mysql = driver;
         multi = mysql.multi();
         
@@ -652,7 +652,7 @@ var batch = vows.describe('drivers/mysql.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter(),
-          multi = app.getResource('drivers/mysql:cache').multi();
+          multi = app._getResource('drivers/mysql:cache').multi();
       
       // Cache invalidate
       multi.__exec({

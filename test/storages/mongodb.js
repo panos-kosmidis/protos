@@ -14,7 +14,7 @@ var batch = vows.describe('storages/mongodb.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      app.getResource('storages/mongodb', function(storage) {
+      app._getResource('storages/mongodb', function(storage) {
         storageBatch.storage = storage;
         promise.emit('success', storage);
       });

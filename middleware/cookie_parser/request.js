@@ -14,7 +14,7 @@ var app = corejs.app,
  */
 
 IncomingMessage.prototype.hasCookie = function(cookie) {
-  if (this.cookies == null) app.loadCookies(this);
+  if (this.cookies == null) app._loadCookies(this);
   return this.cookies[cookie.toLowerCase()] != null;
 }
 
@@ -27,7 +27,7 @@ IncomingMessage.prototype.hasCookie = function(cookie) {
  */
 
 IncomingMessage.prototype.getCookie = function(cookie) {
-  if (this.cookies == null) app.loadCookies(this);
+  if (this.cookies == null) app._loadCookies(this);
   return this.cookies[cookie.toLowerCase()];
 }
 

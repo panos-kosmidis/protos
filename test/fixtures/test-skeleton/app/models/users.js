@@ -1,6 +1,8 @@
 
 function UsersModel(app) {
   
+  this.driver = 'mysql:nocache'
+  
   this.validation = {
     'friends': function(data) {
       return (typeof data == 'number');

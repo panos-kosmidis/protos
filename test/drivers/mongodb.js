@@ -62,7 +62,7 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      app.getResource('drivers/mongodb:nocache', function(driver) {
+      app._getResource('drivers/mongodb:nocache', function(driver) {
         mongodb = driver;
         multi = mongodb.multi();
         promise.emit('success');
@@ -816,7 +816,7 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      var multi = app.getResource('drivers/mongodb:cache').multi();
+      var multi = app._getResource('drivers/mongodb:cache').multi();
       
       // Invalidate cache
       multi.insertInto({

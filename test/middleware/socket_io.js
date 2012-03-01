@@ -52,7 +52,7 @@ vows.describe('SocketIO (middleware)').addBatch({
     },
     
     'Properly registers client script': function() {
-      var script = app.getClientResource('scripts', 'socket.io');
+      var script = app._getClientResource('scripts', 'socket.io');
       assert.equal(script.name, 'socket.io');
     }
     

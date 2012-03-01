@@ -115,7 +115,7 @@ vows.describe('lib/application.js').addBatch({
     'Returns a driver object': function() {
       var mysqlCtor = corejs.drivers.mysql;
       corejs.drivers.mysql = function() { this.success = true; }
-      var driver = app.driver('mysql', {});
+      var driver = app._driver('mysql', {});
       assert.isTrue(driver.success);
       corejs.drivers.mysql = mysqlCtor; // restore mysql constructor
     }
@@ -127,7 +127,7 @@ vows.describe('lib/application.js').addBatch({
     'Returns a storage object': function() {
       var redisCtor = corejs.storages.redis;
       corejs.storages.redis = function() { this.success = true; }
-      var storage = app.storage('redis', {});
+      var storage = app._storage('redis', {});
       assert.isTrue(storage.success);
       corejs.storages.redis = redisCtor; // restore redis constructor
     }
@@ -137,13 +137,13 @@ vows.describe('lib/application.js').addBatch({
   'Application::addFilter': {
     
     topic: function() {
-      app.addFilter('filter', function(data) {
+      app._addFilter('filter', function(data) {
         /* Filter 1 */
         data.push('>>');
         return data;
       });
       
-      app.addFilter('filter', function(data) {
+      app._addFilter('filter', function(data) {
         /* Filter 2 */
         data.unshift('<<');
         return data;
@@ -164,7 +164,7 @@ vows.describe('lib/application.js').addBatch({
   'Application::applyFilters': {
     
     topic: function() {
-      return app.applyFilters('filter', ['data']);
+      return app._applyFilters('filter', ['data']);
     },
     
     'Returns valid values': function(topic) {
@@ -202,7 +202,7 @@ vows.describe('lib/application.js').addBatch({
   'Application::addClientResource': {
     
     "Properly sets client resources": function() {
-      app.addClientResource('custom', {
+      app._addClientResource('custom', {
         name: 'custom.resource',
         path: '/custom/resource.txt'
       });
@@ -214,7 +214,7 @@ vows.describe('lib/application.js').addBatch({
   'Application::getClientResource': {
 
     "Properly gets client resources": function() {
-      var data = app.getClientResource('custom', 'custom.resource');
+      var data = app._getClientResource('custom', 'custom.resource');
       assert.typeOf(data, 'object');
       assert.equal(data.name, 'custom.resource');
       assert.equal(data.path, '/custom/resource.txt');
@@ -230,9 +230,9 @@ vows.describe('lib/application.js').addBatch({
         path: 'http://code.jquery.com/jquery-1.7.1.min.js'
       }
       
-      app.addClientScript(descriptor);
+      app._addClientScript(descriptor);
       
-      script = app.getClientResource('scripts', 'jquery');
+      script = app._getClientResource('scripts', 'jquery');
       assert.deepEqual(script, descriptor);
     }    
     
@@ -246,9 +246,9 @@ vows.describe('lib/application.js').addBatch({
         path: 'http://blueprintcss.org/blueprint/screen.css'
       }
       
-      app.addClientStylesheet(descriptor);
+      app._addClientStylesheet(descriptor);
       
-      stylesheet = app.getClientResource('stylesheets', 'blueprint');
+      stylesheet = app._getClientResource('stylesheets', 'blueprint');
       assert.deepEqual(stylesheet, descriptor);
     }
 
@@ -269,7 +269,7 @@ vows.describe('lib/application.js').addBatch({
 
       app.resources.my_resource = '{RESOURCE}';
 
-      app.getResource('storages/redis', function(storage) {
+      app._getResource('storages/redis', function(storage) {
         promise.emit('success', storage);
       });
       
@@ -277,17 +277,17 @@ vows.describe('lib/application.js').addBatch({
     },
     
     'Gets {context}/{resource}': function() {
-      var drv = app.getResource('context/alpha');
+      var drv = app._getResource('context/alpha');
       assert.equal(drv.name, 'alpha');
     },
     
     'Gets {context}/{group}:{resource}': function() {
-      var drv = app.getResource('context/beta:gamma');
+      var drv = app._getResource('context/beta:gamma');
       assert.equal(drv.name, 'gamma');
     },
     
     'Gets {resource}': function() {
-      assert.equal(app.getResource('my_resource'), '{RESOURCE}');
+      assert.equal(app._getResource('my_resource'), '{RESOURCE}');
     },
     
     'Works asynchronously if callback provided': function(storage) {

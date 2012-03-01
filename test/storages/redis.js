@@ -15,7 +15,7 @@ var batch = vows.describe('storages/redis.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      app.getResource('storages/redis', function(storage) {
+      app._getResource('storages/redis', function(storage) {
         redisStore = storage;
         storageBatch.storage = storage;
         promise.emit('success', storage);

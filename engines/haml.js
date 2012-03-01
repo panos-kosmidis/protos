@@ -16,7 +16,7 @@ function Haml(app) {
 util.inherits(Haml, corejs.lib.engine);
 
 Haml.prototype.render = function(data) {
-  data = this.app.applyFilters('haml_template', data);
+  data = this.app._applyFilters('haml_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     func = function(vars) { 

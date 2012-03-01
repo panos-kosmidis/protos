@@ -94,7 +94,7 @@ function SocketIO(config, middleware) {
   }
   
   // Add socket.io client resource
-  app.addClientScript({
+  app._addClientScript({
     name: 'socket.io',
     path: options.clientScript
   });

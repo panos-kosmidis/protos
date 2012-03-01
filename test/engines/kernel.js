@@ -3,7 +3,7 @@ var app = require('../fixtures/bootstrap');
 
 var engine = 'kernel';
 
-app.addFilter(engine + '_template', function(data) {
+app._addFilter(engine + '_template', function(data) {
   data = app.addEnginePartials(engine, data, '{main_%s(locals)}');
   // console.exit(data);
   return data;

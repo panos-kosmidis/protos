@@ -17,7 +17,7 @@ function EJS(app) {
 util.inherits(EJS, corejs.lib.engine);
 
 EJS.prototype.render = function(data) {
-  data = this.app.applyFilters('ejs_template', data);
+  data = this.app._applyFilters('ejs_template', data);
   var func = this.getCachedFunction(arguments);
   if (func === null) {
     func = ejs.compile(data, this.options);

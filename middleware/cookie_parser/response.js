@@ -19,7 +19,7 @@ OutgoingMessage.prototype.setCookie = function(name, val, opts) {
   var pairs, removeCookie,
       request = this.request;
 
-  app.loadCookies(request);
+  app._loadCookies(request);
 
   if (opts == null) opts = {};
   pairs = [name + "=" + (encodeURIComponent(val))];
@@ -50,7 +50,7 @@ OutgoingMessage.prototype.setCookie = function(name, val, opts) {
  */
 
 OutgoingMessage.prototype.removeCookie = function(name) {
-  if (this.request.cookies == null) app.loadCookies(this.request);
+  if (this.request.cookies == null) app._loadCookies(this.request);
   this.setCookie(name, null, {expires: -3600});
   delete this.request.cookies[name.toLowerCase()];
 }

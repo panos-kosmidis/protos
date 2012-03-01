@@ -18,5 +18,5 @@ OutgoingMessage.prototype.download = function(path, filename) {
   var header = 'attachment';
   if (filename) header += util.format('; filename="%s"', filename);
   this.setHeaders({'Content-Disposition': header});
-  app.serveStaticFile(path, this.request, this);
+  app._serveStaticFile(path, this.request, this);
 }
