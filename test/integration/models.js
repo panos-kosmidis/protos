@@ -236,7 +236,7 @@ vows.describe('Models').addBatch({
     
     'Properly typecasts instance properties': function(user) {
       // assert.strictEqual(user.id, 2);
-      console.log(user);
+      // console.log(user);
       assert.strictEqual(user.user, 'node');
       assert.strictEqual(user.pass, 'javascript');
       assert.strictEqual(user.friends, 1024);
