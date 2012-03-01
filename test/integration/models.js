@@ -27,7 +27,7 @@ app.usersModel.on('delete', function(err, mod) {
 });
 
 var tdate = 1330529734000; // Wed Feb 29 2012 15:35:34 AST
-var now = new Date();    
+var now = new Date();
 
 vows.describe('Models').addBatch({
 
@@ -242,7 +242,7 @@ vows.describe('Models').addBatch({
       assert.strictEqual(user.friends, 1024);
       assert.strictEqual(user.valid, false);
       assert.instanceOf(user.date, Date);
-      assert.equal(user.date.valueOf(), now.valueOf());
+      assert.equal(user.date.toGMTString(), now.toGMTString());
       assert.deepEqual(user.object, {apple: 'green', banana: 'yellow', number: 33, array: [1,2,3]});
       assert.deepEqual(user.array, [1,2,3]);
       assert.equal(Object.keys(user).length, 8);
@@ -288,7 +288,7 @@ vows.describe('Models').addBatch({
       assert.strictEqual(user.friends, 1025);
       assert.strictEqual(user.valid, true);
       assert.instanceOf(user.date, Date);
-      assert.equal(user.date.valueOf(), new Date(tdate).valueOf());
+      assert.equal(user.date.toGMTString(), new Date(tdate).toGMTString());
       assert.deepEqual(user.object, {apple: 'GREEN', banana: 'yellow', number: 32, array: [1,2,3,24], newval: 'NEW'});
       assert.deepEqual(user.array, [1,2,99]);
       assert.equal(Object.keys(user).length, 8);
