@@ -1,5 +1,4 @@
 
-
 /**
   Main Helper
   
@@ -14,7 +13,7 @@
   Other helpers expose their methods as `${alias}_method`, alias being
   the Controller Alias they're associated with.
   
-  This association is a convention used to better organizeand group 
+  This association is a convention used to better organize and group 
   the functionality associated with each controller.
  */
 
