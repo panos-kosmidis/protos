@@ -705,7 +705,7 @@ MongoDB.prototype.__modelMethods = {
     // Process callback & cache data
     if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
 
-    if (typeof id == 'number' || id instanceof String || id instanceof Array || id instanceof ObjectID) {
+    if (typeof id == 'number' || typeof id == 'string' || id instanceof Array || id instanceof ObjectID) {
 
       this.driver.deleteById(_.extend({
         collection: this.context,
