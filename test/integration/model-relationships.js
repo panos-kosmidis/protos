@@ -30,7 +30,13 @@ vows.describe('Model Relationships').addBatch({
     },
     
     "Initialized models": function(models) {
-      assert.deepEqual(Object.keys(models), ['accounts', 'buddies', 'companies', 'groups', 'users', 'websites']);
+      assert.equal(Object.keys(models).length, 6);
+      assert.isTrue('accounts' in models);
+      assert.isTrue('buddies' in models);
+      assert.isTrue('companies' in models);
+      assert.isTrue('groups' in models);
+      assert.isTrue('users' in models);
+      assert.isTrue('websites' in models);
     }, 
     
     "Properly set model methods": function(models) {
