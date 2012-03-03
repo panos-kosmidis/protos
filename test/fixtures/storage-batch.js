@@ -227,7 +227,7 @@ function StorageBatch(stoClass) {
   // Attach to current batch
   instance.forEach = function(callback) {
     var keys = Object.keys(this);
-    for (var test, key, i=0; i < keys.length; i++) {
+    for (var test, i=0; i < keys.length; i++) {
       var key = keys[i],
           item = this[key];
       if (typeof item == 'object') callback(item);

@@ -40,7 +40,7 @@ vows.describe('Model Relationships').addBatch({
     }, 
     
     "Properly set model methods": function(models) {
-      var key, method, model = models.buddies;
+      var key, method, model = models.buddies,
           protoMethods = corejs.lib.driver.prototype.__modelMethods,
           cname = inflect.camelize(model.context),
           scname = inflect.singularize(cname);

@@ -4,4 +4,6 @@
 /node_modules
 /skeleton/log/*.log
 /skeleton/public/test
+/test/fixtures/test-skeleton/public/assets/*.js
+/test/fixtures/test-skeleton/public/assets/*.css
 /test/fixtures/test-skeleton/log/*.log

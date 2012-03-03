@@ -7,56 +7,145 @@ var app = require('../fixtures/bootstrap'),
 
 var logging = app.logging;
 
+var logMessage, redis, mongodb;
+
+app.on('test_log', function(log) {
+  redis = app.logger.transports.test.redis;
+  mongodb = app.logger.transports.test.mongodb;
+  logMessage = log.trim();
+});
+
+var accessLogMessage;
+
+app.on('access_log', function(log) {
+  accessLogMessage = log;
+});
+
 vows.describe('Logger (middleware)').addBatch({
   
-  '': {
+  'Log Transports': {
     
     topic: function() {
-      // Create empty log files
-      fs.writeFileSync(app.fullPath('log/access.log'), '');
-      fs.writeFileSync(app.fullPath('log/info.log'), '');
-      fs.writeFileSync(app.fullPath('log/error.log'), '');
-
-      // Enable logger
-      app.logging = false;
-      app.use('logger', {accessLog: true, accessLogConsole: false});
-
       var promise = new EventEmitter();
-
-      // Info logs
-      app.log('Hello World!');
-
-      // Error logs
-      app.log(new Error('This is an error!'));
-
-      // Access logger
-      app.curl('-i /testing/the/logger/middleware', function(err, results) {
-        app.logging = logging;
-        delete app._events.info_log;
-        delete app._events.error_log;
-        promise.emit('success', err || results);
+      
+      var db = app.config.database,
+          sto = app.config.storage;
+      
+      fs.writeFileSync(app.fullPath('/log/test.log'), '', 'utf-8');
+      
+      app.use('logger', {
+        accessLog: true,
+        accessLogConsole: false,
+        infoLevel: null,
+        errorLevel: null,
+        testLevel: {
+          file: 'test.log',
+          console: true,
+          mongodb: {
+            host: db.mongodb.nocache.host,
+            port: db.mongodb.nocache.port,
+            logLimit: 1
+          },
+          redis: {
+            host: sto.redis.host,
+            port: sto.redis.port,
+            logLimit: 1
+          }
+        }
       });
-
+      
+      app.testLog('This event should be logged!');
+      
+      console.log('');
+      
+      setTimeout(function() {
+        
+        var results = {};
+        
+        var collection = app.logger.transports.test.mongodb.collection;
+        collection.find({}, function(err, cursor) {
+          var docs = [];
+          cursor.toArray(function(err, docs) {
+            var doc = docs.pop();
+            results.mongodb = (docs.length === 0 && doc.log === logMessage);
+            
+            var redis = app.logger.transports.test.redis.client;
+            redis.lrange('test_log', 0, -1, function(err, res) {
+              if (err) results.redis = err;
+              else {
+                var doc = res.pop();
+                results.redis = (res.length === 0 && doc == logMessage);
+              }
+              
+              results.file = fs.readFileSync(app.fullPath('/log/test.log', 'utf-8')).toString().trim() === logMessage;
+              
+              promise.emit('success', results);
+              
+            });
+            
+          });
+        });
+        
+      }, 1000);
+      
       return promise;
     },
-
-    "Successfully stores info logs": function() {
-      var buf = fs.readFileSync(app.fullPath('log/info.log'), 'utf8');
-      assert.isTrue(buf.indexOf('Hello World!') >= 0);
-      assert.equal(buf.trim().split('\n').length, 1); // check number of lines in log
-    },
-
-    "Successfully stores error logs": function() {
-      var buf = fs.readFileSync(app.fullPath('log/error.log'), 'utf8');
-      assert.isTrue(buf.indexOf('Error: This is an error!') >= 0);
-      assert.equal(buf.trim().split('\n').length, 8); // check number of lines in log (stack trace)
+    
+    "Stores logs using the File Transport": function(results) {
+      assert.isTrue(results.file);
     },
     
-    "Successfully stores access logs": function(r) {
-      var buf = fs.readFileSync(app.fullPath('log/access.log'), 'utf8');
-      assert.isTrue(r.indexOf('HTTP/1.1 404 Not Found') >= 0);
-      assert.isTrue(buf.indexOf('GET /testing/the/logger/middleware 404') >= 0);
-      assert.equal(buf.trim().split('\n').length, 1); // check number of lines in log
+    "Stores logs using the MongoDB Transport": function(results) {
+      assert.isTrue(results.mongodb);
+    },
+    
+    "Stores logs using the Redis Transport": function(results) {
+      assert.isTrue(results.redis);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Access Log': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      var logFile = app.fullPath('/log/access.log');
+      
+      fs.writeFileSync(logFile, '', 'utf-8');
+      
+      app.logger.config.accessLogConsole = true;
+      
+      console.log('');
+      
+      app.curl('/', function(err, res) {
+        
+        app.logger.config.accessLogConsole = false;
+        
+        console.log('');
+        
+        if (err) promise.emit('success', err);
+        else {
+          
+          // Account for Disk I/O
+          setTimeout(function() {
+            
+            var buf = fs.readFileSync(logFile, 'utf-8').toString().trim();
+            
+            promise.emit('success', buf);
+            
+          }, 300); 
+          
+        }
+      });
+      
+      return promise;
+    },
+    
+    "Successfully stores access logs": function(log) {
+      assert.equal(log, accessLogMessage);
     }
     
   }
