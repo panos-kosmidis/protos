@@ -7,6 +7,88 @@
 CoreJS is a Web Application Framework for [node.js](http://nodejs.org), using ideas from the 
 [MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture.
 
+## Development Stack
+
+Everything has been developed implementing APIs:
+
+* Database Drivers: MySQL, MongoDB
+* Storages: MongoDB, Redis
+* Models: Database-agnostic using Drivers & Storages for caching
+* Logging Storages: MongoDb, Redis, File, Console
+
+## Features
+
+* Powerful routing
+* RESTful methods
+* Environment-based configuration
+* Bootstrap file, for easy & quick app configuration
+* Middlewares support
+* Executable to create, generate & deploy apps and resources
+* Automatic downloading of assets (jquery, prototype, bootstrap, etc)
+* Cluster support (multiple cores)
+* Easy deployment with JSON file or command line
+* Built-in proxy server for apps
+* Built-in Node Inspector for debugging
+* Built-in Redirection
+* Route validation using regexes
+* JSON Responses
+* Controllers serve as a namespace for routes
+* Models serve as an abstraction for Database Backends
+* Model Relationships: hasOne, hasMany, belongsTo, belongsToMany (database-agnostic)
+* Helpers expose their methods into all views
+* View Partials support (in all supported template engines)
+* Modular Configuration
+* Customizable HTTP Headers, Cache-control, etc
+
+## Rendering Engines
+
+Views are supported and partials can be used interchangeably. This means you can use Swig templates inside
+Jade, or CoffeeKup templates within EJS. Mix & Match them all. Each template does one job well. Use them in
+each scenario you see fit.
+
+Everything is available & provided by the framework, no configuration. Just start using them. Place a view
+with the apropriate extension and you're already using the template engine.
+
+Each template has its own set of registered extensions. You can also define which extensions the template engines
+will render from the application's config.
+
+* CoffeeKup
+* DoT
+* Eco
+* EJS
+* Haml
+* Haml-Coffee
+* Handlebars (default for .mustache)
+* Hogan.js
+* Jade
+* Jazz (async)
+* jQuery Templates
+* JSHtml
+* Kernel (async)
+* Liquor (default for .html)
+* Swig
+* Whiskers
+
+## Middleware
+
+These have been carefully integrated with the framework, to provide quick usability for common libraries:
+
+- **Asset Compiler** Compile LESS, Stylus & CoffeeScript automatically
+- **Amazon Web Services** Provides abstraction for all of aws
+- **BCrypt** Blowfish hashing/comparison
+- **Body Parser** Handle POST/PUT File Uploads & Requests, very secure
+- **Cookie Parser** Parse request cookies
+- **CSRF** Prevents Cross-Site Request Forgery attacks
+- **Logger** Complete Logger, supporting multiple transports such as MongoDB, File, Redis & Console
+- **Mailer** Send email quickly & easily using sendmail, Amazon SES or SMTP
+- **Markdown** Complete markdown solution for your apps
+- **Production URL** Remove port number from proxied apps
+- **Redirect** Redirect all requests to any url (good for "maintenance" mode)
+- **Response Cache** Cache computationally expensive views using any Storage
+- **Session** Everything you need to handle sessions. Supports any Storage
+- **SocketIO** The solution for your realtime app demands
+- **Static Server** Fully featured static file server, integrated with the Asset compiler, supports range requests
+
 ## Installation
 
 It's best if you install the package globally, since you will have access to the `corejs` command:
@@ -33,13 +115,27 @@ The command above will create your application, attach it to the domain `corejs.
 of jQuery and Bootstrap (saving it into public/js and public/css). Will create the `AccountsModel`, as well
 as the `BlogController` and `AdminController`. Views for these controllers are created automatically.
 
-From inside an application, you can dynamically generate your application's resources:
+From inside an application, you can dynamically generate your application's resources.
+
+### Create models
 
     corejs model accounts books stores
+    
+### Create controllers
+
     corejs controller mycontroller
     corejs controller dashboard --nohelper
+    
+### Create views
+
     corejs view main/hello dashboard/settings
+    
+### Create partials
+
     corejs partial blog/post blog/comments
+
+### Create helpers
+    
     corejs helper blog admin
 
 ## Starting the Server
