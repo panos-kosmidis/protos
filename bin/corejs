@@ -408,7 +408,6 @@ function createApplication(data, libs) {
       
       fs.writeFileSync(bootFile, boot);
       
-      
       console.log("» Successfully created " + app);
       
       var downloader = new Multi({
