@@ -12,6 +12,7 @@ drivers = ./test/drivers/*.js
 engines = ./test/engines/*.js
 integration = ./test/integration/*.js
 middleware = ./test/middleware/*.js
+commandline = ./test/command.js
 
 # Make commands
 
@@ -28,6 +29,7 @@ default:
 		@echo "\033[1;31mmake test-eng\033[0m         Run View Engine tests"
 		@echo "\033[1;31mmake test-int\033[0m         Run Integration tests"
 		@echo "\033[1;31mmake test-mid\033[0m         Run Middleware tests"
+		@echo "\033[1;31mmake test-cmd\033[0m         Run command line tests"
 		@echo
 
 deps:
@@ -45,7 +47,7 @@ test:
 		@echo "\n\033[1;30mAvailable Test Commands\033[0m: tests  test-unit  test-sto test-drv test-eng test-int test-mid\n"
 
 tests:
-		@${vows} ${vowsOpts} ${unit} ${storages} ${drivers} ${engines} ${integration} ${middleware}
+		@${vows} ${vowsOpts} ${unit} ${storages} ${drivers} ${engines} ${integration} ${middleware} ${commandline}
 
 test-unit:
 		@${vows} ${vowsOpts} ${unit}
@@ -64,5 +66,8 @@ test-int:
 
 test-mid:
 		@${vows} ${vowsOpts} ${middleware}
+		
+test-cmd:
+		@${vows} ${vowsOpts} ${commandline}
 
 .PHONY: test
