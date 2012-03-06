@@ -1,5 +1,5 @@
 {
-  "name"              : "Skeleton",
+  "name"              : "skeleton",
   "description"       : "CoreJS Application Skeleton",
   "version"           : "0.0.0",
   "main"              : "boot.js",

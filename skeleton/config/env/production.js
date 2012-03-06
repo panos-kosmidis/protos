@@ -1,5 +1,5 @@
 
-/* Production Environment */
+/* Production */
 
 function Production(app) {
 

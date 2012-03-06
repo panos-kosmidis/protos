@@ -1,0 +1,817 @@
+#!/usr/bin/env node
+
+var _ = require('underscore'),
+    fs = require('fs'),
+    cp = require('child_process'),
+    util = require('util'),
+    regex = require('../lib/regex.js'),
+    pathModule = require('path'),
+    inflect = require('../lib/support/inflect.js'),
+    CoreJS = require('../lib/corejs.js'),
+    Multi = require('multi'),
+    CommandLine = require('../lib/command.js');
+
+var corejs;
+
+var origPath;
+
+var commands = {
+  
+  /* test: {
+    single: ['single', 'one'],
+    multiple: ['multi', 'many'],
+    switches: ['switch'],
+    args: 1,
+    run: function(args) {
+      console.exit(args);
+    }
+  }, */
+  
+  create: {
+    multiple: ['js', 'css', 'model', 'controller'],
+    switches: ['mustache'],
+    single: ['domain'],
+    args: 1,
+    help: {
+      domain: "Domain to attach the application to",
+      css: "Bundle client side CSS frameworks",
+      js: "Bundle client side JavaScript libraries/frameworks",
+      model: "Include models on application",
+      controller: "Include controllers on application",
+      mustache: "Use the .mustache extension for generated views"
+    },
+    run: function(args) {
+      
+      var errored = false;
+      
+      var libs = {
+        css: require('../client/css.json'),
+        javascript: require('../client/javascript.json')
+      }
+      
+      args.css.forEach(function(lib) {
+        if (lib in libs.css) {
+          libs.css[lib].id = lib;
+          libs.css[lib].type = 'css';
+        } else {
+          console.exit("CSS Framework not bundled by CoreJS: " + lib);
+        }
+      });
+      
+      args.js.forEach(function(lib) {
+        if (lib in libs.javascript) {
+          libs.javascript[lib].id = lib;
+          libs.javascript[lib].type = 'js';
+        } else {
+          console.exit("JavaScript Library not bundled by CoreJS: " + lib);
+        }
+      });
+
+      if (errored) process.exit();
+      
+      createApplication.call(this, args, libs);
+
+    }
+  },
+  
+  deploy: {
+    args: 1,
+    run: function(data) {
+
+      /*
+       cluster.json spec:
+
+       {
+         "fork": "true",
+         "env": "production",
+         "port": "8080",
+         "logpath": "server.log",
+         "routes": {
+           "app1": "8081",
+           "app2": "8082"
+         }
+       }
+
+      */      
+      
+      var file = process.cwd() + '/' + data.args.pop();
+      
+      if (!pathModule.existsSync(file)) console.exit(file);
+
+      var defaults = {
+        fork: true,
+        env: "production",
+        port: 8080,
+        logpath: "server.log",
+      }
+      
+      var json = require(file),
+          keys = Object.keys(json);
+      
+      if (! 'routes' in json) {
+        console.exit("Invalid JSON file: missing 'routes' field");
+      } else {
+        json = _.extend(defaults, json);
+      }
+      
+      if (typeof json.fork == 'string') {
+        json.fork = json.fork.trim().toLowerCase();
+        json.fork = (json.fork === 'true' || json.fork === '1');
+      }
+      
+      if (typeof json.port == 'string') {
+        json.port = parseInt(json.port, 10);
+      }
+      
+      json.args = [];
+      
+      for (var host in json.routes) {
+        json.args.push(host + ':' + parseInt(json.routes[host], 10));
+      }
+      
+      delete json.routes;
+      
+      commands.server.run.call(this, json);
+      
+    }
+  },
+  
+  server: {
+    switches: ['fork'], // TODO: Add 'watch',
+    single: ['logpath', 'port', 'env'],
+    args: 99,
+    noargs: true,
+    help: {
+      fork: "Creates a new node process when starting servers",
+      port: "Port to use when proxying multiple servers",
+      env: "Environment to use when running server",
+      logpath: "File to save output when forking a new process",
+      // watch: "Automatically watches for changes in apps & reloads server"
+    },
+    run: function(data) {
+
+      process.env.NODE_ENV = (data.env || process.env.NODE_ENV || 'development');
+
+      var cwd = process.cwd();
+      
+      var len = data.args.length;
+      
+      if (len <= 1) {
+        if (len === 1) {
+          var p = data.args.pop();
+          if (pathModule.existsSync(p)) {
+            process.chdir(p);
+          } else {
+            console.exit("File not found: " + p);
+          }
+        } else {
+          var isApp = validateApp.call(this, data, true);
+          if (!isApp) {
+            this.printHelp();
+            process.exit();
+          }
+        }
+        
+        var files = listFiles('.');
+        
+        if (files.indexOf('boot.js') >= 0) {
+          var path = process.cwd();
+          process.chdir(cwd);
+          startServer.call(this, path, data, process.exit);
+        } else if (len === 1) {
+          console.exit(util.format("No application found on %s/", p));
+        } else {
+          this.printHelp();
+        }
+      } else {
+        if (!data.port) console.exit("--port is required when running multiple servers");
+        
+        // Validate
+        data.args = data.args.map(function(app) {
+          app = app.split(':');
+          if (app.length === 1) {
+            console.log("Invalid app: " + app.join(''));
+            console.exit("Apps should be specified as {appPath}:{port}");
+          } else {
+            return app;
+          }
+        });
+        
+        var hosts = {};
+        
+        var queue = data.args.length;
+        
+        // Launch servers!
+        data.args.forEach(function(args) {
+          var app = args[0],
+              port = args[1];
+          
+          var bootFile = app + '/boot.js';
+          
+          if (pathModule.existsSync(bootFile)) {
+            process.env.FAUX = 1;
+            var cmd = 'node ' + bootFile;
+            cp.exec(cmd, function(err, stdout, stderr) {
+              if (err) console.exit(stderr);
+              else {
+                var bootstrap = JSON.parse(stdout);
+                
+                if (!bootstrap.server || !bootstrap.server.host) {
+                  console.exit(util.format("Can't find server config in boostrap file of %s/", app));
+                }
+                
+                if (bootstrap.server.host in hosts) {
+                  console.exit("Conflict: One or more applications are listening on the same domain");
+                } else {
+                  hosts[bootstrap.server.host] = port;
+                }
+                
+                // Set port override
+                process.env.PORT_OVERRIDE = port;
+                
+                delete process.env.FAUX;
+                
+                startServer.call(this, app, data);
+                
+                queue--;
+                
+                if (queue === 0) startProxyServer(hosts, data);
+                
+              }
+            });
+          } else {
+            console.exit("Can't find application: " + app);
+          }
+          
+        });
+        
+      }
+      
+    }
+  },
+  
+  controller: {
+    switches: ['nohelper'],
+    args: 99,
+    help: {
+      nomodel: "Don't create models when generating controllers"
+    },
+    validate: validateApp,
+    run: function(data) {
+       var app = pathModule.basename(process.cwd());
+       process.chdir('../');
+       
+       // Create controllers
+       data.args.forEach(function(controller) {
+         createController.call(this, app, controller);
+       }, this);
+       
+       // Create Helpers
+       if (!data.nohelper) data.args.forEach(function(controller) {
+         createHelper.call(this, app, controller);
+       }, this);
+       
+       // Create views
+       viewsBatch.forEach(function(args) {
+         createView.apply(data, args);
+       });
+       
+    }
+  },
+  
+  view: {
+    single: ['ext'],
+    args: 99,
+    help: {
+      ext: 'Extension to use for generated views/partials'
+    },
+    validate: validateApp,
+    run: function(data, partial) {
+      
+      var app = pathModule.basename(process.cwd());
+      
+      // validate views first
+      data.args = data.args.map(function(view) {
+        view = view.split('/');
+        if (view.length === 2) {
+          var controller = view[0];
+          if (pathModule.existsSync(util.format("app/views/%s", controller))) {
+            view.unshift(app);
+            view.push(partial || false);
+            return view;
+          } else {
+            console.log(util.format("Invalid view: %s", view.join('/')));
+            console.exit(util.format("Controller does not exist: %s", controller));
+          }
+        } else {
+          console.log(util.format("Invalid view: %s", view.join('')));
+          console.exit(util.format("The views should be specified as {controller}/{viewname}{.ext}"));
+        }
+      });
+      
+      process.chdir('../');
+      
+      data.args.forEach(function(args) {
+        createView.apply(data, args);
+      });
+      
+    }
+  },
+  
+  partial: {
+    single: ['ext'],
+    args: 99,
+    validate: validateApp,
+    run: function(data) {
+      commands.view.run.call(this, data, true); // Set partial
+    }
+  },
+  
+  model: {
+    args: 99,
+    validate: validateApp,
+    run: function(data) {
+       
+       var app = pathModule.basename(process.cwd());
+
+       process.chdir('../');
+       
+       // Create models
+       data.args.forEach(function(model) {
+         createModel(app, model);
+       });
+       
+    },
+    
+  },
+  
+  helper: {
+    args: 99,
+    run: function(data) {
+       
+      var app = pathModule.basename(process.cwd());
+
+      process.chdir('../');
+      
+      // Create helpers
+      data.args.forEach(function(helper) {
+        createHelper(app, helper);
+      });
+       
+    },
+    validate: validateApp
+  }
+
+}
+
+var viewsBatch = [];
+var helpersBatch = [];
+
+function createApplication(data, libs) {
+  
+  var app = data.args[0],
+      path = process.cwd() + '/' + app,
+      masterPath = pathModule.resolve(__dirname, '../')
+      cmd = util.format("cp -Rf %s/skeleton %s; rm -Rf %s/log/*.log %s/public/*.css %s/public/*.js", masterPath, app, 
+        app, app, app);
+  
+  // console.exit(cmd);
+  
+  // Check if path exists
+  if (pathModule.existsSync(path)) {
+    console.exit(util.format("Can't create %s: path exists", app));
+  }
+  
+  // Copy skeleton dir
+  cp.exec(cmd, function(err, stdout, stderr) {
+    if (err) console.exit(stderr);
+    else {
+      
+      // Replace corejs directory
+      var bootFile = util.format('./%s/boot.js', app),
+          boot = fs.readFileSync(bootFile, 'utf-8').toString();
+      var repl, isGlobal = pathModule.existsSync('/usr/local/lib/node/corejs');
+      
+      if (isGlobal) {
+        // We can use `require('corejs')` safely
+        repl = 'corejs';
+      } else {
+        // We need to use the global path instead
+        repl = masterPath;
+      }
+      
+      boot = boot.replace("var CoreJS = require('../');", util.format("var CoreJS = require('%s');", repl));
+      
+      if (data.domain) {
+        boot = boot.replace("host: 'localhost',", util.format("host: '%s',", data.domain));
+      }
+      
+      fs.writeFileSync(bootFile, boot);
+      
+      
+      console.log("» Successfully created " + app);
+      
+      var downloader = new Multi({
+        download: downloadAsset
+      });
+      
+      // Create models
+      data.model.forEach(function(model) {
+        createModel.call(data, app, model);
+      });
+      
+      // Create controllers
+      data.controller.forEach(function(controller) {
+        createController.call(data, app, controller);
+      });
+      
+      // Create helpers
+      data.controller.forEach(function(controller) {
+         createHelper.call(data, app, controller);
+      });
+      
+      // Create views
+      if (data.mustache) {
+        viewsBatch.unshift([app, 'main', 'index']);
+      }
+      
+      viewsBatch.forEach(function(args) {
+        createView.apply(data, args);
+      });
+      
+      // Switch to public/ before downloading assets
+      var currentDir = process.cwd();
+      process.chdir(util.format('./%s/public', app));
+      
+      // Download client-side CSS
+      data.css.forEach(function(lib) {
+        downloader.download(libs.css[lib]);
+      });
+      
+      // Download client-side JavaScript
+      data.js.forEach(function(lib) {
+        downloader.download(libs.javascript[lib]);
+      });
+      
+      // Exec downloader queue
+      downloader.exec(function(err, results) {});
+      
+    }
+  });
+}
+
+
+var jsFile = /\.js$/i,
+    zipFile = /\.zip$/i,
+    tgzFile = /\.(tgz|tar\.gz)$/i,
+    tbzFile = /\.tar\.bz2$/i;
+
+function downloadAsset(lib, callback) {
+
+  var cmd = util.format('wget --no-check-certificate -q %s', lib.download);
+  
+  if (lib.extension) cmd += util.format(' -O %s-%s.%s', lib.id, lib.version, lib.extension);
+  
+  // console.exit(cmd);
+  
+  console.log(util.format("» Downloading %s", lib.description));
+  
+  fs.mkdirSync('./tmp');
+  process.chdir('./tmp');
+  
+  cp.exec(cmd, function(err, stderr, stdout) {
+    if (err) {
+      console.log(err);
+      console.exit(util.format("Error downloading %s: %s", lib.id, stderr));
+    } else {
+      var file, files = listFiles('.');
+      if (files.length === 1) {
+        file = files.pop();
+
+        // Detect extract commands
+        var exCmd = null;
+        if (zipFile.test(file)) {
+          exCmd = 'unzip ' + file;
+        } else if (tgzFile.test(file)) {
+          exCmd = 'tar xzf ' + file;
+        } else if (tbzFile.test(file)) {
+          exCmd = 'tar xjf ' + file;
+        }
+        
+        if (exCmd) {
+          cp.exec(exCmd, function(err, stdout, stderr) {
+            if (err) {
+              console.log(err);
+              callback(err);
+            } else {
+              var files = listFiles('.');
+              if (files.length > 2) {
+                console.exit(util.format("Invalid extraction for %s: %s", lib.id, files.toString()));
+              } else {
+                for (var f,i=0; i < files.length; i++) {
+                  f = files[i];
+                  if (f != file) {
+                    fs.mkdir('../'+lib.type, function(err) {
+                      cp.exec(util.format('mv %s ../%s/%s', f, lib.type, lib.id), function(err, stdout, stderr) {
+                        if (err) console.log(util.format("Error downloading %s: %s", lib.id, err));
+                        process.chdir('../');
+                        cp.exec('rm -Rf tmp/', function(err) {
+                          if (err) console.log(err);
+                          callback(err);
+                        });
+                      });
+                    });
+                    break;
+                  }
+                }
+              }
+            }
+          });
+        } else if (jsFile.test(file)) {
+          fs.mkdir('../'+lib.type, function(err) {
+            cp.exec(util.format('mv %s ../%s/', file, lib.type), function(err, stdout, stderr) {
+              if (err) console.log(util.format("Error downloading %s: %s", lib.id, err));
+              process.chdir('../');
+              cp.exec('rm -Rf tmp/', function(err) {
+                if (err) console.log(err);
+                callback(err);
+              });
+            });
+          });
+        }
+      } else {
+        console.exit(util.format("Error downloading %s: Multiple files downloaded: %s", lib.id, files.toString()));
+      }
+    }
+  });
+  
+}
+
+
+function createModel(app, name) {
+  // Note: names will be pluralized
+  name = inflect.pluralize(name.toLowerCase().replace(/(-|_)?model$/,''));
+  model = inflect.camelize(name) + 'Model';
+  var tpl = "\n\
+function %s(app) {\n\
+\n\
+  this.properties = {\n\
+\n\
+  }\n\
+\n\
+}\n\
+\n\
+module.exports = %s;\n\
+";
+  tpl = util.format(tpl, model, model);
+  
+  // console.exit(tpl);
+  
+  var file = util.format('%s/app/models/%s.js', app, name);
+  
+  if (pathModule.existsSync(file)) {
+    console.log(util.format("» Skipping %s: file exists", file));
+    return;
+  }
+  
+  fs.writeFileSync(file, tpl, 'utf-8');
+  
+  console.log(util.format("» Created %s/app/models/%s.js", app, name));
+  
+}
+
+
+function createController(app, name) {
+  
+  // Note: names will be pluralized
+  name = name.toLowerCase().replace(/(-|_)?controller$/,'');
+  controller = inflect.camelize(name) + 'Controller';
+
+  if (controller === 'MainController') return; // That's a no-no
+  
+  // console.exit([name, controller]);
+  
+  var tpl = "\n\
+function %s(app) {\n\
+\n\
+  get('/', function(req, res) {\n\
+    res.render('index');\n\
+  });\n\
+\n\
+}\n\
+\n\
+module.exports = %s;\n\
+";
+
+  tpl = util.format(tpl, controller, controller);
+
+  // console.exit(tpl);
+  
+  var file = util.format('%s/app/controllers/%s.js', app, name);
+
+  if (pathModule.existsSync(file)) {
+    console.log("» Skipping %s: file exists", file);
+    return;
+  }
+
+  fs.writeFileSync(file, tpl, 'utf-8');
+
+  console.log(util.format("» Created %s", file));
+  
+  viewsBatch.push([app, name, 'index']);
+  
+}
+
+
+function createView(app, controller, view, partial) {
+  
+  var tpl, file;
+  
+  var dir = util.format('%s/app/views/%s', app, controller);
+  if (!pathModule.existsSync(dir)) fs.mkdirSync(dir);
+  
+  var hasExt = regex.fileWithExtension.test(view);
+
+  if (hasExt) {
+    file = util.format('%s/%s', dir, view);
+  } else {
+    if (partial) {
+      file = util.format('%s/_%s.', dir, view);
+    } else {
+      file = util.format('%s/%s-%s.', dir, controller, view);
+    }
+    file += (this.mustache) ? 'mustache' : (this.ext || 'html');
+  }
+  
+  if (controller == 'main' && this.mustache == true) {
+    tpl = "\n<p>Welcome to {{corejs.className}}</p>\n";
+    fs.unlinkSync(app + '/app/views/main/main-index.html');
+  } else if (typeof this.ext === 'undefined') {
+    tpl = util.format("\n<p>%s Controller</p>\n", inflect.camelize(controller));
+  } else {
+    tpl = '';
+  }
+  
+  if (pathModule.existsSync(file)) {
+    console.log(util.format("» Skipping %s: file exists", file));
+    return;
+  }
+  
+  fs.writeFileSync(file, tpl, 'utf-8');
+
+  console.log(util.format("» Created %s", file));
+  
+}
+
+
+function createHelper(app, name) {
+
+  // Note: names will be pluralized
+  name = name.toLowerCase().replace(/(-|_)?helper$/,'');
+  helper = inflect.camelize(name) + 'Helper';
+
+  if (helper === 'MainHelper') return; // That's a no-no
+
+  // console.exit([name, helper]);
+
+  var tpl = "\n\
+function %s(app) {\n\
+\n\
+}\n\
+\n\
+module.exports = %s;\n\
+";
+
+  tpl = util.format(tpl, helper, helper);
+
+  // console.exit(tpl);
+
+  var file = util.format('%s/app/helpers/%s.js', app, name);
+
+  if (pathModule.existsSync(file)) {
+    console.log("» Skipping %s: file exists", file);
+    return;
+  }
+
+  fs.writeFileSync(file, tpl, 'utf-8');
+
+  console.log(util.format("» Created %s", file));
+
+}
+
+
+function listFiles(path, regex) {
+  var files, out;
+  files = fs.readdirSync(path);
+  out = [];
+  if (regex != null) {
+    for (var file,i=0; i < files.length; i++) {
+      file = files[i];
+      if ( regex.test(file) ) out.push(file);
+    }
+    return out;
+  } else {
+    return files;
+  }
+}
+
+
+function validateApp(data, noexit) {
+  var inApp = listFiles(process.cwd()).indexOf('boot.js') >= 0;
+  if (!inApp) {
+    process.chdir('../');
+    var cwd = process.cwd();
+    if (cwd === '/') {
+      if (!noexit) {
+        if (this.context === 'server') {
+          this.printHelp();
+          process.exit();
+        } else {
+          console.exit(util.format("corejs [%s] only works within the application's directories.", this.context));
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return validateApp.call(this, data);
+    }
+  } else {
+    return true;
+  }
+}
+
+
+function startServer(path, data, callback) {
+  var bootFile = path + '/boot.js';
+  var logPath = data.logpath;
+  if (data.fork) {
+    if (!logPath) console.exit("--fork has to be used with --logpath");
+    var cmd = util.format("nohup node %s >> %s 2>&1", bootFile, logPath);
+    cp.exec(cmd);
+    if (data.args.length <= 1) {
+      console.log("Saving all output to " + logPath);
+      process.exit(); // Only exit on single app
+    }
+  } else {
+    var cmd = cp.spawn('node', [bootFile], {setsid: true});
+    var log = function(data) { console.log(data.toString('utf8').trimRight()); }
+    cmd.stdout.on('data', log);
+    cmd.stderr.on('data', log);
+  }
+}
+
+function startProxyServer(hosts, data) {
+  var bouncy = require('bouncy');
+  if (data.fork) {
+    var logPath = data.logpath;
+    var code = util.format("\
+var bouncy = require('%s/node_modules/bouncy'), hosts = JSON.parse('%s'); \
+for (var h in hosts) { hosts[h] = parseInt(hosts[h], 10); } \
+bouncy(function(req, bounce) { var host, port;\
+ host = req.headers.host.split(':').shift();\
+ if (port = hosts[host]) bounce(port);\
+ else req.socket.destroy(); \
+}).listen(%s);", CoreJS.path, JSON.stringify(hosts), data.port);
+    
+    code = code.replace(/"/g, '\\"');
+    // console.exit(code);
+    var cmd = util.format('NODE_ENV=%s nohup node -e "%s" >> %s 2>&1', process.env.NODE_ENV, code, logPath);
+    // console.exit(cmd);
+    cp.exec(cmd);
+    console.log("Saving all output to " + logPath);
+    process.exit();
+    
+  } else {
+    
+    var bouncy = require('bouncy');
+
+    (function(bouncy, hosts) {
+      bouncy(function(req, bounce) { var host, port;
+        host = req.headers.host.split(':').shift();
+        if (port = hosts[host]) bounce(port);
+        else req.socket.destroy();
+      }).listen(data.port);
+    }).call(null, bouncy, hosts);
+    
+    console.log("Proxy server listening on " + data.port);
+    
+  }
+}
+
+
+var cli = new CommandLine(commands);
+
+cli.help.before = "\
+Usage: corejs [action] [arguments]\n\n\
+Actions: [create, server, deploy] [controller, view, partial, helper, model]\n";
+
+cli.help.after = "\n\
+Example:\n\n\
+ corejs create myapp --css bootstrap --js jquery backbone --model users --controller admin user\n\n\
+ Generate an application skeleton in the current directory, with the assets,\n\
+ models and controllers specified in the command.\n\n\
+ corejs server myapp --fork --logpath server.log\n\n\
+ Starts the application's server and forks a new node process.\n\n\
+ For documentation, refer to http://corejs.org";
+
+cli.parse();

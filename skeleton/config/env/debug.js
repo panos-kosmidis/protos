@@ -1,5 +1,5 @@
 
-/* Debug Environment */
+/* Debug */
 
 function Debug(app) {
   

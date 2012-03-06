@@ -14,7 +14,8 @@
   the Controller Alias they're associated with.
   
   This association is a convention used to better organize and group 
-  the functionality associated with each controller.
+  the functionality associated with each controller. Not a functionality
+  requirement.
  */
 
 function MainHelper(app) {
