@@ -49,7 +49,7 @@ function Hogan(app) {
 util.inherits(Hogan, corejs.lib.engine);
 
 Hogan.prototype.render = function(data, vars) {
-  data = this.app.applyFilterss('hogan_template', data);
+  data = this.app.applyFilter('hogan_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     tpl = hogan.compile(data);

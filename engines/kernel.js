@@ -21,7 +21,7 @@ function Kernel(app) {
 util.inherits(Kernel, corejs.lib.engine);
 
 Kernel.prototype.render = function(data) {
-  data = this.app.applyFilterss('kernel_template', data);
+  data = this.app.applyFilter('kernel_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     tpl = this.compile.apply(this, arguments);
