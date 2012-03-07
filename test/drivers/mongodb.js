@@ -65,7 +65,11 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
       app._getResource('drivers/mongodb:nocache', function(driver) {
         mongodb = driver;
         multi = mongodb.multi();
-        promise.emit('success');
+        
+        driver.client.dropDatabase(function(err) {
+           promise.emit('success', err);
+        });
+        
       });
       
       return promise;
@@ -81,6 +85,10 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
     
     'Sets client': function() {
       assert.instanceOf(mongodb.client, Db);
+    },
+    
+    'Dropped test db': function(err) {
+      assert.isNull(err);
     }
     
   }

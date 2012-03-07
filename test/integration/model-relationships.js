@@ -9,7 +9,7 @@ var app = require('../fixtures/bootstrap'),
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
 
-var multi = new Multi(app);
+var multi = new Multi(app.model);
 
 var models = {};
 
@@ -39,16 +39,17 @@ vows.describe('Model Relationships').addBatch({
       assert.isTrue('websites' in models);
     }, 
     
-    "Properly set model methods": function(models) {
+    "Properly sets model methods": function(models) {
       var key, method, model = models.buddies,
           protoMethods = corejs.lib.driver.prototype.__modelMethods,
           cname = inflect.camelize(model.context),
           scname = inflect.singularize(cname);
+      
       for (key in protoMethods) {
         var suffix = (key.slice(-3) === 'All') ? cname : scname;
         method = key + suffix;
-        assert.isTrue(method in app);
-        assert.equal(app[method].toString().indexOf('model[key].apply(model, arguments);'), 24);
+        assert.isTrue(method in app.model);
+        assert.equal(app.model[method].toString().indexOf('model[key].apply(model, arguments);'), 22);
       }
     }
     
@@ -341,7 +342,7 @@ vows.describe('Model Relationships').addBatch({
         .removeCompany(function(err) {
         if (err) promise.emit('success', err);
         else {
-          app.getBuddy(models.buddy.id, function(err, buddy) {
+          app.model.getBuddy(models.buddy.id, function(err, buddy) {
             models.buddy = buddy;
             promise.emit('success', err || buddy)
           });
@@ -512,7 +513,7 @@ vows.describe('Model Relationships').addBatch({
         .removeGroup(99, function(err) {
         if (err) promise.emit('success', err);
         else {
-          app.getBuddy(models.buddy.id, function(err, buddy) {
+          app.model.getBuddy(models.buddy.id, function(err, buddy) {
             models.buddy = buddy;
             promise.emit('success', err || buddy);
           });
@@ -541,7 +542,7 @@ vows.describe('Model Relationships').addBatch({
       .removeGroups([102], function(err) {
         if (err) promise.emit('success', err);
         else {
-          app.getBuddy(models.buddy.id, function(err, buddy) {
+          app.model.getBuddy(models.buddy.id, function(err, buddy) {
             models.buddy = buddy;
             promise.emit('success', err || buddy)
           });
@@ -577,12 +578,12 @@ vows.describe('Model Relationships').addBatch({
         if (err) promise.emit('success', err);
         else {
           
-          app.getBuddy(models.buddy.id, function(err, buddy) {
+          app.model.getBuddy(models.buddy.id, function(err, buddy) {
             if (err) promise.emit('success', err);
             else {
               models.buddy = buddy;
               
-              app.getGroup([models.group1.id, models.group2.id], function(err, groups) {
+              app.model.getGroup([models.group1.id, models.group2.id], function(err, groups) {
                 if (err) promise.emit('success', err);
                 else {
                   

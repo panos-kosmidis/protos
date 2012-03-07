@@ -1,0 +1,31 @@
+
+This is some text, containing shortcode data.
+
+The data in the   DATA FROM SHORTCODE 1  , and then, the data
+from the shortcode 2 is more cool  SUPER COOL! :
+
+
+  DATA FROM SHORTCODE 1  
+
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
+
+SED QUIA CONSEQUUNTUR MAGNI DOLORES EOS QUI RATIONE VOLUPTATEM SEQUI NESCIUNT. NEQUE PORRO QUISQUAM EST, QUI DOLOREM IPSUM QUIA DOLOR SIT AMET, CONSECTETUR, ADIPISCI VELIT, SED QUIA NON NUMQUAM EIUS MODI TEMPORA INCIDUNT UT LABORE ET DOLORE MAGNAM ALIQUAM QUAERAT VOLUPTATEM. UT ENIM AD MINIMA VENIAM.
+
+ 
+
+  HI THERE!
+  I THOUGHT YOU WERE HERE!
+
+
+
+Quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+
+THIS DATA IS FROM THE SHORTCODE 3
+
+THIS DATA IS FROM THE SHORTCODE 4
+
+WHICH BY THE WAY, HAS LOTS OF FORBIDDEN CHARACTERS
+
+
+
+Ok, final stuff...

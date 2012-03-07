@@ -38,6 +38,21 @@ function MainController(app) {
     res.render('response-cache');
   });
   
+  /* Response Buffer filter test */
+  
+  get('/response/buffer', function(req, res) {
+    res.render('#msg', {message: 'HELLO'}, true);
+  });
+  
+  get('/response/buffer/specific', function(req, res) {
+    res.setContext('specific');
+    res.render('#msg', {message: 'WORLD'}, true);
+  });
+  
+  get('/response/buffer/raw', function(req, res) {
+    res.end('THIS SHOULD NOT BE MODIFIED');
+  });
+  
   /* Header Tests */
   
   get('/setheaders', function(req, res, params) {

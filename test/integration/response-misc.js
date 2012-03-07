@@ -11,6 +11,8 @@ var multi = new Multi(app);
 multi.on('pre_exec', app.backupFilters);
 multi.on('post_exec', app.restoreFilters);
 
+var generalFilter, specificFilter;
+
 vows.describe('Response Misc').addBatch({
   
   'Sending Headers': {
@@ -149,6 +151,7 @@ vows.describe('Response Misc').addBatch({
     
     'Application::login responds w/401 when app.loginUrl is null': function(results) {
       var r = results;
+      // console.exit(r);
       assert.isTrue(r.indexOf('HTTP/1.1 401 Unauthorized') >= 0);
     }
     
@@ -188,6 +191,58 @@ vows.describe('Response Misc').addBatch({
       assert.isTrue(r.indexOf('myCoolFunc({"name":"ernie","age":"28","jsoncallback":"myCoolFunc","file":"hello.json"})') >= 0);
     }
     
+  }
+  
+}).addBatch({
+  
+  'Response Context & Filter': {
+
+    topic: function() {
+
+      // Note: this test also covers OutgoingMessage::setContext
+
+      var promise = new EventEmitter();
+
+      // Override multi, since filters are being restored on each exec
+      var multi = new Multi(app);
+
+      app.addFilter('response_buffer', function(data) {
+        data.buffer = '-- ' + data.buffer + ' --';
+        return data;
+      });
+
+      app.addFilter('specific_response_buffer', function(data) {
+        data.buffer = new Buffer(data.buffer).toString('base64');
+        data = app.applyFilters('response_buffer', data);
+        return data;
+      });
+
+      multi.curl('/response/buffer/raw');
+      multi.curl('/response/buffer');
+      multi.curl('/response/buffer/specific');
+
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+
+      return promise;
+    },
+
+    "Do not apply on `res.end` calls": function(results) {
+      var r1 = results[0];
+      assert.equal(r1, 'THIS SHOULD NOT BE MODIFIED')
+    },
+
+    "Applies to the general `response_buffer` filter": function(results) {
+      var r2= results[1];
+      assert.equal(r2, "-- \n<p>HELLO</p>\n --");
+    },
+
+    "Applies to the `specific_response_buffer` filter": function(results) {
+      var r3 = results[2];
+      assert.equal(r3, "-- CjxwPldPUkxEPC9wPgo= --");
+    }
+
   }
   
 }).export(module);

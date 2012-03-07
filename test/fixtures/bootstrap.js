@@ -5,8 +5,9 @@
 // Prevent timezone conflicts
 process.env.TZ = '';
 
-var env, 
+var env,
     _ = require('underscore'),
+    fs = require('fs'),
     path = require('path'),
     vows = require('vows'),
     assert = require('assert'),
@@ -26,22 +27,22 @@ if (module.parent.id == '.') {
 CoreJS.configure('autoCurl', false);
 
 CoreJS.on('pre_init', function(app) {
-  
+
   // Convert port to int, otherwise mongodb client complains...
   testConfig.mongodb.port = parseInt(testConfig.mongodb.port, 10);
-  
+
   app.config.database.default = 'mysql:nocache';
-  
+
   app.config.database.mysql = {
     nocache: testConfig.mysql,
     cache: _.extend({storage: 'redis'}, testConfig.mysql)
   }
-  
+
   app.config.database.mongodb = {
    nocache: testConfig.mongodb,
    cache: _.extend({storage: 'redis'}, testConfig.mongodb)
   }
-  
+
   app.config.storage.redis = testConfig.redis;
   app.config.storage.mongodb = testConfig.mongodb;
 });
@@ -51,7 +52,17 @@ CoreJS.on('bootstrap_config', function(bootstrap) {
   // console.log(bootstrap);
 });
 
-var testSkeleton = CoreJS.path + '/test/fixtures/test-skeleton';
+// Automatically detect test skeleton: Allows to test the app with different names
+// Just make sure the name ends with 'skeleton', and it'll be fine...
+var skelDir, testSkeleton;
+fs.readdirSync('test/fixtures').forEach(function(dir) {
+  if (/skeleton$/.test(dir)) {
+    skelDir = dir;
+    testSkeleton = CoreJS.path + '/test/fixtures/' + dir;
+  }
+});
+
+// console.exit(testSkeleton);
 
 var corejs = CoreJS.bootstrap(testSkeleton, {
       server: {
@@ -59,11 +70,12 @@ var corejs = CoreJS.bootstrap(testSkeleton, {
       },
       events: {
         pre_init: function(app) {
+          app.skelDir = skelDir;
           app.__initBootstrapEvent = true;
         }
       }
     });
-    
+
 var app = corejs.app;
 
 app.logging = false;
@@ -95,7 +107,7 @@ app.restoreFilters = function() {
 function engineCompatibility(buffer, __engine__) {
   var pass, checks = [], failed = [], notCompatible = [],
       helperPropertyRegex = /<p>99(\s+)?<\/p>/;
-  
+
   for (var engine,i=0; i < engines.length; i++) {
     engine = engines[i];
     pass = buffer.indexOf('Rendered Partial: ' + engine.toUpperCase()) >= 0;
@@ -106,7 +118,7 @@ function engineCompatibility(buffer, __engine__) {
       console.log('    ✗ ' + colorize('Not Compatible with ' + engine, '0;33'));
     }
   }
-  
+
   if (app.engines[__engine__].async === false && failed.length > 0) {
     for (i=0; i < failed.length; i++) {
       engine = failed[i];
@@ -116,7 +128,7 @@ function engineCompatibility(buffer, __engine__) {
       }
     }
   }
-  
+
 }
 
 // Automate engine tests
@@ -136,7 +148,7 @@ app.addEnginePartials = function(current, data, repl) {
 // Automate vows batches for test engines
 
 app.createEngineBatch = function(className, engine, testUrl, __module__) {
-  
+
   vows.describe(className + ' Rendering Engine').addBatch({
 
     '': {
@@ -159,7 +171,7 @@ app.createEngineBatch = function(className, engine, testUrl, __module__) {
     }
 
   }).export(__module__);
-  
+
 }
 
 // Common model properties
