@@ -164,7 +164,7 @@ vows.describe('lib/application.js').addBatch({
   'Application::applyFilters': {
     
     topic: function() {
-      return app.applyFilterss('filter', ['data']);
+      return app.applyFilters('filter', ['data']);
     },
     
     'Returns valid values': function(topic) {

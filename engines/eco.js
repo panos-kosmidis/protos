@@ -16,7 +16,7 @@ function Eco(app) {
 util.inherits(Eco, corejs.lib.engine);
 
 Eco.prototype.render = function(data) {
-  data = this.app.applyFilterss('eco_template', data);
+  data = this.app.applyFilters('eco_template', data);
   var func = this.getCachedFunction(arguments);
   if (func === null) {
     func = eco.compile(data);

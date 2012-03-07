@@ -19,7 +19,7 @@ function Handlebars(app) {
 util.inherits(Handlebars, corejs.lib.engine);
 
 Handlebars.prototype.render = function(data) {
-  data = this.app.applyFilterss('handlebars_template', data);
+  data = this.app.applyFilters('handlebars_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     func = handlebars.compile(data);

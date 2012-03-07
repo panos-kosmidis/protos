@@ -19,7 +19,7 @@ function Liquor(app) {
 util.inherits(Liquor, corejs.lib.engine);
 
 Liquor.prototype.render = function(data) {
-  data = this.app.applyFilterss('liquor_template', data);
+  data = this.app.applyFilters('liquor_template', data);
   var func = this.getCachedFunction(arguments);
   if (func === null) {
     func = liquor.compile(data, this.options);

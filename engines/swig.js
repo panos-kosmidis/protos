@@ -22,7 +22,7 @@ function Swig(app) {
 util.inherits(Swig, corejs.lib.engine);
 
 Swig.prototype.render = function(data) {
-  data = this.app.applyFilterss('swig_template', data);
+  data = this.app.applyFilters('swig_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     tpl = swig.compile(data, this.options);

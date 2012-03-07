@@ -19,13 +19,13 @@ function Dot(app) {
   dot.templateSettings.append = false;
   
   // Apply filters to dot settings
-  app.applyFilterss('dot_options', dot.templateSettings);
+  app.applyFilters('dot_options', dot.templateSettings);
 }
 
 util.inherits(Dot, corejs.lib.engine);
 
 Dot.prototype.render = function(data) {
-  data = this.app.applyFilterss('dot_template', data);
+  data = this.app.applyFilters('dot_template', data);
   var func = this.getCachedFunction(arguments);
   if (func === null) {
     func = dot.compile(data);
