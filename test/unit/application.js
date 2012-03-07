@@ -137,13 +137,13 @@ vows.describe('lib/application.js').addBatch({
   'Application::addFilter': {
     
     topic: function() {
-      app._addFilter('filter', function(data) {
+      app.attachFilter('filter', function(data) {
         /* Filter 1 */
         data.push('>>');
         return data;
       });
       
-      app._addFilter('filter', function(data) {
+      app.attachFilter('filter', function(data) {
         /* Filter 2 */
         data.unshift('<<');
         return data;
@@ -164,7 +164,7 @@ vows.describe('lib/application.js').addBatch({
   'Application::applyFilters': {
     
     topic: function() {
-      return app._applyFilters('filter', ['data']);
+      return app.applyFilterss('filter', ['data']);
     },
     
     'Returns valid values': function(topic) {

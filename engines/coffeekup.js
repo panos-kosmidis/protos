@@ -20,7 +20,7 @@ function CoffeeKup(app) {
 util.inherits(CoffeeKup, corejs.lib.engine);
 
 CoffeeKup.prototype.render = function(data) {
-  data = this.app._applyFilters('coffeekup_template', data);
+  data = this.app.applyFilterss('coffeekup_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     tpl = ck.compile(data, this.options);
