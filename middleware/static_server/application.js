@@ -76,9 +76,9 @@ Application.prototype._serveStaticFile = function(path, req, res) {
 
         date.setTime(date.getTime() + maxAge * 1000);
 
-        var expires = date.toUTCString(),
-          isCached = ( (req.headers['if-modified-since'] != null)
-          && lastModified === req.headers['if-modified-since'] );
+        var expires = date.toUTCString();
+        
+        var isCached = ( (req.headers['if-modified-since'] != null) && lastModified === req.headers['if-modified-since'] );
 
         // Static headers
         var headers = {
@@ -96,10 +96,11 @@ Application.prototype._serveStaticFile = function(path, req, res) {
         } else if (typeof enableEtags == 'function') {
           headers.Etag = enableEtags(stats);
         }
-
+        
         // Return cached content
         if (isCached) {
           res.statusCode = 304;
+          delete headers['Content-Length'];
           res.sendHeaders(headers);
           res.end();
           return;
