@@ -16,7 +16,7 @@ function JqueryTemplate(app) {
 util.inherits(JqueryTemplate, corejs.lib.engine);
 
 JqueryTemplate.prototype.render = function(data, vars, relPath) {
-  data = this.app.applyFilter('jqtpl_template', data);
+  data = this.app.applyFilters('jqtpl_template', data);
   var tpl, tplID, func = this.getCachedFunction(arguments);
   if (func === null) {
     tplID = util.format('%s:%s', this.app.domain, relPath);

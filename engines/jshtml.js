@@ -17,7 +17,7 @@ function JsHtml(app) {
 util.inherits(JsHtml, corejs.lib.engine);
 
 JsHtml.prototype.render = function(data) {
-  data = this.app.applyFilter('jshtml_template', data);
+  data = this.app.applyFilters('jshtml_template', data);
   var func = this.getCachedFunction(arguments);
   if (func === null) {
     func = j.compile(data, this.options);
