@@ -34,6 +34,10 @@ module.exports = {
     connection: 'close'
   },
   
+  engines: {
+    liquor: {pretty: true}
+  },
+  
   viewExtensions: {
     html: 'liquor',
     mustache: 'handlebars'
