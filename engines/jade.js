@@ -20,7 +20,7 @@ function Jade(app) {
 util.inherits(Jade, corejs.lib.engine);
 
 Jade.prototype.render = function(data, vars, relPath) {
-  data = this.app.applyFilters('jade_template', data);
+  data = this.app.applyFilterss('jade_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     var filename = this.app.fullPath(this.app.mvcpath + 'views/' + relPath),

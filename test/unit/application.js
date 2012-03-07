@@ -161,10 +161,10 @@ vows.describe('lib/application.js').addBatch({
     
   },
   
-  'Application::applyFilterss': {
+  'Application::applyFilters': {
     
     topic: function() {
-      return app.applyFilters('filter', ['data']);
+      return app.applyFilterss('filter', ['data']);
     },
     
     'Returns valid values': function(topic) {

@@ -16,7 +16,7 @@ function Whiskers(app) {
 util.inherits(Whiskers, corejs.lib.engine);
 
 Whiskers.prototype.render = function(data) {
-  data = this.app.applyFilters('whiskers_template', data);
+  data = this.app.applyFilterss('whiskers_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     tpl = whiskers.compile(data);

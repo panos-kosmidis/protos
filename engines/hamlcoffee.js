@@ -16,7 +16,7 @@ function HamlCoffee(app) {
 util.inherits(HamlCoffee, corejs.lib.engine);
 
 HamlCoffee.prototype.render = function(data) {
-  data = this.app.applyFilters('hamlcoffee_template', data);
+  data = this.app.applyFilterss('hamlcoffee_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
     func = hamlCoffee.compile(data);
