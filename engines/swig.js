@@ -8,12 +8,16 @@ var swig = require('swig'),
 
 function Swig(app) {
   this.app = app;
-  this.options = {
+  
+  var opts = (app.config.engines && app.config.engines.swig) || {};
+  
+  this.options = corejs.extend({
     allowErrors: true,
     autoescape: true,
     encoding: 'utf-8',
     tags: {}
-  };
+  }, opts);
+  
   this.module = swig;
   this.multiPart = true;
   this.extensions = ['swig', 'swig.html', 'sw.html'];

@@ -9,9 +9,13 @@ var jade = require('jade'),
 
 function Jade(app) {
   this.app = app;
-  this.options = {
+  
+  var opts = (app.config.engines && app.config.engines.jade) || {};
+  
+  this.options = corejs.extend({
     pretty: true
-  }
+  }, opts);
+  
   this.module = jade;
   this.multiPart = false;
   this.extensions = ['jade', 'jade.html']

@@ -8,7 +8,11 @@ var ejs = require('ejs'),
 
 function EJS(app) {
   this.app = app;
-  this.options = {open: '<%', close: '%>'}
+  
+  var opts = (app.config.engines && app.config.engines.ejs) || {};
+  
+  this.options = corejs.extend({open: '<%', close: '%>'}, opts);
+  
   this.module = ejs;
   this.multiPart = true;
   this.extensions = ['ejs', 'ejs.html'];

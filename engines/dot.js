@@ -18,8 +18,10 @@ function Dot(app) {
   dot.templateSettings.strip = false;
   dot.templateSettings.append = false;
   
-  // Apply filters to dot settings
-  app.applyFilters('dot_options', dot.templateSettings);
+  var opts = (app.config.engines && app.config.engines.dot) || {};
+  
+  dot.templateSettings = corejs.extend(dot.templateSettings, opts);
+  
 }
 
 util.inherits(Dot, corejs.lib.engine);

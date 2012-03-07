@@ -8,10 +8,14 @@ var ck = require('coffeekup'),
 
 function CoffeeKup(app) {
   this.app = app;
-  this.options = {
+  
+  var opts = (app.config.engines && app.config.engines.coffeekup) || {};
+
+  this.options = corejs.extend({
     locals: true,
     hardcode: {}
-  };
+  }, opts);
+  
   this.module = ck;
   this.multiPart = true;
   this.extensions = ['coffeekup', 'ck.html'];

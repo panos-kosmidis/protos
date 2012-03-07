@@ -8,9 +8,13 @@ var liquor = require('liquor'),
 
 function Liquor(app) {
   this.app = app;
-  this.options = {
+  
+  var opts = (app.config.engines && app.config.engines.liquor) || {};
+
+  this.options = corejs.extend({
     pretty: true
-  }
+  }, opts);
+
   this.module = liquor;
   this.multiPart = true;
   this.extensions = ['liquor', 'liquor.html', 'lq.html'];

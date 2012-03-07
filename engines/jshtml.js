@@ -9,7 +9,11 @@ var j = require('jshtml'),
 function JsHtml(app) {
   this.app = app;
   this.module = j;
-  this.options = {with: false};
+  
+  var opts = (app.config.engines && app.config.engines.jshtml) || {};
+
+  this.options = corejs.extend({with: false}, opts);
+  
   this.multiPart = true;
   this.extensions = ['jshtml'];
 }
