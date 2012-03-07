@@ -12,7 +12,8 @@ function Liquor(app) {
   var opts = (app.config.engines && app.config.engines.liquor) || {};
 
   this.options = corejs.extend({
-    pretty: true
+    pretty: true,
+    indent: true
   }, opts);
 
   this.module = liquor;
