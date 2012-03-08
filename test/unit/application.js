@@ -13,12 +13,33 @@ var multi = new Multi(app);
 multi.on('pre_exec', app.backupFilters);
 multi.on('post_exec', app.restoreFilters);
 
+var beforeInitCheck, afterInitCheck;
+
+app.onInitialize(function() {
+  beforeInitCheck = true;
+});
+
 vows.describe('lib/application.js').addBatch({
 
   'Integrity Checks': {
 
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      app.once('init', function() {
+        
+        app.onInitialize(function() {
+          afterInitCheck = true;
+        });
+        
+        promise.emit('success');
+      })
+      
+      return promise;
+    },
+
     'Sets domain': function() {
-      assert.equal(app.domain, 'localhost');
+      
     },
 
     'Sets application path': function() {
@@ -66,6 +87,18 @@ vows.describe('lib/application.js').addBatch({
   }
 
 }).addBatch({
+  
+  'Application::onInitialize': {
+    
+    "Successfully runs callbacks before the 'init' event": function() {
+      assert.isTrue(beforeInitCheck);
+    },
+    
+    "Successfully runs callbacks after the 'init' event": function() {
+      assert.isTrue(afterInitCheck);
+    }
+    
+  },
 
   'Application::url': {
 
