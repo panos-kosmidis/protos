@@ -25,7 +25,7 @@ function UsersModel(app) {
   this.driver = 'default';
   
   this.properties = {
-    user    : {type: 'string', required: true, validates: 'alpha_underscores'},
+    user    : {type: 'string', required: true, validates: 'alnum_underscores'},
     pass    : {type: 'string', required: true, validates: 'password'}
   }
 
