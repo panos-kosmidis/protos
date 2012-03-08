@@ -13,7 +13,7 @@ function Liquor(app) {
 
   this.options = corejs.extend({
     pretty: true,
-    indent: true
+    indent: 0
   }, opts);
 
   this.module = liquor;
