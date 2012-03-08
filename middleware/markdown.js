@@ -49,6 +49,7 @@
 var app = corejs.app,
     util = require('util'),
     discount = require('discount'),
+    inflect = require('../lib/support/inflect.js'),
     sanitizer = require('sanitizer'),
     isArray = util.isArray;
 
@@ -87,6 +88,8 @@ function Markdown(config, middleware) {
   // Register Markdown view helpers
   registerViewHelpers(this);
   
+  // Add flag partial methods
+  setFlagMethods(this);
 }
 
 /**
@@ -182,7 +185,7 @@ function parseFlag(flag) {
 /**
   Registers View Helpers
   
-  @param {object} instance Markdown middleware instance
+  @param {object} markdown
   @private
  */
 
@@ -193,4 +196,32 @@ function registerViewHelpers(markdown) {
   
 }
 
+/**
+  Sets flags methods in middleware instance
+  
+  @param {object} markdown
+  @private
+ */
+ 
+function setFlagMethods(markdown) {
+  var flag, flags = markdown.flags;
+  for (flag in flags) {
+    if (flag == 'default') continue;
+    (function(flag) {
+      markdown['parse' + inflect.camelize(flag)] = function(str) {
+        return markdown.parse(str, flag);
+      }
+    }).call(this, flag);
+  } 
+}
+
 module.exports = Markdown;
+
+
+
+
+
+
+
+
+

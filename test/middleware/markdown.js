@@ -38,6 +38,11 @@ vows.describe('Markdown (middleware)').addBatch({
       assert.isFunction(app.views.partials.$markdown);
     },
     
+    "Flag methods are properly registered in markdown instance": function() {
+      assert.isFunction(app.markdown.parseInsecure);
+      assert.equal(app.markdown.parseInsecure('[Google](http://google.com)'), '<p>[Google](http://google.com)</p>');
+    },
+    
     "The '$markdown' view helper can be used within views": function(r) {
       assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
       
