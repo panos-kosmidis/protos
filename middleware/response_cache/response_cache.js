@@ -29,13 +29,7 @@ var app = corejs.app;
 
 require('./response.js');
 
-function ResponseCache(config, middleware) {
-
-  /* config = {
-    storage: 'redis'
-  } */
-  
-  var sto;
+function ResponseCache(config, middleware) { var sto;
   
   if (!config.storage) {
     throw new Error('A storage is required.');
