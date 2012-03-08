@@ -31,3 +31,5 @@ CoreJS.bootstrap(__dirname, {
   }
   
 });
+
+module.exports = corejs.app;
