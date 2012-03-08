@@ -29,7 +29,7 @@ vows.describe('Shortcode (middleware)').addBatch({
     assert.equal(output, expected);
     
     // Test single arguments + empty shortcodes
-    var buf = 'Hi there! this is [name][/name]';
+    buf = 'Hi there! this is [name][/name]';
     var out = app.shortcode.replace(buf, 'name', function(str) {
       return 'SPARTA!';
     });

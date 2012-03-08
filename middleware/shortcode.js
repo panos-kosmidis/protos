@@ -83,9 +83,9 @@ Shortcode.prototype.replace = function(buffer, shortcode, func) {
   } else if (shortcode.constructor && shortcode.constructor === Object) {
     // `shortcode` is an object containing {shortcode:func}
     var ob = shortcode;
-    for (shortcode in ob) {
-      func = ob[shortcode];
-      buffer = replaceShortcode(buffer, shortcode, func);
+    for (var key in ob) {
+      func = ob[key];
+      buffer = replaceShortcode(buffer, key, func);
     }
     return buffer;
   } else {
