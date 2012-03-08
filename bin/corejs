@@ -254,7 +254,7 @@ var commands = {
     switches: ['nohelper'],
     args: 99,
     help: {
-      nomodel: "Don't create models when generating controllers"
+      nohelper: "Don't create helpers when generating controllers"
     },
     validate: validateApp,
     run: function(data) {
