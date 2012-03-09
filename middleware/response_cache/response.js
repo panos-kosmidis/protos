@@ -15,5 +15,5 @@ var app = corejs.app,
  */
 
 OutgoingMessage.prototype.useCache = function(cacheID) {
-  this.cacheID = cacheID;
+  this.cacheID = "response_cache_" + cacheID;
 }

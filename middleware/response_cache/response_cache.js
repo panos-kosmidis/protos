@@ -42,6 +42,9 @@ function ResponseCache(config, middleware) { var sto;
   app.resources[middleware] = {
     storage: sto
   };
+
+  // Used to check response caches
+  app[middleware] = {};
   
 }
 
