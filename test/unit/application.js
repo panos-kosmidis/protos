@@ -24,6 +24,7 @@ vows.describe('lib/application.js').addBatch({
   'Integrity Checks': {
 
     topic: function() {
+      
       var promise = new EventEmitter();
       
       app.once('init', function() {
@@ -39,7 +40,7 @@ vows.describe('lib/application.js').addBatch({
     },
 
     'Sets domain': function() {
-      
+      assert.equal(app.domain, 'localhost');
     },
 
     'Sets application path': function() {
@@ -73,6 +74,16 @@ vows.describe('lib/application.js').addBatch({
     'Initializes application engines': function() {
       assert.instanceOf(app.engines.eco, corejs.lib.engine);
     },
+    
+    "Properly registers view partials": function() {
+      var partials = app.views.partials;
+      assert.isFunction(partials.layout_partial);
+      assert.equal(partials.layout_partial.engine, 'Liquor');
+      assert.isFunction(partials.layout_dir_partial);
+      assert.equal(partials.layout_dir_partial.engine, 'Kernel');
+      assert.isFunction(partials.main_subdir_partial);
+      assert.equal(partials.main_subdir_partial.engine, 'Jade');
+    }
 
   }
 
