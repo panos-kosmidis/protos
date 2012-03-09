@@ -358,13 +358,22 @@ Request Headers: \n%s\n", req.socket.remoteAddress, sessId, sessHash, req.method
 
   @param {object} req
   @param {object} res
+  @param {object} data (optional)
   @param {function} callback
   @public
 */
 
-Session.prototype.createGuestSession = function(req, res, callback) {
+Session.prototype.createGuestSession = function(req, res, data, callback) {
   var self = this;
-  this.create(req, res, {guest: '1'}, "guest", function(data, hashes, expires) {
+  
+  if (!callback) { 
+    callback = data; 
+    data = {guest: '1'};
+  } else {
+    data.guest = '1';
+  }
+  
+  this.create(req, res, data, 'guest', function(data, hashes, expires) {
     return callback.call(self, data, hashes, expires);
   });
 }
