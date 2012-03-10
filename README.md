@@ -1,12 +1,136 @@
 # CoreJS [![Build Status](https://secure.travis-ci.org/corejs/corejs.png)](http://travis-ci.org/corejs/corejs)
 
-## Status: beta
+CoreJS is an open source Web Application Development framework, focused on high performance, integration, ease of 
+deployment, maintainability and security.
 
-## About
+It aims to integrate several open source packages and combine their power &amp; functionality, to bring a common set of
+utilities and functionality to all applications, reducing their dependencies.
 
-CoreJS is a Web Application Framework for [node.js](http://nodejs.org), using ideas from the 
-[MVC](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) architecture.
+## Features
 
-## License
+- Powerful Routing
+- Controller Authentication & Route Filters
+- RESTful Methods support
+- Environment based Configuration
+- Fast Configuration with bootstrap file
+- Multi Core Cluster support
+- Easy Deployment with JSON or Command line
+- MongoDB, MySQL & Redis Development Stack
+- Application Helpers
+- Application Models supporting ORM &amp; Relationships
+- Database Drivers & Storages
+- Query Caching in Drivers by using Storages
+- Built-in Support for multiple Template Engines
+- View Partials Support
+- JSON Responses Support
+- Custom & Dynamic Headers
+- Built-in & Adjustable Cache-Control settings
+- Built-in Proxy Server for Applications
+- Built-in Node Inspector for debugging
+- Executable used to create/manage/deploy applications &amp; servers
+- Full Suite of Functional tests
+- Organized Application directory structure
 
-This project is [MIT](http://www.opensource.org/licenses/mit-license.php) Licensed.
+## Development Stack
+
+CoreJS provides a set of APIs that allow the framework to be extended in all sorts of ways. Use it either to contribute
+new functionality &amp; components to it, or to enhance it with the needs of your team/organization.
+
+### Drivers
+
+You have at your disposal the _Database Drivers_, which provide a common set of methods to operate the backend database,
+implementing the _Models API_, which allows the Driver to connect with _Models_.
+
+### Storages
+
+_Storages_ are used for caching, session data and anything you can think of. These abstract databases with fast read/write 
+operations, such as MongoDB and Redis. Storages are also used as the _caching layer_ for Drivers on the _Query Cache_ functionality.
+
+### Models
+
+Models use Drivers under the hood to handle the low level manipulation of their data. They provide automatic validation of data.
+You can set your own validation rules with ease on a per-model basis.
+
+The Models can relate with eaach other by using Relationships. These are used to connect models in specific ways, storing only the
+references to their related models. You can then retrieve the related models either individually, or in groups.
+
+Each relationship add a set predefined methods using a common convention, that help you maniuplate the relationships between
+the model objects you're working with.
+
+Model (and Relationships) database-agnostic, you can change the underlying database driver used by the model, and no changes are required. This
+means you can use a database backend for development, and another for production (just to give an example). No changes needed on deployment.
+
+### Overview
+
+Here's the Development Stack the framework provides, in a nutshell:
+
+- **Drivers** &nbsp; _[MongoDB](https://github.com/corejs/corejs/blob/master/drivers/mongodb.js), [MySQL](https://github.com/corejs/corejs/blob/master/drivers/mysql.js)_
+- **Storages** &nbsp; _[MongoDB](https://github.com/corejs/corejs/blob/master/storages/mongodb.js), [Redis](https://github.com/corejs/corejs/blob/master/storages/redis.js)_
+- **Models** &nbsp; _Use any Driver supported_
+- **Query Cache (Drivers)** &nbsp; _Use any Storage supported_
+- **Query Cache (Models)** &nbsp; _Handled by underlying Driver_
+- **Caching** &nbsp; _Use any Storage supported_
+- **Sessions** &nbsp; _Use any Storage supported_
+- **Response Caching** &nbsp; _Use any Storage supported_
+- **Logging** &nbsp; _[MongoDB](https://github.com/corejs/corejs/blob/master/middleware/logger/transport-mongodb.js), 
+[Redis](https://github.com/corejs/corejs/blob/master/middleware/logger/transport-redis.js) (additionally 
+[File](https://github.com/corejs/corejs/blob/master/middleware/logger/transport-file.js), [Console](https://github.com/corejs/corejs/blob/master/middleware/logger/transport-console.js) via Middleware)_
+
+## Middleware
+
+The Application's functionality can be extended with the following (ready to use) components:
+
+- [asset_compiler](http://corejs.org/middleware#asset_compiler) &nbsp; *Automatically compiles LESS, Stylus and CoffeeScript assets (with watch support)*
+- [aws](http://corejs.org/middleware#aws) &nbsp; *Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)*
+- [bcrypt](http://corejs.org/middleware#bcrypt) &nbsp; *Blowfish encryption support*
+- [body_parser](http://corejs.org/middleware#body_parser) &nbsp; *Parse request bodies and file uploads in POST/PUT requests*
+- [cookie_parser](http://corejs.org/middleware#cookie_parser) &nbsp; *Parse cookie headers, Integrates with Sessions & Auth*
+- [csrf](http://corejs.org/middleware#csrf) &nbsp; *Cross-Site Request Forgery protection, integrates with Controller Validation*
+- [logger](http://corejs.org/middleware#logger) &nbsp; *Application/Request logger, supporting several transports such as MongoDB, Redis, File &amp; console*
+- [mailer](http://corejs.org/middleware#mailer) &nbsp; *Send email using SMTP, Amazon SES or Sendmail*
+- [ markdown ](http://corejs.org/middleware#markdown) &nbsp; *Parse markdown syntax*
+- [production_url](http://corejs.org/middleware#production_url) &nbsp; *Remove port number from application-generated URLs*
+- [redirect](http://corejs.org/middleware#redirect) &nbsp; *Quick redirection support (useful for "maintenance mode")*
+- [response_cache](http://corejs.org/middleware#response_cache) &nbsp; *Response caching into supported Storages (Redis, MongoDB, etc)*
+- [session](http://corejs.org/middleware#session) &nbsp; *Full session support with Storages, guest sessions and regeneration*
+- [shortcode](http://corejs.org/middleware#shortcode) &nbsp; *Allows custom content to be inserted into views using shortcodes*
+- [socket_io](http://corejs.org/middleware#socket_io) &nbsp; *Socket.io Integration with applications*
+- [static_server](http://corejs.org/middleware#static_server) &nbsp; *Complete Static Server solution, supporting Ranges, Conditional GETs, etc.*
+
+## Template Engines
+
+There is a lot of flexibility when it comes to template engines. To use a view engine, just add the extension 
+to the template and you're set. You don't need to install any npm dependencies.
+
+View Partials can be used across template engines. This means you can use Jade partials within Swig templates. Or CoffeeKup
+partials within EJS templates (and vice versa). There are a few exceptions with mustache engines (due to their *logicless*
+nature), such as Hogan and Handlebars.
+
+You are not limited by the default view extensions the framework provides. You can specify your own view extensions in the
+application's configuration.
+
+The following view engines are fully integrated with the Framework:
+
+- [CoffeeKup](https://github.com/mauricemach/coffeekup)
+- [DoT](https://github.com/olado/doT)
+- [Eco](https://github.com/sstephenson/eco)
+- [EJS](https://github.com/visionmedia/ejs)
+- [Haml](https://github.com/visionmedia/haml.js)
+- [Haml-Coffee](https://github.com/9elements/haml-coffee)
+- [Handlebars](https://github.com/wycats/handlebars.js)
+- [Hogan.js](https://github.com/twitter/hogan.js)
+- [Jade](https://github.com/visionmedia/jade)
+- [Jazz](https://github.com/shinetech/jazz)
+- [JQuery Templates](https://github.com/kof/node-jqtpl)
+- [JSHtml](https://github.com/LuvDaSun/jshtml)
+- [Kernel](https://github.com/c9/kernel)
+- [Liquor](https://github.com/chjj/liquor)
+- [Swig](https://github.com/paularmstrong/swig)
+- [Whiskers](https://github.com/gsf/whiskers.js/tree)
+
+## Resources
+
+- Visit the official [corejs.org](http://corejs.org) website.
+- Follow [@derdesign](http://twitter.com/derdesign) on Twitter for updates.
+- Report issues on the [github issues](https://github.com/corejs/corejs/issues) page.
+
