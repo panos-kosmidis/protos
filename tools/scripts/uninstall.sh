@@ -2,6 +2,6 @@
 
 # Uninstall from $PREFIX/lib/node if running as root
 if [[ $EUID -eq 0 ]]; then
-	unlink /usr/local/lib/node/corejs
+	unlink /usr/local/lib/node/corejs &> /dev/null
 	exit 0
 fi
