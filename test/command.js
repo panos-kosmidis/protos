@@ -284,7 +284,7 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
         return promise;
       },
 
-      "Properly generates views": function(results) {
+      "Properly generates view partials": function(results) {
         var r1 = results[0];
         var expected =  '» Created myapp1/app/views/blog/_post.html\n» Created myapp1/app/views/admin/_widget.html';
 
@@ -303,6 +303,42 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
       }
 
     }
+  
+}).addBatch({
+  
+  'corejs static': {
+
+    topic: function() {
+      var promise = new EventEmitter();
+
+      corejs.command('static hello world');
+      corejs.command('static about contact --ext jade');
+
+      corejs.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+
+      return promise;
+    },
+
+    "Properly generates static views": function(results) {
+      var r1 = results[0];
+      var expected = '» Created myapp1/app/views/__static/hello.html\n» Created myapp1/app/views/__static/world.html';
+      assert.equal(r1, expected);
+      assert.isTrue(pathModule.existsSync('app/views/__static/hello.html'));
+      assert.isTrue(pathModule.existsSync('app/views/__static/world.html'));
+    },
+
+    "Uses custom extensions when using --ext": function(results) {
+      var r2 = results[1];
+      var expected = '» Created myapp1/app/views/__static/about.jade\n» Created myapp1/app/views/__static/contact.jade';
+      
+      assert.equal(r2, expected);
+      assert.isTrue(pathModule.existsSync('app/views/__static/about.jade'));
+      assert.isTrue(pathModule.existsSync('app/views/__static/contact.jade'));
+    }
+
+  }
   
 }).addBatch({
   

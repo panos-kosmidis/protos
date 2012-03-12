@@ -250,6 +250,26 @@ var commands = {
     }
   },
   
+  inspector: {
+    args: 1,
+    run: function(data) {
+      var action = data.args.pop();
+      switch (action) {
+        case 'start':
+        case 'stop':
+          var cmd = 'node ' + CoreJS.path + '/tools/' + action + '-inspector';
+          cp.exec(cmd, function(err, stdout, stderr) {
+            if (err) throw err;
+            else console.exit(stdout.trim());
+          });
+          break;
+        default:
+          console.exit("Valid commands are: [start, stop]");
+          break;
+      }
+    }
+  },
+  
   controller: {
     switches: ['nohelper'],
     args: 99,
@@ -283,10 +303,10 @@ var commands = {
     single: ['ext'],
     args: 99,
     help: {
-      ext: 'Extension to use for generated views/partials'
+      ext: 'Extension to use for generated normal/static/partial views'
     },
     validate: validateApp,
-    run: function(data, partial) {
+    run: function(data, partial, path) {
       
       var app = pathModule.basename(process.cwd());
       
@@ -324,6 +344,18 @@ var commands = {
     validate: validateApp,
     run: function(data) {
       commands.view.run.call(this, data, true); // Set partial
+    }
+  },
+  
+  static: {
+    single: ['ext'],
+    args: 99,
+    validate: validateApp,
+    run: function(data) {
+      data.args = data.args.map(function(view) {
+        return '__static/' + view;
+      });
+      commands.view.run.call(this, data, false); // Set view directory
     }
   },
   
@@ -642,6 +674,9 @@ function createView(app, controller, view, partial) {
     file += (this.mustache) ? 'mustache' : (this.ext || 'html');
   }
   
+  // Replace static file prefix
+  file = file.replace('__static-', '');
+  
   if (controller == 'main' && this.mustache == true) {
     tpl = "\n<p>Welcome to {{corejs.className}}</p>\n";
     fs.unlinkSync(app + '/app/views/main/main-index.html');
@@ -802,7 +837,7 @@ var cli = new CommandLine(commands);
 
 cli.help.before = "\
 Usage: corejs [action] [arguments]\n\n\
-Actions: [create, server, deploy] [controller, view, partial, helper, model]\n";
+Actions: [create, server, deploy, inspector] [controller, helper, model, view, partial, static]\n";
 
 cli.help.after = "\n\
 Example:\n\n\
