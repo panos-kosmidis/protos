@@ -16,7 +16,11 @@ function StorageBatch(stoClass) {
     getHash: {},
     updateHash: {},
     deleteFromHash: {},
-    expire: {}
+    expire: {},
+    incr: {},
+    incrBy: {},
+    decr: {},
+    decrBy: {}
   };
   
   instance.set[stoClass + '::set'] = {
@@ -216,6 +220,102 @@ function StorageBatch(stoClass) {
       assert.isNull(err);
     }
 
+  }
+  
+  // Incr
+  instance.incr[stoClass + '::incr'] = {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+
+      multi.set('hello', 100);
+      multi.incr('hello');
+      multi.incr('hello');
+      multi.get('hello');
+
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+
+      return promise;
+    },
+    
+    "Increments key by one": function(results) {
+      assert.equal(results.pop(), 102);
+    }
+    
+  }
+  
+  // IncrBy
+  instance.incrBy[stoClass + '::incrBy'] = {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+
+      multi.set('hello', 100);
+      multi.incrBy('hello', 5);
+      multi.incrBy('hello', 5);
+      multi.get('hello');
+
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+
+      return promise;
+    },
+    
+    "Increments key by value": function(results) {
+      assert.equal(results.pop(), 110);
+    }
+    
+  }
+  
+  // Decr
+  instance.decr[stoClass + '::decr'] = {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+
+      multi.set('hello', 100);
+      multi.decr('hello');
+      multi.decr('hello');
+      multi.get('hello');
+
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+
+      return promise;
+    },
+    
+    "Decrements key by one": function(results) {
+      assert.deepEqual(results.pop(), 98);
+    }
+    
+  }
+  
+  // IncrBy
+  instance.decrBy[stoClass + '::decrBy'] = {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+
+      multi.set('hello', 100);
+      multi.decrBy('hello', 2);
+      multi.decrBy('hello', 2);
+      multi.get('hello');
+
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+
+      return promise;
+    },
+    
+    "Decrements keys by value": function(results) {
+      assert.equal(results.pop(), 96);
+    }
+    
   }
   
   // Defining a `model` setter, to prevent conflicts with vows

@@ -346,5 +346,36 @@ MongoStorage.prototype.expire = function(key, timeout, callback) {
   this.app.log("MongoStorage: MongoDB does not support key expiration");
   callback.call(this, null);
 }
+
+/** Storage API incr */
+
+MongoStorage.prototype.incr = function(key, callback) {
+  this.incrBy(key, 1, callback);
+}
+
+/** Storage API incrBy */
+
+MongoStorage.prototype.incrBy = function(key, value, callback) {
+  var self = this;
+  self.collection.update({
+    key: 'k'+key
+  },{
+    $inc: {value: value}
+  }, function(err, results) {
+    callback.call(self, err, results);
+  });
+}
+
+/** Storage API decr */
+
+MongoStorage.prototype.decr = function(key, callback) {
+  this.incrBy(key, -1, callback);
+}
+
+/** Storage API decrBy */
+
+MongoStorage.prototype.decrBy = function(key, value, callback) {
+  this.incrBy(key, -value, callback);
+}
   
 module.exports = MongoStorage;

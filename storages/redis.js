@@ -247,5 +247,42 @@ RedisStorage.prototype.expire = function(key, timeout, callback) {
     callback.call(self, err);
   });
 }
-  
+
+/** Storage API incr */
+
+RedisStorage.prototype.incr = function(key, callback) {
+  var self = this;
+  this.client.incr(key, function(err, current) {
+    callback.call(self, err);
+  });
+}
+
+/** Storage API incrBy */
+
+RedisStorage.prototype.incrBy = function(key, value, callback) {
+  var self = this;
+  this.client.incrby(key, value, function(err, current) {
+    callback.call(self, err);
+  });
+}
+
+
+/** Storage API decr */
+
+RedisStorage.prototype.decr = function(key, callback) {
+  var self = this;
+  this.client.decr(key, function(err, current) {
+    callback.call(self, err);
+  });
+}
+
+/** Storage API decrBy */
+
+RedisStorage.prototype.decrBy = function(key, value, callback) {
+  var self = this;
+  this.client.decrby(key, value, function(err, current) {
+    callback.call(self, err);
+  });
+}
+
 module.exports = RedisStorage;
