@@ -52,8 +52,10 @@ function Session(config, middleware) {
     sessCookie: "_sess",
     hashCookie: "_shash",
     defaultUserAgent: "Mozilla",
-    salt: "$28b28fc2ebcd355ca1a2be8881e888a.67a42975e1626d59434e576b5c63f3483!"
+    salt: null
     }, config);
+    
+    if (typeof config.salt != 'string') throw new Error("Session: you must specify a salt");
 
     if (typeof config.storage == 'object') this.storage = config.storage;
     else if (typeof config.storage == 'string') this.storage = app._getResource('storages/' + config.storage);

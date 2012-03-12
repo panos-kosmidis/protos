@@ -26,7 +26,7 @@ vows.describe('CSRF (middleware)').addBatch({
       
       app.use('cookie_parser');
       app.use('body_parser');
-      app.use('session', {storage: 'redis', guestSessions: true});
+      app.use('session', {storage: 'redis', guestSessions: true, salt: 'abc1234'});
       app.use('csrf', {
         onFailure: 403
       });

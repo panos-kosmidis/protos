@@ -101,7 +101,7 @@ vows.describe('Session (middleware)').addBatch({
       var promise = new EventEmitter();
       
       app.use('cookie_parser');
-      app.use('session', {storage: 'redis', guestSessions: false});
+      app.use('session', {storage: 'redis', guestSessions: false, salt: 'abc1234'});
       
       // Response should not contain any session cookies
       multi.curl('-i /session');

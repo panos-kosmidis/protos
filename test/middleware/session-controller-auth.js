@@ -117,7 +117,7 @@ var currentBatch = batch['Controllers » auth/sessions + authentication'] = {
 
     if (!app.supports.csrf) {
       app.use('cookie_parser');
-      app.use('session', {storage: 'redis', guestSessions: false});
+      app.use('session', {storage: 'redis', guestSessions: false, salt: 'abc1234'});
     } else {
       app.session.config.guestSessions = false;
     }

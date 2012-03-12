@@ -12,7 +12,7 @@ vows.describe('Session (middleware) » Unit Tests').addBatch({
     topic: function() {
       // Enable session
       app.use('cookie_parser');
-      app.use('session', {storage: 'redis'});
+      app.use('session', {storage: 'redis', salt: 'abc1234'});
       return true;
     },
 
