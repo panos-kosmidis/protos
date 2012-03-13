@@ -1,5 +1,5 @@
 
-/* Static Server » Asset compilers */
+/* Asset compilers */
 
 var less = require('less'),
     stylus = require('stylus'),

@@ -38,8 +38,12 @@ Application.prototype._isStaticFileRequest = function(req, res) {
   @private
  */
 
+var multiSlashes = /\/+/g;
+
 Application.prototype._serveStaticFile = function(path, req, res) {
 
+  path = path.replace(multiSlashes, '/').trim();
+  
   req.__handledRoute = true;
   
   if ( pathModule.basename(path).charAt(0) == '.' ) {

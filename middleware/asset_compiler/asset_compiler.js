@@ -10,18 +10,17 @@
     http://coffeescript.org/
     http://learnboost.github.com/stylus/
     
-  » TODO
-  
-    * Implement a compressor/minifier
-    * Ability to merge several compiled/minified files into a single file to serve in production
-    
   » Configuration options:
-  
+
+    {object} minify: Assets to be minified. {target: [sources]}
     {array} watchOn: Array containing environments in which the assets will be automatically compiled on change
     {array} compile: Extensions to compile and/or watch.
     {object} compileExts: Object containing the target extensions of compiled assets. Contains {ext: outExt}
     {object} compilers: Object containing the functions that compile the target extensions.
     {boolean} assetSourceAccess: If set to true, will enable access to the asset sources (disabled by default)
+    {object} compilers: Extend the supported compilers (Advanced)
+    {object} compileExts: Extend the supported compile extensions (Advanced)
+    {object} uglifyOpts: UglifyJS options
     
     If the `compile` array is found in the middleware configuration object, then the default assets (such as
     less, coffee & stylus) will be disabled and replaced with your own extensions. This allow to only watch
@@ -73,14 +72,24 @@ function AssetCompiler(config, middleware) {
       coffee: 'js',
       styl: 'css',
       less: 'css',
+    },
+    minify: {},
+    uglifyOpts: {
+      mangle: true,
+      squeeze: true,
+      liftVariables: false,
+      strictSemicolons: false
     }
   }, config);
   
   // Expose config into app config
-  app.config.assetCompiler = config;
+  app[middleware] = config;
   
   // Run Assets manager
   require('./asset-manager.js');
+  
+  // Run Assets minifier
+  require('./asset-minifier.js');
   
 }
 

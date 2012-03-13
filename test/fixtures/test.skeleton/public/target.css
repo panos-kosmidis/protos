@@ -1,0 +1,35 @@
+#features #toc-sidebar {
+  display: none !important;
+}
+#toc-sidebar {
+  overflow-y: scroll;
+  box-shadow: 5px 0 40px rgba(255, 255, 255, 0.8);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #f2f2f2 repeat;
+}
+#toc-sidebar > *:first-child {
+  margin: 50px 0 100px 20px;
+  padding: 0;
+}
+#toc-sidebar ul {
+  width: 250px;
+}
+#toc-sidebar ul li {
+  list-style: none;
+}
+#toc-sidebar ul li a {
+  font-size: 12px;
+  color: #222222;
+}
+#toc-sidebar ul li.section {
+  margin-top: 0.5em;
+}
+#toc-sidebar ul li.section a {
+  font-weight: bold;
+}
+#toc-sidebar ul li.sub {
+  margin-left: 0px;
+}

@@ -1,33 +1,49 @@
 
-/* Asset Compiler » Asset manager */
+/* Asset manager */
 
 var app = corejs.app,
     fs = require('fs'),
     util = require('util'),
     fileModule = require('file'),
-    config = app.config.assetCompiler;
+    config = app.asset_compiler;
 
 // Do nothing if no compilation is required
 if (config.compile.length === 0) return;
 
 var assets = {},
     extRegex = new RegExp('\\.(' + config.compile.join('|') + ')$');
+    
+// console.exit(extRegex);
 
 // Prevent access to raw source files
 if (! config.assetSourceAccess) {
   app.on('static_file_request', function(req, res, path) {
-   if (extRegex.test(path.trim())) {
-     req.stopRoute();
-     app.notFound(res);
-   }
+    if (extRegex.test(path) || ignores.indexOf(path) >= 0) {
+      req.stopRoute();
+      app.notFound(res);
+    }
   });
 }
+
+// Get ignores
+var target, arr, ignores = [];
+
+for (target in config.minify) {
+  arr = config.minify[target];
+  if (!Array.isArray(arr)) arr = [arr];
+  for (var i=0; i < arr.length; i++) {
+    ignores.push(app.fullPath('public/' + arr[i]));
+  }
+}
+
+// console.exit(ignores);
 
 // Scan for files to compile
 fileModule.walkSync(app.fullPath(app.paths.public), function(dirPath, dirs, files) {
   for (var matches, path, ext, file, i=0; i < files.length; i++) {
     file = files[i].trim();
     path = dirPath.trim() + '/' + file;
+    if (ignores.indexOf(path) >= 0) continue;
     matches = path.match(extRegex);
     if (matches) {
       ext = matches[1];
@@ -36,6 +52,16 @@ fileModule.walkSync(app.fullPath(app.paths.public), function(dirPath, dirs, file
     }
   }
 });
+
+// Cleanup ignores, only leave compiled sources that are not 
+// allowed, since they're being minified. Asset sources are
+// normally blocked. This improves performance on array index lookup.
+ignores = ignores.filter(function(item) {
+  return !extRegex.test(item);
+});
+
+// console.exit(ignores);
+// console.exit(assets);
 
 // config.watchOn = [];
 

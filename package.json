@@ -15,6 +15,8 @@
     "nodemailer"        : ">= 0.3.2",
     "sanitizer"         : ">= 0.0.15",
     "discount"          : ">= 0.2.0",
+    "clean-css"         : ">= 0.3.2",
+    "uglify-js"         : ">= 1.2.5",
     "bouncy"            : ">= 1.3.1",
     "multi"             : ">= 0.1.0",
     "file"              : ">= 0.1.1",
