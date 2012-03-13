@@ -846,6 +846,7 @@ Example:\n\n\
  models and controllers specified in the command.\n\n\
  corejs server myapp --fork --logpath server.log\n\n\
  Starts the application's server and forks a new node process.\n\n\
- For documentation, refer to http://corejs.org";
+ For documentation, refer to http://corejs.org\n\n\
+ corejs@" + CoreJS.version + " " + CoreJS.path;
 
 cli.parse();
