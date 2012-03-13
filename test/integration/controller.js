@@ -315,4 +315,44 @@ vows.describe('Application Controllers').addBatch(batch).addBatch({
     
   }
   
+}).addBatch({
+  
+  'Multiple Route Functions Chain': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      // Should run functions in order
+      multi.curl('-i /route-chain-a');
+      multi.curl('-i /route-chain-b');
+      multi.curl('-i -X POST /route-chain-b');
+      multi.curl('-i -X PUT /route-chain-b');
+      
+      multi.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+      
+      return promise;
+    },
+    
+    'Runs chained route functions': function(results) {
+      var r1 = results[0];
+      assert.isTrue(r1.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r1.indexOf('Counter: {-41}') >= 0);
+    },
+    
+    "Runs chained route functions w/ multiple HTTP methods": function(results) {
+      var r2 = results[1],
+          r3 = results[2],
+          r4 = results[3];
+      assert.isTrue(r2.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r2.indexOf('Counter: {-41}') >= 0);
+      assert.isTrue(r3.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r3.indexOf('Counter: {-41}') >= 0);
+      assert.isTrue(r4.indexOf('HTTP/1.1 200 OK') >= 0);
+      assert.isTrue(r4.indexOf('Counter: {-41}') >= 0);
+    }
+    
+  }
+  
 }).export(module);

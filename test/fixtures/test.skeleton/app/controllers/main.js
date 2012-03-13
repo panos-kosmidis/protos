@@ -109,6 +109,18 @@ function MainController(app) {
     }
   });
   
+  /* Route Functions chaining */
+  
+  var cb1 = function(req, res, params) { req.counter = 24; req.next(); }
+  var cb2 = function(req, res, params) { req.counter += 55; req.next(); }
+  var cb3 = function(req, res, params) { req.counter -= 120; res.end("Counter: {" + req.counter + '}'); }
+  
+  // Route chain with 1 method
+  get('/route-chain-a', cb1, cb2, cb3);
+  
+  // Route chain accepting multiple methods
+  get('/route-chain-b', cb1, cb2, cb3, 'post', 'put');
+  
 }
 
 module.exports = MainController;
