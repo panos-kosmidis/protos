@@ -80,7 +80,7 @@ Here's the Development Stack the framework provides, in a nutshell:
 
 The Application's functionality can be extended with the following (ready to use) components:
 
-- [asset_compiler](http://corejs.org/middleware#asset_compiler) &nbsp; *Automatically compiles LESS, Stylus and CoffeeScript assets (with watch support)*
+- [asset_compiler](/middleware#asset_compiler) &nbsp; *Compiles LESS, Stylus and CoffeeScript, Supports Watch/Compress/Minify.*
 - [aws](http://corejs.org/middleware#aws) &nbsp; *Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)*
 - [bcrypt](http://corejs.org/middleware#bcrypt) &nbsp; *Blowfish encryption support*
 - [body_parser](http://corejs.org/middleware#body_parser) &nbsp; *Parse request bodies and file uploads in POST/PUT requests*

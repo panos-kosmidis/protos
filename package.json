@@ -1,7 +1,7 @@
 {
   "name"                : "corejs",
   "description"         : "Web application framework for node.js",
-  "version"             : "0.0.7",
+  "version"             : "0.0.8",
   "homepage"            : "http://corejs.org",
   "repository"          : "https://github.com/corejs/corejs",
   "author"              : "Ernesto Méndez <der@der-design.com>",
