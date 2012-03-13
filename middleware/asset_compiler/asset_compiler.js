@@ -18,8 +18,6 @@
     {object} compileExts: Object containing the target extensions of compiled assets. Contains {ext: outExt}
     {object} compilers: Object containing the functions that compile the target extensions.
     {boolean} assetSourceAccess: If set to true, will enable access to the asset sources (disabled by default)
-    {object} compilers: Extend the supported compilers (Advanced)
-    {object} compileExts: Extend the supported compile extensions (Advanced)
     {object} uglifyOpts: UglifyJS options
     
     If the `compile` array is found in the middleware configuration object, then the default assets (such as
