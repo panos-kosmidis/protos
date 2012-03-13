@@ -118,8 +118,8 @@ function MainController(app) {
   // Route chain with 1 method
   get('/route-chain-a', cb1, cb2, cb3);
   
-  // Route chain accepting multiple methods
-  get('/route-chain-b', cb1, cb2, cb3, 'post', 'put');
+  // Route chain accepting multiple methods + flattens callbacks
+  get('/route-chain-b', cb1, [[cb2], [cb3]], 'post', 'put');
   
 }
 
