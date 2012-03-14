@@ -44,28 +44,7 @@ var commands = {
       
       var errored = false;
       
-      var libs = {
-        css: require('../client/css.json'),
-        javascript: require('../client/javascript.json')
-      }
-      
-      args.css.forEach(function(lib) {
-        if (lib in libs.css) {
-          libs.css[lib].id = lib;
-          libs.css[lib].type = 'css';
-        } else {
-          console.exit("CSS Framework not bundled by CoreJS: " + lib);
-        }
-      });
-      
-      args.js.forEach(function(lib) {
-        if (lib in libs.javascript) {
-          libs.javascript[lib].id = lib;
-          libs.javascript[lib].type = 'js';
-        } else {
-          console.exit("JavaScript Library not bundled by CoreJS: " + lib);
-        }
-      });
+      var libs = getLibs(args);
 
       if (errored) process.exit();
       
@@ -133,6 +112,40 @@ var commands = {
       
       commands.server.run.call(this, json);
       
+    }
+  },
+  
+  fetch: {
+    multiple: ['js', 'css'],
+    args: 0,
+    validate: validateApp,
+    run: function(data) {
+      
+      if (data.css.length === 0 && data.js.length === 0) {
+        this.printHelp();
+      }
+      
+      var libs = getLibs(data);
+      
+      var downloader = new Multi({
+        download: downloadAsset
+      });
+      
+      // Switch to public/ before downloading assets
+      process.chdir('public/');
+      
+      // Download client-side CSS
+      data.css.forEach(function(lib) {
+        downloader.download(libs.css[lib]);
+      });
+      
+      // Download client-side JavaScript
+      data.js.forEach(function(lib) {
+        downloader.download(libs.javascript[lib]);
+      });
+      
+      // Exec downloader queue
+      downloader.exec(function(err, results) {});
     }
   },
   
@@ -733,6 +746,31 @@ module.exports = %s;\n\
 
 }
 
+function getLibs(args) {
+  var libs = {
+    css: require('../client/css.json'),
+    javascript: require('../client/javascript.json')
+  }
+  
+  args.css.forEach(function(lib) {
+    if (lib in libs.css) {
+      libs.css[lib].id = lib;
+      libs.css[lib].type = 'css';
+    } else {
+      console.exit("CSS Framework not bundled by CoreJS: " + lib);
+    }
+  });
+  
+  args.js.forEach(function(lib) {
+    if (lib in libs.javascript) {
+      libs.javascript[lib].id = lib;
+      libs.javascript[lib].type = 'js';
+    } else {
+      console.exit("JavaScript Library not bundled by CoreJS: " + lib);
+    }
+  });
+  return libs;
+}
 
 function listFiles(path, regex) {
   var files, out;
@@ -761,7 +799,7 @@ function validateApp(data, noexit) {
           this.printHelp();
           process.exit();
         } else {
-          console.exit(util.format("corejs [%s] only works within the application's directories.", this.context));
+          console.exit(util.format("corejs [%s] only works within the application path.", this.context));
         }
       } else {
         return false;
@@ -832,12 +870,11 @@ bouncy(function(req, bounce) { var host, port;\
   }
 }
 
-
 var cli = new CommandLine(commands);
 
 cli.help.before = "\
 Usage: corejs [action] [arguments]\n\n\
-Actions: [create, server, deploy, inspector] [controller, helper, model, view, partial, static]\n";
+Actions: [create, server, deploy, fetch, inspector] [controller, helper, model, view, partial, static]\n";
 
 cli.help.after = "\n\
 Example:\n\n\

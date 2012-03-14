@@ -342,6 +342,32 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
   
 }).addBatch({
   
+  'corejs fetch': {
+
+    topic: function() {
+      var promise = new EventEmitter();
+
+      corejs.command('fetch --js ember --css skeleton');
+
+      corejs.exec(function(err, results) {
+        promise.emit('success', err || results);
+      });
+
+      return promise;
+    },
+
+    "Properly downloads & extracts assets into public/": function(results) {
+      var r1 = results[0];
+      var expected = '» Downloading Skeleton Mobile-Friendly Responsive Framework\n» Downloading Ember.js JavaScript Framework';
+      assert.equal(r1, expected);
+      assert.isTrue(pathModule.existsSync('public/js/ember-0.9.5.min.js'));
+      assert.isTrue(pathModule.existsSync('public/css/skeleton'));
+    }
+
+  }
+  
+}).addBatch({
+  
   'Cleanup': {
     
     topic: function() {
