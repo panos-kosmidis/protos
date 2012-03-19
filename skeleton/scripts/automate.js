@@ -3,7 +3,7 @@
   You can load the application by doing `var app = require('boot.js')`. This allows you
   to manipulate the application's configuration and automate any type of tasks.
   
-  During bootstrap, the `corejs` global will be available to you.
+  During bootstrap, the `protos` global will be available to you.
  */
 
 // Supress default output
@@ -11,7 +11,7 @@ process.env.NODE_ENV = 'silent';
 
 var app = require('../boot.js'),
     util = require('util'),
-    Multi = corejs.require('multi');
+    Multi = protos.require('multi');
 
 app.onInitialize(function() {
   

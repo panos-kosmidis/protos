@@ -11,7 +11,7 @@ function Swig(app) {
   
   var opts = (app.config.engines && app.config.engines.swig) || {};
   
-  this.options = corejs.extend({
+  this.options = protos.extend({
     allowErrors: true,
     autoescape: true,
     encoding: 'utf-8',
@@ -23,7 +23,7 @@ function Swig(app) {
   this.extensions = ['swig', 'swig.html', 'sw.html'];
 }
 
-util.inherits(Swig, corejs.lib.engine);
+util.inherits(Swig, protos.lib.engine);
 
 Swig.prototype.render = function(data) {
   data = this.app.applyFilters('swig_template', data);

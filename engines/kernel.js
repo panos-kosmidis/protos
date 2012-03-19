@@ -18,7 +18,7 @@ function Kernel(app) {
   this.extensions = ['kernel', 'kernel.html', 'k.html', 'khtml'];
 }
 
-util.inherits(Kernel, corejs.lib.engine);
+util.inherits(Kernel, protos.lib.engine);
 
 Kernel.prototype.render = function(data) {
   data = this.app.applyFilters('kernel_template', data);

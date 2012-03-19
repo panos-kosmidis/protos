@@ -8,55 +8,55 @@ var app = require('../fixtures/bootstrap'),
 
 app.logging = false;
 
-vows.describe('lib/corejs.js').addBatch({
+vows.describe('lib/protos.js').addBatch({
   
   'Integrity Checks': {
     
     'Sets environment': function() {
-      assert.isTrue(/^(debug|development|travis)$/.test(corejs.environment));
+      assert.isTrue(/^(debug|development|travis)$/.test(protos.environment));
     },
     
     'Sets application': function() {
-      assert.instanceOf(corejs.app, corejs.lib.application);
+      assert.instanceOf(protos.app, protos.lib.application);
     },
     
-    'Sets corejs path': function() {
+    'Sets protos path': function() {
       var path = pathModule.resolve(__dirname, '../../');
-      assert.equal(corejs.path, corejs.constructor.path + '/test/fixtures/test-corejs');
+      assert.equal(protos.path, protos.constructor.path + '/test/fixtures/test-protos');
     },
     
     'Inherits from EventEmitter': function() {
       // Framework inherits from EventEmitter indirectly
-      assert.isFunction(corejs.on);
-      assert.isFunction(corejs.emit);
+      assert.isFunction(protos.on);
+      assert.isFunction(protos.emit);
     },
     
     'Detects drivers': function() {
-      assert.isFunction(corejs.drivers.mysql);
+      assert.isFunction(protos.drivers.mysql);
     },
     
     'Detects storages': function() {
-      assert.isFunction(corejs.storages.redis);
+      assert.isFunction(protos.storages.redis);
     },
     
     'Detects view engines': function() {
-      assert.isFunction(corejs.engines.eco);
+      assert.isFunction(protos.engines.eco);
     }
     
   },
   
-  'CoreJS::require': {
+  'Protos::require': {
     
     'Returns the required module': function() {
-      var module1 = corejs.require('node_modules/multi'),
-          module2 = corejs.require('multi');
+      var module1 = protos.require('node_modules/multi'),
+          module2 = protos.require('multi');
       assert.isFunction(module1);
       assert.isFunction(module2);
     },
     
     'Can require/reload modules without using module cache': function() {
-      var h1 = corejs.require('handlebars', true);
-      var h2 = corejs.require('handlebars', true);
+      var h1 = protos.require('handlebars', true);
+      var h2 = protos.require('handlebars', true);
       
       h1.a = 99;
       h2.a = 55;
@@ -66,8 +66,8 @@ vows.describe('lib/corejs.js').addBatch({
     },
     
     'Accepts relative/absolute paths': function() {
-      assert.isFunction(corejs.require('./node_modules/multi'));
-      assert.isFunction(corejs.require('/node_modules/multi'));
+      assert.isFunction(protos.require('./node_modules/multi'));
+      assert.isFunction(protos.require('/node_modules/multi'));
     },
     
   }

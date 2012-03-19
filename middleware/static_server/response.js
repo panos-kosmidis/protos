@@ -1,7 +1,7 @@
 
 /* Static Server » Response extensions */
 
-var app = corejs.app,
+var app = protos.app,
     http = require('http'),
     util = require('util'),
     OutgoingMessage = http.OutgoingMessage;

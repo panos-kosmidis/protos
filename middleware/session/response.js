@@ -1,7 +1,7 @@
 
 /* Session Response methods */
 
-var app = corejs.app,
+var app = protos.app,
     http = require('http'),
     slice = Array.prototype.slice,
     OutgoingMessage = http.OutgoingMessage;

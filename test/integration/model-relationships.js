@@ -2,7 +2,7 @@
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     util = require('util'),
-    inflect = corejs.require('./lib/support/inflect.js'),
+    inflect = protos.require('./lib/support/inflect.js'),
     assert = require('assert'),
     mongodb = require('mongodb'),
     ObjectID = mongodb.ObjectID,
@@ -41,7 +41,7 @@ vows.describe('Model Relationships').addBatch({
     
     "Properly sets model methods": function(models) {
       var key, method, model = models.buddies,
-          protoMethods = corejs.lib.driver.prototype.__modelMethods,
+          protoMethods = protos.lib.driver.prototype.__modelMethods,
           cname = inflect.camelize(model.context),
           scname = inflect.singularize(cname);
       

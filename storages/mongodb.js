@@ -19,7 +19,7 @@ function MongoStorage(app, config) {
 
    var self = this;
    
-   config = corejs.extend({
+   config = protos.extend({
      host: 'localhost',
      port: 27017,
      database: 'store',
@@ -30,15 +30,15 @@ function MongoStorage(app, config) {
    this.config = config;
    this.className = this.constructor.name;
    
-   corejs.async(app); // Register async queue
+   protos.async(app); // Register async queue
    
    var reportError = function(err) {
      app.log(util.format("MongoStore [%s:%s] %s", config.host, config.port, err.code));
      self.client = err;
-     corejs.done(app); // Flush async queue
+     protos.done(app); // Flush async queue
    }
    
-   corejs.util.checkPort(config.port, function(err) {
+   protos.util.checkPort(config.port, function(err) {
      
      if (err) {
        reportError(err);
@@ -62,7 +62,7 @@ function MongoStorage(app, config) {
              self.collection = collection;
              
              // Flush async queue
-             corejs.done(app);
+             protos.done(app);
              
            });
            
@@ -73,10 +73,10 @@ function MongoStorage(app, config) {
    });
    
    // Set enumerable properties
-   corejs.util.onlySetEnumerable(this, ['className', 'db']);
+   protos.util.onlySetEnumerable(this, ['className', 'db']);
 }
 
-util.inherits(MongoStorage, corejs.lib.storage);
+util.inherits(MongoStorage, protos.lib.storage);
 
 /** Storage API get */
 

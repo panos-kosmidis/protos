@@ -46,7 +46,7 @@ function Hogan(app) {
   
 }
 
-util.inherits(Hogan, corejs.lib.engine);
+util.inherits(Hogan, protos.lib.engine);
 
 Hogan.prototype.render = function(data, vars) {
   data = this.app.applyFilters('hogan_template', data);

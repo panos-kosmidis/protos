@@ -20,11 +20,11 @@ function Dot(app) {
   
   var opts = (app.config.engines && app.config.engines.dot) || {};
   
-  dot.templateSettings = corejs.extend(dot.templateSettings, opts);
+  dot.templateSettings = protos.extend(dot.templateSettings, opts);
   
 }
 
-util.inherits(Dot, corejs.lib.engine);
+util.inherits(Dot, protos.lib.engine);
 
 Dot.prototype.render = function(data) {
   data = this.app.applyFilters('dot_template', data);

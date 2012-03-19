@@ -25,7 +25,7 @@ var batch = vows.describe('storages/redis.js').addBatch({
 
     'Created storage instance': function(storage) {
       assert.equal(storage.className, 'RedisStorage');
-      assert.instanceOf(storage, corejs.lib.storage);
+      assert.instanceOf(storage, protos.lib.storage);
     }
     
   }

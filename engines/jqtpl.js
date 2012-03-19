@@ -13,7 +13,7 @@ function JqueryTemplate(app) {
   this.extensions = ['jqtpl', 'jqtpl.html', 'jq.html'];
 }
 
-util.inherits(JqueryTemplate, corejs.lib.engine);
+util.inherits(JqueryTemplate, protos.lib.engine);
 
 JqueryTemplate.prototype.render = function(data, vars, relPath) {
   data = this.app.applyFilters('jqtpl_template', data);

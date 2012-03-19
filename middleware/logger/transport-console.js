@@ -1,7 +1,7 @@
 
 /* Logger » Console Transport */
 
-var app = corejs.app;
+var app = protos.app;
 
 function ConsoleTransport(evt) {
 

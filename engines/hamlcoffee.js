@@ -13,7 +13,7 @@ function HamlCoffee(app) {
   this.extensions = ['hamlc', 'haml.coffee', 'hamlc.html'];
 }
 
-util.inherits(HamlCoffee, corejs.lib.engine);
+util.inherits(HamlCoffee, protos.lib.engine);
 
 HamlCoffee.prototype.render = function(data) {
   data = this.app.applyFilters('hamlcoffee_template', data);

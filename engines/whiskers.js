@@ -13,7 +13,7 @@ function Whiskers(app) {
   this.extensions = ['whiskers', 'whiskers.html', 'wk.html'];
 }
 
-util.inherits(Whiskers, corejs.lib.engine);
+util.inherits(Whiskers, protos.lib.engine);
 
 Whiskers.prototype.render = function(data) {
   data = this.app.applyFilters('whiskers_template', data);

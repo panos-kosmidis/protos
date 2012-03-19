@@ -10,7 +10,7 @@
   
  */
 
-var app = corejs.app;
+var app = protos.app;
 
 require('./request.js');
 require('./controller.js');
@@ -18,7 +18,7 @@ require('./controller.js');
 function BodyParser(config, middleware) {
   
   // Middleware configuration
-  config = corejs.extend({
+  config = protos.extend({
     maxFieldSize: 2 * 1024 * 1024,
     maxUploadSize: 2 * 1024 * 1024,
     keepUploadExtensions: true

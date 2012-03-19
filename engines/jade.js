@@ -3,7 +3,7 @@
 
 var jade = require('jade'),
     util = require('util'),
-    extend = corejs.extend;
+    extend = protos.extend;
 
 // https://github.com/visionmedia/jade
 
@@ -12,7 +12,7 @@ function Jade(app) {
   
   var opts = (app.config.engines && app.config.engines.jade) || {};
   
-  this.options = corejs.extend({
+  this.options = protos.extend({
     pretty: true
   }, opts);
   
@@ -21,7 +21,7 @@ function Jade(app) {
   this.extensions = ['jade', 'jade.html']
 }
 
-util.inherits(Jade, corejs.lib.engine);
+util.inherits(Jade, protos.lib.engine);
 
 Jade.prototype.render = function(data, vars, relPath) {
   data = this.app.applyFilters('jade_template', data);

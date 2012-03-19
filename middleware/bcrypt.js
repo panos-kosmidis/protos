@@ -16,7 +16,7 @@
   
   */
 
-var app = corejs.app,
+var app = protos.app,
     bcrypt = require('bcrypt');
     
 var config;
@@ -26,7 +26,7 @@ function Blowfish(cfg, middleware) {
   app[middleware] = this;
   
   // Middleware configuration
-  this.config = config = corejs.extend({
+  this.config = config = protos.extend({
     rounds: 10,
     seedLength: 20
   }, cfg);

@@ -28,7 +28,7 @@ vows.describe('SocketIO (middleware)').addBatch({
       
       // In order for the test to run, environments have to work, so this
       // is actually a test. On failure, the test will not run.
-      options.environments[corejs.environment] = function(io) {
+      options.environments[protos.environment] = function(io) {
         io.__testVal = 99;
         promise.emit('success', io);
       }

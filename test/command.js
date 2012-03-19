@@ -16,9 +16,9 @@ var cwd = process.cwd(),
 var skeleton = fs.readdirSync(cwd + '/skeleton/');
 var prefix = '../../../';
 
-var corejs = new Multi({
+var protos = new Multi({
   command: function(str, callback) {
-    cp.exec(util.format(prefix + 'bin/corejs %s', str), function(err, stdout, stderr) {
+    cp.exec(util.format(prefix + 'bin/protos %s', str), function(err, stdout, stderr) {
       if (err) callback(err, stderr.trim());
       else callback(null, stdout.trim());
     });
@@ -48,16 +48,16 @@ vows.describe('Command Line Interface').addBatch({
   
 }).addBatch({
   
-  'corejs create': {
+  'protos create': {
     
     topic: function() {
       var promise = new EventEmitter(),
           results = [];
       
-      corejs.command('create myapp --domain corejs.org --js jquery prototype --css bootstrap --model posts comment --controller admin dashboard');
-      corejs.command('create myapp1 --mustache --controller test');
+      protos.command('create myapp --domain protos.org --js jquery prototype --css bootstrap --model posts comment --controller admin dashboard');
+      protos.command('create myapp1 --mustache --controller test');
       
-      corejs.exec(function(err, results) {
+      protos.exec(function(err, results) {
         promise.emit('success', err || results);
       });
       
@@ -124,17 +124,17 @@ Created myapp1/app/views/test/test-index.mustache';
   
 }).addBatch({
   
-  'corejs controller': {
+  'protos controller': {
     
     topic: function() {
       var promise = new EventEmitter();
       
       process.chdir('myapp1');
       prefix += '../';
-      corejs.command('controller blog admin');
-      corejs.command('controller cool --nohelper');
+      protos.command('controller blog admin');
+      protos.command('controller cool --nohelper');
       
-      corejs.exec(function(err, results) {
+      protos.exec(function(err, results) {
         promise.emit('success', err || results);
       });
       
@@ -172,14 +172,14 @@ Created myapp1/app/views/blog/blog-index.html\n» Created myapp1/app/views/admin
   
 }).addBatch({
   
-    'corejs model': {
+    'protos model': {
 
       topic: function() {
         var promise = new EventEmitter();
 
-        corejs.command('model posts comments');
+        protos.command('model posts comments');
 
-        corejs.exec(function(err, results) {
+        protos.exec(function(err, results) {
           promise.emit('success', err || results);
         });
 
@@ -200,14 +200,14 @@ Created myapp1/app/views/blog/blog-index.html\n» Created myapp1/app/views/admin
   
 }).addBatch({
   
-  'corejs helper': {
+  'protos helper': {
 
     topic: function() {
       var promise = new EventEmitter();
 
-      corejs.command('helper helper1 helper2');
+      protos.command('helper helper1 helper2');
 
-      corejs.exec(function(err, results) {
+      protos.exec(function(err, results) {
         promise.emit('success', err || results);
       });
 
@@ -228,15 +228,15 @@ Created myapp1/app/views/blog/blog-index.html\n» Created myapp1/app/views/admin
   
 }).addBatch({
   
-  'corejs view': {
+  'protos view': {
 
     topic: function() {
       var promise = new EventEmitter();
 
-      corejs.command('view main/info blog/post admin/settings');
-      corejs.command('view main/m1 blog/m2 admin/m3 --ext eco.html');
+      protos.command('view main/info blog/post admin/settings');
+      protos.command('view main/m1 blog/m2 admin/m3 --ext eco.html');
 
-      corejs.exec(function(err, results) {
+      protos.exec(function(err, results) {
         promise.emit('success', err || results);
       });
 
@@ -269,15 +269,15 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
   
 }).addBatch({
   
-    'corejs partial': {
+    'protos partial': {
 
       topic: function() {
         var promise = new EventEmitter();
 
-        corejs.command('partial blog/post admin/widget');
-        corejs.command('partial blog/post admin/widget --ext coffee');
+        protos.command('partial blog/post admin/widget');
+        protos.command('partial blog/post admin/widget --ext coffee');
 
-        corejs.exec(function(err, results) {
+        protos.exec(function(err, results) {
           promise.emit('success', err || results);
         });
 
@@ -306,15 +306,15 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
   
 }).addBatch({
   
-  'corejs static': {
+  'protos static': {
 
     topic: function() {
       var promise = new EventEmitter();
 
-      corejs.command('static hello world');
-      corejs.command('static about contact --ext jade');
+      protos.command('static hello world');
+      protos.command('static about contact --ext jade');
 
-      corejs.exec(function(err, results) {
+      protos.exec(function(err, results) {
         promise.emit('success', err || results);
       });
 
@@ -342,14 +342,14 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
   
 }).addBatch({
   
-  'corejs fetch': {
+  'protos fetch': {
 
     topic: function() {
       var promise = new EventEmitter();
 
-      corejs.command('fetch --js ember --css skeleton');
+      protos.command('fetch --js ember --css skeleton');
 
-      corejs.exec(function(err, results) {
+      protos.exec(function(err, results) {
         promise.emit('success', err || results);
       });
 

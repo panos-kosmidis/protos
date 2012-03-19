@@ -1,7 +1,7 @@
 
 /* Session Request methods */
 
-var app = corejs.app,
+var app = protos.app,
     util = require('util'),
     http = require('http'),
     IncomingMessage = http.IncomingMessage;

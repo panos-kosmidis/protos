@@ -1,7 +1,7 @@
 
 /* Logger » File Transport */
 
-var app = corejs.app,
+var app = protos.app,
     fs = require('fs'),
     pathModule = require('path');
 

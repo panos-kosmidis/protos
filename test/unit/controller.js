@@ -29,7 +29,7 @@ vows.describe('lib/controller.js').addBatch({
     },
     
     'Accepts start/end slashes in alias': function() {
-      var ctor = corejs.lib.controller;
+      var ctor = protos.lib.controller;
       assert.instanceOf(app.controller.getControllerByAlias('/blog'), ctor);
       assert.instanceOf(app.controller.getControllerByAlias('blog/'), ctor);
       assert.instanceOf(app.controller.getControllerByAlias('/blog/'), ctor);

@@ -51,7 +51,7 @@
 
 */
 
-var app = corejs.app,
+var app = protos.app,
     util = require('util'),
     aws2js = require('aws2js'),
     isArray = util.isArray;
@@ -66,7 +66,7 @@ function AmazonWebServices(config, middleware) {
   app[middleware] = this;
 
   // Middleware config
-  config = corejs.extend({
+  config = protos.extend({
     accessKey: null,
     secretKey: null,
     clients: {}

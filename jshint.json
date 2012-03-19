@@ -2,7 +2,7 @@
   
   // jshint.com/options/
   
-  "predef": ["corejs", "app"],
+  "predef": ["protos", "app"],
   
   // Enforcing
   

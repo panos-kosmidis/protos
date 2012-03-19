@@ -1,6 +1,6 @@
 {
   "name"              : "skeleton",
-  "description"       : "CoreJS Application Skeleton",
+  "description"       : "Protos Application Skeleton",
   "version"           : "0.0.0",
   "main"              : "boot.js",
   "engines"           : { "node": ">= 0.6.0" },

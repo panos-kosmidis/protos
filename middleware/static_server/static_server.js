@@ -13,7 +13,7 @@
 
  */
  
-var app = corejs.app,
+var app = protos.app,
     fs = require('fs');
 
 require('./application.js');
@@ -24,7 +24,7 @@ function StaticServer(config, middleware) {
   createStaticFileRegex.call(app);
   
   // Middleware configuration
-  config = corejs.configExtend({
+  config = protos.configExtend({
     eTags: false,
     acceptRanges: true,
   }, config);

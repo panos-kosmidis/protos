@@ -20,7 +20,7 @@
 
  */
 
-var app = corejs.app;
+var app = protos.app;
 
 var _ = require('underscore'),
     util = require('util'),
@@ -63,7 +63,7 @@ function Session(config, middleware) {
 
     this.className = this.constructor.name;
 
-    corejs.util.onlySetEnumerable(this, ['className', 'storage']);
+    protos.util.onlySetEnumerable(this, ['className', 'storage']);
     
   }
 
@@ -439,7 +439,7 @@ Session.prototype.typecast = function(data) {
   var tvars = this.config.typecastVars;
   for (var key,i=0; i < tvars.length; i++) {
     key = tvars[i];
-    if (data[key] != null) data[key] = corejs.util.typecast(data[key]);
+    if (data[key] != null) data[key] = protos.util.typecast(data[key]);
   }
   return data;
 }

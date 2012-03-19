@@ -13,7 +13,7 @@ function Eco(app) {
   this.extensions = ['eco', 'eco.html'];
 }
 
-util.inherits(Eco, corejs.lib.engine);
+util.inherits(Eco, protos.lib.engine);
 
 Eco.prototype.render = function(data) {
   data = this.app.applyFilters('eco_template', data);

@@ -47,7 +47,7 @@
 
  */
 
-var app = corejs.app,
+var app = protos.app,
     util = require('util'),
     discount = require('discount'),
     inflect = require('../lib/support/inflect.js'),
@@ -60,7 +60,7 @@ function Markdown(config, middleware) {
   app[middleware] = this;
   
   // Configuration defaults
-  config = corejs.extend({
+  config = protos.extend({
     sanitize: ['default']
   }, config);
   

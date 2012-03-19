@@ -25,11 +25,11 @@ function RedisStorage(app, config) {
    this.config = config;
    this.className = this.constructor.name;
    
-   corejs.async(app); // Register async queue
+   protos.async(app); // Register async queue
    
-   corejs.util.checkPort(config.port, function(err) {
+   protos.util.checkPort(config.port, function(err) {
      
-     corejs.done(app); // Flush async queue
+     protos.done(app); // Flush async queue
      
      if (err) {
        app.log(util.format("Redis [%s:%s] %s", config.host, config.port, err.code));
@@ -61,10 +61,10 @@ function RedisStorage(app, config) {
    });
    
    // Set enumerable properties
-   corejs.util.onlySetEnumerable(this, ['className', 'db']);
+   protos.util.onlySetEnumerable(this, ['className', 'db']);
 }
 
-util.inherits(RedisStorage, corejs.lib.storage);
+util.inherits(RedisStorage, protos.lib.storage);
 
 RedisStorage.prototype.options = {};
 

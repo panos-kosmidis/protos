@@ -46,7 +46,7 @@
 
  */
 
-var app = corejs.app,
+var app = protos.app,
     util = require('util');
 
 function SocketIO(config, middleware) {
@@ -86,7 +86,7 @@ function SocketIO(config, middleware) {
   }
   
   // Extend the options, 1 level deep
-  corejs.configExtend(options, config);
+  protos.configExtend(options, config);
   
   // If no debug env specified, use development env
   if (config.environment && config.environment.debug == null) {
@@ -114,7 +114,7 @@ function initSockets(config) {
   var io = require('socket.io').listen(app.server, config.settings);
   
   // Run environment code
-  var func = config.environments[corejs.environment];
+  var func = config.environments[protos.environment];
   if (func instanceof Function) func(io);
   
   // Set app.sockets

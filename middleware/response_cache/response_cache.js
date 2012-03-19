@@ -25,7 +25,7 @@
  */
 
 
-var app = corejs.app;
+var app = protos.app;
 
 require('./response.js');
 

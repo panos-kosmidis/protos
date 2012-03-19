@@ -1,7 +1,7 @@
 
 /* CSRF » Request enhancements */
 
-var app = corejs.app,
+var app = protos.app,
     http = require('http'),
     IncomingMessage = http.IncomingMessage;
   

@@ -1,8 +1,8 @@
 
 /* Body Parser » Controller enhancements */
 
-var app = corejs.app,
-    Controller = corejs.lib.controller;
+var app = protos.app,
+    Controller = protos.lib.controller;
 
 /**
   Retrieves POST fields & files, with validation & CSRF protection.

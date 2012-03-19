@@ -1,13 +1,13 @@
 
 /* Static Server » Application extensions */
 
-var app = corejs.app,
+var app = protos.app,
     fs = require('fs'),
     mime = require('mime'),
     pathModule = require('path'),
-    Application = corejs.lib.application;
+    Application = protos.lib.application;
 
-var parseRange = corejs.util.parseRange;
+var parseRange = protos.util.parseRange;
 
 /**
   Checks if the request is a file request

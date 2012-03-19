@@ -22,7 +22,7 @@ function MongoDB(app, config) {
 
     var self = this;
 
-    config = corejs.extend({
+    config = protos.extend({
       host: 'localhost',
       port: 27017,
       database: 'default',
@@ -34,15 +34,15 @@ function MongoDB(app, config) {
     this.app = app;
     this.config = config;
 
-    corejs.async(app); // Register async queue
+    protos.async(app); // Register async queue
     
     var reportError = function(err) {
       app.log(util.format("MongoDB [%s:%s] %s", config.host, config.port, err.code));
       self.client = err;
-      corejs.done(app); // Flush async queue
+      protos.done(app); // Flush async queue
     }
     
-    corejs.util.checkPort(config.port, function(err) {
+    protos.util.checkPort(config.port, function(err) {
 
       if (err) {
         reportError(err);
@@ -61,7 +61,7 @@ function MongoDB(app, config) {
             // Set storage
             if (typeof config.storage == 'string') {
               self.storage = app._getResource('storages/' + config.storage);
-            } else if (config.storage instanceof corejs.lib.storage) {
+            } else if (config.storage instanceof protos.lib.storage) {
               self.storage = config.storage;
             }
 
@@ -74,7 +74,7 @@ function MongoDB(app, config) {
               Collection.prototype.__count = Collection.prototype.count;
             }
             
-            corejs.done(app); // Flush async queue
+            protos.done(app); // Flush async queue
           }
         });
 
@@ -83,10 +83,10 @@ function MongoDB(app, config) {
     });
     
     // Only set important properties enumerable
-    corejs.util.onlySetEnumerable(this, ['className', 'db']);
+    protos.util.onlySetEnumerable(this, ['className', 'db']);
 }
 
-util.inherits(MongoDB, corejs.lib.driver);
+util.inherits(MongoDB, protos.lib.driver);
 
 /**
   Inserts values into a collection

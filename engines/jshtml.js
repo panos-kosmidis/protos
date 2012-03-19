@@ -12,13 +12,13 @@ function JsHtml(app) {
   
   var opts = (app.config.engines && app.config.engines.jshtml) || {};
 
-  this.options = corejs.extend({with: false}, opts);
+  this.options = protos.extend({with: false}, opts);
   
   this.multiPart = true;
   this.extensions = ['jshtml'];
 }
 
-util.inherits(JsHtml, corejs.lib.engine);
+util.inherits(JsHtml, protos.lib.engine);
 
 JsHtml.prototype.render = function(data) {
   data = this.app.applyFilters('jshtml_template', data);

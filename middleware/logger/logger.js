@@ -65,11 +65,11 @@
     
  */
 
-var app = corejs.app,
+var app = protos.app,
     fs = require('fs'),
     http = require('http'),
     util = require('util'),
-    inflect = corejs.require('./lib/support/inflect.js');
+    inflect = protos.require('./lib/support/inflect.js');
 
 var Application = app.constructor;
 
@@ -100,7 +100,7 @@ function Logger(config, middleware) {
       appDate = app.date;
   
   // Middleware config (levels are overridden)
-  this.config = config = corejs.extend({
+  this.config = config = protos.extend({
     accessLog: true,
     accessLogConsole: true,
     accessLogFormat: 'default',

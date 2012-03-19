@@ -50,14 +50,14 @@ vows.describe('Models').addBatch({
       model.context = table;
       mysql = model.driver;
       
-      assert.isTrue(model instanceof corejs.lib.model);
+      assert.isTrue(model instanceof protos.lib.model);
       assert.equal(model.className, 'UsersModel');
-      assert.isTrue(model.driver instanceof corejs.lib.driver);
+      assert.isTrue(model.driver instanceof protos.lib.driver);
     },
     
     'Alternative shortcut set (app.xxxModel)': function() {
       assert.equal(app.usersModel.className, 'UsersModel');
-      assert.isTrue(app.usersModel instanceof corejs.lib.model);
+      assert.isTrue(app.usersModel instanceof protos.lib.model);
     }
 
   }

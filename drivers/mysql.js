@@ -29,11 +29,11 @@ function MySQL(app, config) {
   this.app = app;
   this.config = config;
   
-  corejs.async(app); // Register async queue
+  protos.async(app); // Register async queue
   
-  corejs.util.checkPort(config.port, function(err) {
+  protos.util.checkPort(config.port, function(err) {
 
-    corejs.done(app); // Flush async queue
+    protos.done(app); // Flush async queue
     
     if (err) {
       app.log(util.format("MySQL [%s:%s] %s", config.host, config.port, err.code));
@@ -45,7 +45,7 @@ function MySQL(app, config) {
       // Assign storage
       if (typeof config.storage == 'string') {
         self.storage = app._getResource('storages/' + config.storage);
-      } else if (config.storage instanceof corejs.lib.storage) {
+      } else if (config.storage instanceof protos.lib.storage) {
         self.storage = config.storage;
       }
       
@@ -63,11 +63,11 @@ function MySQL(app, config) {
   });
   
   // Only set important properties enumerable
-  corejs.util.onlySetEnumerable(this, ['className', 'db']);
+  protos.util.onlySetEnumerable(this, ['className', 'db']);
   
 }
 
-util.inherits(MySQL, corejs.lib.driver);
+util.inherits(MySQL, protos.lib.driver);
 
 /**
   Queries rows from a table
@@ -276,7 +276,7 @@ MySQL.prototype.insertInto = function(o, callback) {
       values = o.values || {};
       
   if (util.isArray(values)) {
-    params = corejs.util.strRepeat('?, ', values.length).replace(regex.endingComma, '');
+    params = protos.util.strRepeat('?, ', values.length).replace(regex.endingComma, '');
     args = ["INSERT INTO " + table + " VALUES(" + params + ")", values];
   } else {
     query = "INSERT INTO " + table + " SET ";

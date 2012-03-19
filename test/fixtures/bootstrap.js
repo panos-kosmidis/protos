@@ -13,7 +13,7 @@ var env,
     assert = require('assert'),
     rootPath = path.resolve(__dirname, '../../'),
     testConfig = require(rootPath + '/test/fixtures/dbconfig.json'),
-    CoreJS = require(rootPath),
+    Protos = require(rootPath),
     EventEmitter = require('events').EventEmitter;
 
 if (module.parent.id == '.') {
@@ -24,9 +24,9 @@ if (module.parent.id == '.') {
   env = path.basename(path.dirname(module.parent.id));
 }
 
-CoreJS.configure('autoCurl', false);
+Protos.configure('autoCurl', false);
 
-CoreJS.on('pre_init', function(app) {
+Protos.on('pre_init', function(app) {
 
   // Convert port to int, otherwise mongodb client complains...
   testConfig.mongodb.port = parseInt(testConfig.mongodb.port, 10);
@@ -47,7 +47,7 @@ CoreJS.on('pre_init', function(app) {
   app.config.storage.mongodb = testConfig.mongodb;
 });
 
-CoreJS.on('bootstrap_config', function(bootstrap) {
+Protos.on('bootstrap_config', function(bootstrap) {
   // For debugging purposes
   // console.log(bootstrap);
 });
@@ -58,13 +58,13 @@ var skelDir, testSkeleton;
 fs.readdirSync('test/fixtures').forEach(function(dir) {
   if (/skeleton$/.test(dir)) {
     skelDir = dir;
-    testSkeleton = CoreJS.path + '/test/fixtures/' + dir;
+    testSkeleton = Protos.path + '/test/fixtures/' + dir;
   }
 });
 
 // console.exit(testSkeleton);
 
-var corejs = CoreJS.bootstrap(testSkeleton, {
+var protos = Protos.bootstrap(testSkeleton, {
       server: {
         port: 8000
       },
@@ -76,16 +76,16 @@ var corejs = CoreJS.bootstrap(testSkeleton, {
       }
     });
 
-var app = corejs.app;
+var app = protos.app;
 
 app.logging = false;
 
-corejs.path = CoreJS.path + '/test/fixtures/test-corejs';
+protos.path = Protos.path + '/test/fixtures/test-protos';
 
 // Extend assert to check view engine compatibility
 
 var engines = Object.keys(app.engines),
-    colorize = corejs.util.colorize;
+    colorize = protos.util.colorize;
 
 /* Prevent conflicts with template engine test filters */
 

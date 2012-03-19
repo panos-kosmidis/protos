@@ -16,7 +16,7 @@ function Handlebars(app) {
   partials = {partials: app.views.partials};
 }
 
-util.inherits(Handlebars, corejs.lib.engine);
+util.inherits(Handlebars, protos.lib.engine);
 
 Handlebars.prototype.render = function(data) {
   data = this.app.applyFilters('handlebars_template', data);

@@ -1,7 +1,7 @@
 
 /* Asset Minifier */
 
-var app = corejs.app,
+var app = protos.app,
     fs = require('fs'),
     util = require('util'),
     config = app.asset_compiler,

@@ -1,7 +1,7 @@
 
 /* File Manager */
 
-var app = corejs.app,
+var app = protos.app,
     fs = require('fs'),
     slice = Array.prototype.slice;
     
@@ -17,7 +17,7 @@ function FileManager(files) {
   
   // Instance files
   Object.defineProperty(this, 'files', {
-    value: corejs.extend({}, files),
+    value: protos.extend({}, files),
     writable: true,
     enumerable: false,
     configurable: true

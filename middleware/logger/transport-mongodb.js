@@ -1,7 +1,7 @@
 
 /* Logger » MongoDB Transport */
 
-var app = corejs.app,
+var app = protos.app,
     mongodb = require('mongodb'),
     Db = mongodb.Db,
     Server = mongodb.Server,
@@ -16,7 +16,7 @@ function MongoTransport(evt, config) {
   if (config === true) config = {};
   
   // Transport configuration
-  config = corejs.extend({
+  config = protos.extend({
     host: 'localhost',
     port: 27017,
     database: 'myapp',

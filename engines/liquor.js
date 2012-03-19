@@ -11,7 +11,7 @@ function Liquor(app) {
   
   var opts = (app.config.engines && app.config.engines.liquor) || {};
 
-  this.options = corejs.extend({
+  this.options = protos.extend({
     pretty: true,
     indent: 0
   }, opts);
@@ -21,7 +21,7 @@ function Liquor(app) {
   this.extensions = ['liquor', 'liquor.html', 'lq.html'];
 }
 
-util.inherits(Liquor, corejs.lib.engine);
+util.inherits(Liquor, protos.lib.engine);
 
 Liquor.prototype.render = function(data) {
   data = this.app.applyFilters('liquor_template', data);

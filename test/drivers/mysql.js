@@ -3,7 +3,7 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     util = require('util'),
     assert = require('assert'),
-    colorize = corejs.util.colorize,
+    colorize = protos.util.colorize,
     ModelBatch = require('../fixtures/model-batch'),
     Multi = require('multi'),
     createClient = require('mysql').createClient,
@@ -56,7 +56,7 @@ function TestModel() {
 
 }
 
-util.inherits(TestModel, corejs.lib.model);
+util.inherits(TestModel, protos.lib.model);
 
 var modelBatch = new ModelBatch();
     

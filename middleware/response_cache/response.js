@@ -1,7 +1,7 @@
 
 /* Response Cache » Response extensions */
 
-var app = corejs.app,
+var app = protos.app,
     http = require('http'),
     OutgoingMessage = http.OutgoingMessage;
     

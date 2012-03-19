@@ -23,7 +23,7 @@ var batch = vows.describe('storages/mongodb.js').addBatch({
 
     'Created storage instance': function(storage) {
       assert.equal(storage.className, 'MongoStorage');
-      assert.instanceOf(storage, corejs.lib.storage);
+      assert.instanceOf(storage, protos.lib.storage);
     }
     
   }

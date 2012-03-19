@@ -1,8 +1,8 @@
 
 /* Cookie Parser » Application extensions */
 
-var app = corejs.app,
-    Application = corejs.lib.application;
+var app = protos.app,
+    Application = protos.lib.application;
 
 /**
   Loads request cookies

@@ -32,7 +32,7 @@
   
  */
  
-var app = corejs.app,
+var app = protos.app,
     md5 = app.session.md5;
 
 require('./request.js');
@@ -50,7 +50,7 @@ function Csrf(config, middleware) {
   app[middleware] = this;
   
   // Middleware configuration
-  config = corejs.extend({
+  config = protos.extend({
     tokenSuffix: '_key',
     onFailure: 400
   }, config);

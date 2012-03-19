@@ -44,13 +44,13 @@
   
  */
 
-var app = corejs.app,
+var app = protos.app,
     util = require('util');
 
 function Shortcode(config, middleware) {
   
   // Middleware configuration
-  config = corejs.extend({
+  config = protos.extend({
     
   }, config);
   

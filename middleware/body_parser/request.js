@@ -1,7 +1,7 @@
 
 /* Body Parser » Request ennhancements */
 
-var app = corejs.app,
+var app = protos.app,
     http = require('http'),
     formidable = require('formidable'),
     IncomingForm = formidable.IncomingForm,

@@ -11,7 +11,7 @@ function CoffeeKup(app) {
   
   var opts = (app.config.engines && app.config.engines.coffeekup) || {};
 
-  this.options = corejs.extend({
+  this.options = protos.extend({
     locals: true,
     hardcode: {}
   }, opts);
@@ -21,7 +21,7 @@ function CoffeeKup(app) {
   this.extensions = ['coffeekup', 'ck.html'];
 }
 
-util.inherits(CoffeeKup, corejs.lib.engine);
+util.inherits(CoffeeKup, protos.lib.engine);
 
 CoffeeKup.prototype.render = function(data) {
   data = this.app.applyFilters('coffeekup_template', data);

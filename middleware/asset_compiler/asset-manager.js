@@ -1,7 +1,7 @@
 
 /* Asset manager */
 
-var app = corejs.app,
+var app = protos.app,
     fs = require('fs'),
     util = require('util'),
     fileModule = require('file'),
@@ -65,7 +65,7 @@ ignores = ignores.filter(function(item) {
 
 // config.watchOn = [];
 
-var watch = (config.watchOn.indexOf(corejs.environment) >= 0),
+var watch = (config.watchOn.indexOf(protos.environment) >= 0),
     assetExts = Object.keys(assets);
     
 if (watch) app.debug('Asset Manager: Watching files in ' + app.paths.public);

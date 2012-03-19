@@ -12,7 +12,7 @@
   
  */
 
-var app = corejs.app;
+var app = protos.app;
 
 function Redirect(url, middleware) {
   

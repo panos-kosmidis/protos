@@ -1,6 +1,6 @@
-# CoreJS [![Build Status](https://secure.travis-ci.org/corejs/corejs.png)](http://travis-ci.org/corejs/corejs)
+# Protos [![Build Status](https://secure.travis-ci.org/protos/protos.png)](http://travis-ci.org/protos/protos)
 
-CoreJS is an open source Web Application Development framework, focused on high performance, integration, ease of 
+Protos is an open source Web Application Development framework, focused on high performance, integration, ease of 
 deployment, maintainability and security.
 
 It aims to integrate several open source packages and combine their power &amp; functionality, to bring a common set of
@@ -33,7 +33,7 @@ utilities and functionality to all applications, reducing their dependencies.
 
 ## Development Stack
 
-CoreJS provides a set of APIs that allow the framework to be extended in all sorts of ways. Use it either to contribute
+Protos provides a set of APIs that allow the framework to be extended in all sorts of ways. Use it either to contribute
 new functionality &amp; components to it, or to enhance it with the needs of your team/organization.
 
 ### Drivers
@@ -64,38 +64,38 @@ means you can use a database backend for development, and another for production
 
 Here's the Development Stack the framework provides, in a nutshell:
 
-- **Drivers** &nbsp; _[MongoDB](https://github.com/corejs/corejs/blob/master/drivers/mongodb.js), [MySQL](https://github.com/corejs/corejs/blob/master/drivers/mysql.js)_
-- **Storages** &nbsp; _[MongoDB](https://github.com/corejs/corejs/blob/master/storages/mongodb.js), [Redis](https://github.com/corejs/corejs/blob/master/storages/redis.js)_
+- **Drivers** &nbsp; _[MongoDB](https://github.com/protos/protos/blob/master/drivers/mongodb.js), [MySQL](https://github.com/protos/protos/blob/master/drivers/mysql.js)_
+- **Storages** &nbsp; _[MongoDB](https://github.com/protos/protos/blob/master/storages/mongodb.js), [Redis](https://github.com/protos/protos/blob/master/storages/redis.js)_
 - **Models** &nbsp; _Use any Driver supported_
 - **Query Cache (Drivers)** &nbsp; _Use any Storage supported_
 - **Query Cache (Models)** &nbsp; _Handled by underlying Driver_
 - **Caching** &nbsp; _Use any Storage supported_
 - **Sessions** &nbsp; _Use any Storage supported_
 - **Response Caching** &nbsp; _Use any Storage supported_
-- **Logging** &nbsp; _[MongoDB](https://github.com/corejs/corejs/blob/master/middleware/logger/transport-mongodb.js), 
-[Redis](https://github.com/corejs/corejs/blob/master/middleware/logger/transport-redis.js) (additionally 
-[File](https://github.com/corejs/corejs/blob/master/middleware/logger/transport-file.js), [Console](https://github.com/corejs/corejs/blob/master/middleware/logger/transport-console.js) via Middleware)_
+- **Logging** &nbsp; _[MongoDB](https://github.com/protos/protos/blob/master/middleware/logger/transport-mongodb.js), 
+[Redis](https://github.com/protos/protos/blob/master/middleware/logger/transport-redis.js) (additionally 
+[File](https://github.com/protos/protos/blob/master/middleware/logger/transport-file.js), [Console](https://github.com/protos/protos/blob/master/middleware/logger/transport-console.js) via Middleware)_
 
 ## Middleware
 
 The Application's functionality can be extended with the following (ready to use) components:
 
 - [asset_compiler](/middleware#asset_compiler) &nbsp; *Compiles LESS, Stylus and CoffeeScript, Supports Watch/Compress/Minify.*
-- [aws](http://corejs.org/middleware#aws) &nbsp; *Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)*
-- [bcrypt](http://corejs.org/middleware#bcrypt) &nbsp; *Blowfish encryption support*
-- [body_parser](http://corejs.org/middleware#body_parser) &nbsp; *Parse request bodies and file uploads in POST/PUT requests*
-- [cookie_parser](http://corejs.org/middleware#cookie_parser) &nbsp; *Parse cookie headers, Integrates with Sessions & Auth*
-- [csrf](http://corejs.org/middleware#csrf) &nbsp; *Cross-Site Request Forgery protection, integrates with Controller Validation*
-- [logger](http://corejs.org/middleware#logger) &nbsp; *Application/Request logger, supporting several transports such as MongoDB, Redis, File &amp; console*
-- [mailer](http://corejs.org/middleware#mailer) &nbsp; *Send email using SMTP, Amazon SES or Sendmail*
-- [ markdown ](http://corejs.org/middleware#markdown) &nbsp; *Parse markdown syntax*
-- [production_url](http://corejs.org/middleware#production_url) &nbsp; *Remove port number from application-generated URLs*
-- [redirect](http://corejs.org/middleware#redirect) &nbsp; *Quick redirection support (useful for "maintenance mode")*
-- [response_cache](http://corejs.org/middleware#response_cache) &nbsp; *Response caching into supported Storages (Redis, MongoDB, etc)*
-- [session](http://corejs.org/middleware#session) &nbsp; *Full session support with Storages, guest sessions and regeneration*
-- [shortcode](http://corejs.org/middleware#shortcode) &nbsp; *Allows custom content to be inserted into views using shortcodes*
-- [socket_io](http://corejs.org/middleware#socket_io) &nbsp; *Socket.io Integration with applications*
-- [static_server](http://corejs.org/middleware#static_server) &nbsp; *Complete Static Server solution, supporting Ranges, Conditional GETs, etc.*
+- [aws](http://protos.org/middleware#aws) &nbsp; *Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)*
+- [bcrypt](http://protos.org/middleware#bcrypt) &nbsp; *Blowfish encryption support*
+- [body_parser](http://protos.org/middleware#body_parser) &nbsp; *Parse request bodies and file uploads in POST/PUT requests*
+- [cookie_parser](http://protos.org/middleware#cookie_parser) &nbsp; *Parse cookie headers, Integrates with Sessions & Auth*
+- [csrf](http://protos.org/middleware#csrf) &nbsp; *Cross-Site Request Forgery protection, integrates with Controller Validation*
+- [logger](http://protos.org/middleware#logger) &nbsp; *Application/Request logger, supporting several transports such as MongoDB, Redis, File &amp; console*
+- [mailer](http://protos.org/middleware#mailer) &nbsp; *Send email using SMTP, Amazon SES or Sendmail*
+- [ markdown ](http://protos.org/middleware#markdown) &nbsp; *Parse markdown syntax*
+- [production_url](http://protos.org/middleware#production_url) &nbsp; *Remove port number from application-generated URLs*
+- [redirect](http://protos.org/middleware#redirect) &nbsp; *Quick redirection support (useful for "maintenance mode")*
+- [response_cache](http://protos.org/middleware#response_cache) &nbsp; *Response caching into supported Storages (Redis, MongoDB, etc)*
+- [session](http://protos.org/middleware#session) &nbsp; *Full session support with Storages, guest sessions and regeneration*
+- [shortcode](http://protos.org/middleware#shortcode) &nbsp; *Allows custom content to be inserted into views using shortcodes*
+- [socket_io](http://protos.org/middleware#socket_io) &nbsp; *Socket.io Integration with applications*
+- [static_server](http://protos.org/middleware#static_server) &nbsp; *Complete Static Server solution, supporting Ranges, Conditional GETs, etc.*
 
 ## Template Engines
 
@@ -152,7 +152,7 @@ THE SOFTWARE.
 
 ## Resources
 
-- Visit the official [corejs.org](http://corejs.org) website.
+- Visit the official [protos.org](http://protos.org) website.
 - Follow [@derdesign](http://twitter.com/derdesign) on Twitter for updates.
-- Report issues on the [github issues](https://github.com/corejs/corejs/issues) page.
+- Report issues on the [github issues](https://github.com/protos/protos/issues) page.
 

@@ -13,7 +13,7 @@ function Haml(app) {
   this.extensions = ['haml', 'haml.html'];
 }
 
-util.inherits(Haml, corejs.lib.engine);
+util.inherits(Haml, protos.lib.engine);
 
 Haml.prototype.render = function(data) {
   data = this.app.applyFilters('haml_template', data);

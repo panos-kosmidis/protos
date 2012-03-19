@@ -11,14 +11,14 @@ function EJS(app) {
   
   var opts = (app.config.engines && app.config.engines.ejs) || {};
   
-  this.options = corejs.extend({open: '<%', close: '%>'}, opts);
+  this.options = protos.extend({open: '<%', close: '%>'}, opts);
   
   this.module = ejs;
   this.multiPart = true;
   this.extensions = ['ejs', 'ejs.html'];
 }
 
-util.inherits(EJS, corejs.lib.engine);
+util.inherits(EJS, protos.lib.engine);
 
 EJS.prototype.render = function(data) {
   data = this.app.applyFilters('ejs_template', data);

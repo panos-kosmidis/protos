@@ -26,7 +26,7 @@ vows.describe('Asset Compiler (middleware)').addBatch({
       if (!app.supports.static_server) app.use('static_server');
       
       if (!app.supports.asset_compiler) app.use('asset_compiler', {
-        watchOn: [corejs.environment],
+        watchOn: [protos.environment],
         minify: {
           'assets/min.css': ['target.css', 'assets/target.less'],
           'assets/min.js': ['target.js', 'assets/target.coffee']

@@ -1,6 +1,6 @@
 
 var assert = require('assert'),
-    colorize = corejs.util.colorize,
+    colorize = protos.util.colorize,
     EventEmitter = require('events').EventEmitter;
 
 function StorageBatch(stoClass) {

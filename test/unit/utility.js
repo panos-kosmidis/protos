@@ -12,7 +12,7 @@ vows.describe('lib/utility.js').addBatch({
   'Utility::typecast': {
     
     topic: function() {
-      return corejs.util.typecast;
+      return protos.util.typecast;
     },
     
     'Converts integer': function(f) {
@@ -36,7 +36,7 @@ vows.describe('lib/utility.js').addBatch({
   'Utility::toCamelCase': {
     
     'Returns valid strings': function() {
-      assert.strictEqual(corejs.util.toCamelCase('my_test_suite'), 'MyTestSuite');
+      assert.strictEqual(protos.util.toCamelCase('my_test_suite'), 'MyTestSuite');
     }
     
   },
@@ -44,8 +44,8 @@ vows.describe('lib/utility.js').addBatch({
   'Utility::isTypeOf': {
     
     'Returns valid booleans': function() {
-      assert.isTrue(corejs.util.isTypeOf(99, 'number'));
-      assert.isFalse(corejs.util.isTypeOf(99, 'function'));
+      assert.isTrue(protos.util.isTypeOf(99, 'number'));
+      assert.isFalse(protos.util.isTypeOf(99, 'function'));
     }
     
   },
@@ -55,7 +55,7 @@ vows.describe('lib/utility.js').addBatch({
     'Parses range strings': function() {
       
       function p(str) {
-        return corejs.util.parseRange(1000, 'bytes='+str);
+        return protos.util.parseRange(1000, 'bytes='+str);
       }
       
       assert.deepEqual(p('0-499'), [{start: 0, end: 499}]);
@@ -73,7 +73,7 @@ vows.describe('lib/utility.js').addBatch({
   'Utility::searchPattern': {
     
     topic: function() {
-      return corejs.util.searchPattern;
+      return protos.util.searchPattern;
     },
     
     'Detects single match w/ one find': function(f) {
@@ -97,7 +97,7 @@ vows.describe('lib/utility.js').addBatch({
   'Utility::extract': {
     
     'Returns an object with the extracted keys': function() {
-      assert.deepEqual(corejs.util.extract({a:1, b:2, c:3}, ['a','b']), {a:1, b:2});
+      assert.deepEqual(protos.util.extract({a:1, b:2, c:3}, ['a','b']), {a:1, b:2});
     }
     
   }
@@ -112,11 +112,11 @@ vows.describe('lib/utility.js').addBatch({
           port = 9999,
           server = net.createServer().listen(port); // listen on 9999;
       // Check port when server is listening
-      corejs.util.checkPort(port, function(err) {
+      protos.util.checkPort(port, function(err) {
         errors.push(err); // err1
         // Emitted when server closes
         server.on('close', function(err) {
-          corejs.util.checkPort(port, function(err) {
+          protos.util.checkPort(port, function(err) {
             errors.push(err); // err2
             promise.emit('success', errors); // Send topic
           });

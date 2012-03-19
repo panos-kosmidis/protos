@@ -26,7 +26,7 @@
     
   » Adding Custom Extensions & Compilers
   
-    You can define your own extensions and compilers to be used by the application. CoreJS provides a solid
+    You can define your own extensions and compilers to be used by the application. Protos provides a solid
     platform in which you can extend upon, and integrate your own asset compilers. Here's how you do it:
     
     1) Add the custom extension in the `compile` array
@@ -50,7 +50,7 @@
     
  */
 
-var app = corejs.app;
+var app = protos.app;
 
 function AssetCompiler(config, middleware) {
   
@@ -61,7 +61,7 @@ function AssetCompiler(config, middleware) {
   }
   
   // Extend configuration
-  config = corejs.configExtend({
+  config = protos.configExtend({
     watchOn: ['development', 'debug'],
     compile: ['less', 'styl', 'coffee'],
     assetSourceAccess: false,

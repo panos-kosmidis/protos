@@ -44,11 +44,11 @@ vows.describe('lib/application.js').addBatch({
     },
 
     'Sets application path': function() {
-      assert.equal(app.path, corejs.constructor.path + '/test/fixtures/' + app.skelDir);
+      assert.equal(app.path, protos.constructor.path + '/test/fixtures/' + app.skelDir);
     },
 
     'Sets default controller': function() {
-      assert.instanceOf(app.controller, corejs.lib.controller);
+      assert.instanceOf(app.controller, protos.lib.controller);
     },
 
     'Inherits from EventEmitter': function() {
@@ -56,7 +56,7 @@ vows.describe('lib/application.js').addBatch({
     },
 
     'Initializes models': function() {
-      assert.instanceOf(app.models.users, corejs.lib.model);
+      assert.instanceOf(app.models.users, protos.lib.model);
     },
 
     'Initializes helpers': function() {
@@ -64,15 +64,15 @@ vows.describe('lib/application.js').addBatch({
     },
 
     'Initializes controllers': function() {
-      assert.instanceOf(app.controllers.main, corejs.lib.controller);
+      assert.instanceOf(app.controllers.main, protos.lib.controller);
     },
 
-    'Initializes corejs engines': function() {
-      assert.instanceOf(app.engines.eco, corejs.lib.engine);
+    'Initializes protos engines': function() {
+      assert.instanceOf(app.engines.eco, protos.lib.engine);
     },
 
     'Initializes application engines': function() {
-      assert.instanceOf(app.engines.eco, corejs.lib.engine);
+      assert.instanceOf(app.engines.eco, protos.lib.engine);
     },
     
     "Properly registers view partials": function() {
@@ -114,12 +114,12 @@ vows.describe('lib/application.js').addBatch({
   'Application::url': {
 
     'Returns proper url when no args provided': function() {
-      assert.equal(app.url(), util.format('http://%s:%s/', app.domain, corejs.config.server.listenPort));
+      assert.equal(app.url(), util.format('http://%s:%s/', app.domain, protos.config.server.listenPort));
     },
 
     'Returns proper url when run with path argument': function() {
       var q = '/item?id=25';
-      assert.equal(app.url(q), util.format('http://%s:%s%s', app.domain, corejs.config.server.listenPort, q));
+      assert.equal(app.url(q), util.format('http://%s:%s%s', app.domain, protos.config.server.listenPort, q));
     }
 
   },
@@ -157,11 +157,11 @@ vows.describe('lib/application.js').addBatch({
   'Application::driver': {
 
     'Returns a driver object': function() {
-      var mysqlCtor = corejs.drivers.mysql;
-      corejs.drivers.mysql = function() { this.success = true; }
+      var mysqlCtor = protos.drivers.mysql;
+      protos.drivers.mysql = function() { this.success = true; }
       var driver = app._driver('mysql', {});
       assert.isTrue(driver.success);
-      corejs.drivers.mysql = mysqlCtor; // restore mysql constructor
+      protos.drivers.mysql = mysqlCtor; // restore mysql constructor
     }
 
   },
@@ -169,11 +169,11 @@ vows.describe('lib/application.js').addBatch({
   'Application::storage': {
 
     'Returns a storage object': function() {
-      var redisCtor = corejs.storages.redis;
-      corejs.storages.redis = function() { this.success = true; }
+      var redisCtor = protos.storages.redis;
+      protos.storages.redis = function() { this.success = true; }
       var storage = app._storage('redis', {});
       assert.isTrue(storage.success);
-      corejs.storages.redis = redisCtor; // restore redis constructor
+      protos.storages.redis = redisCtor; // restore redis constructor
     }
 
   },
@@ -335,7 +335,7 @@ vows.describe('lib/application.js').addBatch({
     },
 
     'Works asynchronously if callback provided': function(storage) {
-      assert.instanceOf(storage, corejs.storages.redis);
+      assert.instanceOf(storage, protos.storages.redis);
     }
 
   }

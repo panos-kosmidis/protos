@@ -23,7 +23,7 @@ vows.describe('Static File Server (middleware)').addBatch({
       sessionState = app.supports.session;
       app.supports.session = false;
       app.use('static_server', {
-        watchOn: [corejs.environment]
+        watchOn: [protos.environment]
       });
       
       var promise = new EventEmitter();

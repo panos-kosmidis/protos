@@ -14,7 +14,7 @@ function Jazz(app) {
   this.extensions = ['jazz', 'jazz.html'];
 }
 
-util.inherits(Jazz, corejs.lib.engine);
+util.inherits(Jazz, protos.lib.engine);
 
 Jazz.prototype.render = function(data) {
   data = this.app.applyFilters('jazz_template', data);

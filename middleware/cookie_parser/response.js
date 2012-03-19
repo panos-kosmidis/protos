@@ -1,7 +1,7 @@
 
 /* Cookie Parser » Response extensions */
 
-var app = corejs.app,
+var app = protos.app,
     http = require('http'),
     slice = Array.prototype.slice,
     OutgoingMessage = http.OutgoingMessage;
@@ -23,12 +23,12 @@ OutgoingMessage.prototype.setCookie = function(name, val, opts) {
 
   if (opts == null) opts = {};
   pairs = [name + "=" + (encodeURIComponent(val))];
-  removeCookie = corejs.util.isTypeOf(opts.expires, 'number') && opts.expires < 0;
+  removeCookie = protos.util.isTypeOf(opts.expires, 'number') && opts.expires < 0;
   if (opts.domain == null) opts.domain = app.domain;
   if (opts.domain == 'localhost') opts.domain = null;
   if (opts.path == null) opts.path = '/';
 
-  opts.expires = (corejs.util.isTypeOf(opts.expires, 'number')
+  opts.expires = (protos.util.isTypeOf(opts.expires, 'number')
   ? new Date(Date.now() + (opts.expires*1000))
   : null);
 

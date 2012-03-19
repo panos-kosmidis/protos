@@ -1,7 +1,7 @@
 
 /* Cookie Parser */
 
-var app = corejs.app;
+var app = protos.app;
 
 require('./application.js');
 require('./request.js');

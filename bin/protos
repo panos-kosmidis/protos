@@ -7,11 +7,11 @@ var _ = require('underscore'),
     regex = require('../lib/regex.js'),
     pathModule = require('path'),
     inflect = require('../lib/support/inflect.js'),
-    CoreJS = require('../lib/corejs.js'),
+    Protos = require('../lib/protos.js'),
     Multi = require('multi'),
     CommandLine = require('../lib/command.js');
 
-var corejs;
+var protos;
 
 var origPath;
 
@@ -270,7 +270,7 @@ var commands = {
       switch (action) {
         case 'start':
         case 'stop':
-          var cmd = 'node ' + CoreJS.path + '/tools/' + action + '-inspector';
+          var cmd = 'node ' + Protos.path + '/tools/' + action + '-inspector';
           cp.exec(cmd, function(err, stdout, stderr) {
             if (err) throw err;
             else console.exit(stdout.trim());
@@ -432,20 +432,20 @@ function createApplication(data, libs) {
     if (err) console.exit(stderr);
     else {
       
-      // Replace corejs directory
+      // Replace protos directory
       var bootFile = util.format('./%s/boot.js', app),
           boot = fs.readFileSync(bootFile, 'utf-8').toString();
-      var repl, isGlobal = pathModule.existsSync('/usr/local/lib/node/corejs');
+      var repl, isGlobal = pathModule.existsSync('/usr/local/lib/node/protos');
       
       if (isGlobal) {
-        // We can use `require('corejs')` safely
-        repl = 'corejs';
+        // We can use `require('protos')` safely
+        repl = 'protos';
       } else {
         // We need to use the global path instead
         repl = masterPath;
       }
       
-      boot = boot.replace("var CoreJS = require('../');", util.format("var CoreJS = require('%s');", repl));
+      boot = boot.replace("var Protos = require('../');", util.format("var Protos = require('%s');", repl));
       
       if (data.domain) {
         boot = boot.replace("host: 'localhost',", util.format("host: '%s',", data.domain));
@@ -691,7 +691,7 @@ function createView(app, controller, view, partial) {
   file = file.replace('__static-', '');
   
   if (controller == 'main' && this.mustache == true) {
-    tpl = "\n<p>Welcome to {{corejs.className}}</p>\n";
+    tpl = "\n<p>Welcome to {{protos.className}}</p>\n";
     fs.unlinkSync(app + '/app/views/main/main-index.html');
   } else if (typeof this.ext === 'undefined') {
     tpl = util.format("\n<p>%s Controller</p>\n", inflect.camelize(controller));
@@ -757,7 +757,7 @@ function getLibs(args) {
       libs.css[lib].id = lib;
       libs.css[lib].type = 'css';
     } else {
-      console.exit("CSS Framework not bundled by CoreJS: " + lib);
+      console.exit("CSS Framework not bundled by Protos: " + lib);
     }
   });
   
@@ -766,7 +766,7 @@ function getLibs(args) {
       libs.javascript[lib].id = lib;
       libs.javascript[lib].type = 'js';
     } else {
-      console.exit("JavaScript Library not bundled by CoreJS: " + lib);
+      console.exit("JavaScript Library not bundled by Protos: " + lib);
     }
   });
   return libs;
@@ -799,7 +799,7 @@ function validateApp(data, noexit) {
           this.printHelp();
           process.exit();
         } else {
-          console.exit(util.format("corejs [%s] only works within the application path.", this.context));
+          console.exit(util.format("protos [%s] only works within the application path.", this.context));
         }
       } else {
         return false;
@@ -843,7 +843,7 @@ bouncy(function(req, bounce) { var host, port;\
  host = req.headers.host.split(':').shift();\
  if (port = hosts[host]) bounce(port);\
  else req.socket.destroy(); \
-}).listen(%s);", CoreJS.path, JSON.stringify(hosts), data.port);
+}).listen(%s);", Protos.path, JSON.stringify(hosts), data.port);
     
     code = code.replace(/"/g, '\\"');
     // console.exit(code);
@@ -873,17 +873,17 @@ bouncy(function(req, bounce) { var host, port;\
 var cli = new CommandLine(commands);
 
 cli.help.before = "\
-Usage: corejs [action] [arguments]\n\n\
+Usage: protos [action] [arguments]\n\n\
 Actions: [create, server, deploy, fetch, inspector] [controller, helper, model, view, partial, static]\n";
 
 cli.help.after = "\n\
 Example:\n\n\
- corejs create myapp --css bootstrap --js jquery backbone --model users --controller admin user\n\n\
+ protos create myapp --css bootstrap --js jquery backbone --model users --controller admin user\n\n\
  Generate an application skeleton in the current directory, with the assets,\n\
  models and controllers specified in the command.\n\n\
- corejs server myapp --fork --logpath server.log\n\n\
+ protos server myapp --fork --logpath server.log\n\n\
  Starts the application's server and forks a new node process.\n\n\
- For documentation, refer to http://corejs.org\n\n\
- corejs@" + CoreJS.version + " " + CoreJS.path;
+ For documentation, refer to http://protos.org\n\n\
+ protos@" + Protos.version + " " + Protos.path;
 
 cli.parse();

@@ -1,7 +1,7 @@
 
 /* Logger » Redis Transport */
 
-var app = corejs.app,
+var app = protos.app,
     fs = require('fs'),
     redis = require('redis');
 
@@ -11,7 +11,7 @@ function RedisTransport(evt, config) {
   
   if (config === true) config = {};
   
-  config = corejs.extend({
+  config = protos.extend({
     host: 'localhost',
     port: 6379,
     db: 0,
@@ -98,7 +98,7 @@ function initRedis(config, callback) {
 
   var self = this;
 
-  corejs.util.checkPort(config.port, function(err) {
+  protos.util.checkPort(config.port, function(err) {
 
     if (err) {
       app.log("RedisTransport [%s:%s] %s", config.host, config.port, err.code);

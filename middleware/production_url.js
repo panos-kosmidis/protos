@@ -9,7 +9,7 @@
 
 */
 
-var app = corejs.app;
+var app = protos.app;
 
 function ProductionUrl() {
   

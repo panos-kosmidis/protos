@@ -1,7 +1,7 @@
 
 /* Cookie Parser » Request extensions */
 
-var app = corejs.app,
+var app = protos.app,
     http = require('http'),
     IncomingMessage = http.IncomingMessage;
     

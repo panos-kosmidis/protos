@@ -44,7 +44,7 @@
   
  */
 
-var app = corejs.app,
+var app = protos.app,
     util = require('util'),
     nodemailer = require('nodemailer'),
     Application = app.constructor,
