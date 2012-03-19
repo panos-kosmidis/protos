@@ -64,17 +64,17 @@ means you can use a database backend for development, and another for production
 
 Here's the Development Stack the framework provides, in a nutshell:
 
-- **Drivers** &nbsp; _[MongoDB](https://github.com/derdesign/protos//blob/master/drivers/mongodb.js), [MySQL](https://github.com/derdesign/protos//blob/master/drivers/mysql.js)_
-- **Storages** &nbsp; _[MongoDB](https://github.com/derdesign/protos//blob/master/storages/mongodb.js), [Redis](https://github.com/derdesign/protos//blob/master/storages/redis.js)_
+- **Drivers** &nbsp; _[MongoDB](https://github.com/derdesign/protos/blob/master/drivers/mongodb.js), [MySQL](https://github.com/derdesign/protos/blob/master/drivers/mysql.js)_
+- **Storages** &nbsp; _[MongoDB](https://github.com/derdesign/protos/blob/master/storages/mongodb.js), [Redis](https://github.com/derdesign/protos/blob/master/storages/redis.js)_
 - **Models** &nbsp; _Use any Driver supported_
 - **Query Cache (Drivers)** &nbsp; _Use any Storage supported_
 - **Query Cache (Models)** &nbsp; _Handled by underlying Driver_
 - **Caching** &nbsp; _Use any Storage supported_
 - **Sessions** &nbsp; _Use any Storage supported_
 - **Response Caching** &nbsp; _Use any Storage supported_
-- **Logging** &nbsp; _[MongoDB](https://github.com/derdesign/protos//blob/master/middleware/logger/transport-mongodb.js), 
-[Redis](https://github.com/derdesign/protos//blob/master/middleware/logger/transport-redis.js) (additionally 
-[File](https://github.com/derdesign/protos//blob/master/middleware/logger/transport-file.js), [Console](https://github.com/derdesign/protos//blob/master/middleware/logger/transport-console.js) via Middleware)_
+- **Logging** &nbsp; _[MongoDB](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-mongodb.js), 
+[Redis](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js) (additionally 
+[File](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js), [Console](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js) via Middleware)_
 
 ## Middleware
 
