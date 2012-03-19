@@ -878,12 +878,12 @@ Actions: [create, server, deploy, fetch, inspector] [controller, helper, model, 
 
 cli.help.after = "\n\
 Example:\n\n\
- protos create myapp --css bootstrap --js jquery backbone --model users --controller admin user\n\n\
+ $ protos create myapp --css bootstrap --js jquery backbone --model users --controller admin user\n\n\
  Generate an application skeleton in the current directory, with the assets,\n\
  models and controllers specified in the command.\n\n\
- protos server myapp --fork --logpath server.log\n\n\
+ $ protos server myapp --fork --logpath server.log\n\n\
  Starts the application's server and forks a new node process.\n\n\
- For documentation, refer to http://protos.org\n\n\
+ For documentation, refer to http://protos.der-design.com\n\n\
  protos@" + Protos.version + " " + Protos.path;
 
 cli.parse();
