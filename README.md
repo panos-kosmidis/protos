@@ -1,4 +1,4 @@
-# Protos [![Build Status](https://secure.travis-ci.org/protos/protos.png)](http://travis-ci.org/protos/protos)
+# Protos [![Build Status](https://secure.travis-ci.org/derdesign/protos.png)](http://travis-ci.org/derdesign/protos)
 
 Protos is an open source Web Application Development framework, focused on high performance, integration, ease of 
 deployment, maintainability and security.
@@ -64,17 +64,17 @@ means you can use a database backend for development, and another for production
 
 Here's the Development Stack the framework provides, in a nutshell:
 
-- **Drivers** &nbsp; _[MongoDB](https://github.com/protos/protos/blob/master/drivers/mongodb.js), [MySQL](https://github.com/protos/protos/blob/master/drivers/mysql.js)_
-- **Storages** &nbsp; _[MongoDB](https://github.com/protos/protos/blob/master/storages/mongodb.js), [Redis](https://github.com/protos/protos/blob/master/storages/redis.js)_
+- **Drivers** &nbsp; _[MongoDB](https://github.com/derdesign/protos//blob/master/drivers/mongodb.js), [MySQL](https://github.com/derdesign/protos//blob/master/drivers/mysql.js)_
+- **Storages** &nbsp; _[MongoDB](https://github.com/derdesign/protos//blob/master/storages/mongodb.js), [Redis](https://github.com/derdesign/protos//blob/master/storages/redis.js)_
 - **Models** &nbsp; _Use any Driver supported_
 - **Query Cache (Drivers)** &nbsp; _Use any Storage supported_
 - **Query Cache (Models)** &nbsp; _Handled by underlying Driver_
 - **Caching** &nbsp; _Use any Storage supported_
 - **Sessions** &nbsp; _Use any Storage supported_
 - **Response Caching** &nbsp; _Use any Storage supported_
-- **Logging** &nbsp; _[MongoDB](https://github.com/protos/protos/blob/master/middleware/logger/transport-mongodb.js), 
-[Redis](https://github.com/protos/protos/blob/master/middleware/logger/transport-redis.js) (additionally 
-[File](https://github.com/protos/protos/blob/master/middleware/logger/transport-file.js), [Console](https://github.com/protos/protos/blob/master/middleware/logger/transport-console.js) via Middleware)_
+- **Logging** &nbsp; _[MongoDB](https://github.com/derdesign/protos//blob/master/middleware/logger/transport-mongodb.js), 
+[Redis](https://github.com/derdesign/protos//blob/master/middleware/logger/transport-redis.js) (additionally 
+[File](https://github.com/derdesign/protos//blob/master/middleware/logger/transport-file.js), [Console](https://github.com/derdesign/protos//blob/master/middleware/logger/transport-console.js) via Middleware)_
 
 ## Middleware
 
@@ -152,7 +152,7 @@ THE SOFTWARE.
 
 ## Resources
 
-- Visit the official [protos.org](http://protos.org) website.
+- Visit the [official website](http://protos.der-design.com).
 - Follow [@derdesign](http://twitter.com/derdesign) on Twitter for updates.
-- Report issues on the [github issues](https://github.com/protos/protos/issues) page.
+- Report issues on the [github issues](https://github.com/derdesign/protos/issues) page.
 
