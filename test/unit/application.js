@@ -26,6 +26,8 @@ vows.describe('lib/application.js').addBatch({
     topic: function() {
       
       var promise = new EventEmitter();
+
+      app.libExtensions(); // Load lib extensions
       
       app.once('init', function() {
         
@@ -75,6 +77,11 @@ vows.describe('lib/application.js').addBatch({
       assert.instanceOf(app.engines.eco, protos.lib.engine);
     },
     
+    "Properly loads extensions in lib/": function() {
+      assert.equal(app.hello, 99);
+      assert.equal(protos.hello, 101);
+    },
+    
     "Properly registers view partials": function() {
       var partials = app.views.partials;
       assert.isFunction(partials.layout_partial);
@@ -84,7 +91,7 @@ vows.describe('lib/application.js').addBatch({
       assert.isFunction(partials.main_subdir_partial);
       assert.equal(partials.main_subdir_partial.engine, 'Jade');
     }
-
+    
   }
 
 }).addBatch({

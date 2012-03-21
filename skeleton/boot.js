@@ -22,6 +22,11 @@ Protos.bootstrap(__dirname, {
   // Application events
   events: {
     init: function(app) {
+      
+      // Load extensions in lib/
+      app.libExtensions();
+      
+      // Load middleware
       app.use('logger');
       app.use('markdown');
       app.use('body_parser');
