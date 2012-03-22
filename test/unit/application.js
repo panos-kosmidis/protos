@@ -85,7 +85,7 @@ vows.describe('lib/application.js').addBatch({
     "Properly registers view partials": function() {
       var partials = app.views.partials;
       assert.isFunction(partials.layout_partial);
-      assert.equal(partials.layout_partial.engine, 'Liquor');
+      assert.equal(partials.layout_partial.engine, 'EJS');
       assert.isFunction(partials.layout_dir_partial);
       assert.equal(partials.layout_dir_partial.engine, 'Kernel');
       assert.isFunction(partials.main_subdir_partial);

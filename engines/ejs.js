@@ -11,7 +11,7 @@ function EJS(app) {
   
   var opts = (app.config.engines && app.config.engines.ejs) || {};
   
-  this.options = protos.extend({open: '<%', close: '%>'}, opts);
+  this.options = protos.extend({open: '<?', close: '?>'}, opts);
   
   this.module = ejs;
   this.multiPart = true;

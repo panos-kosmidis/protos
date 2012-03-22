@@ -35,12 +35,12 @@ module.exports = {
   },
   
   engines: {
-    liquor: {pretty: true}
+    ejs: {open: '<?', close: '?>'}
   },
   
   viewExtensions: {
-    html: 'liquor',
-    mustache: 'handlebars'
+    html: 'ejs',
+    mustache: 'hogan'
   }
 
 }

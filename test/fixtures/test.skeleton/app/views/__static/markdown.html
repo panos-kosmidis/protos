@@ -1,10 +1,11 @@
-`
+<?
   var str = '<script type="text/javascript" src="myscript.js">window.hackme = true;</script>';
-`
+?>
+
 Escaped markdown code:
 
-<p id="sanitized">#{$markdown(str)}</p>
+<p id="sanitized"><?- $markdown(str) ?></p>
 
 Unescaped markdown code:
 
-<p id="unsanitized">#{$markdown(str, 'insecure')}</p>
+<p id="unsanitized"><?- $markdown(str, 'insecure') ?></p>

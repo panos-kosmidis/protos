@@ -88,7 +88,7 @@ function compileSrc(file, compiler) {
     if (err) app.log(err);
     outFile = file.replace(extRegex, '.' + config.compileExts[ext]);
     fs.writeFileSync(outFile, code, 'utf8');
-    app.debug(util.format('Asset Manager: Compiled %s (%s)', app.relPath(outFile), ext));
+    app.debug('Asset Manager: Compiled %s (%s)', app.relPath(outFile), ext);
   });
 }
 
