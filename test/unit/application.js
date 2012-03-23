@@ -77,12 +77,20 @@ vows.describe('lib/application.js').addBatch({
       assert.instanceOf(app.engines.eco, protos.lib.engine);
     },
     
+    'Properly registers inflection shortcut': function() {
+      assert.deepEqual(app.inflect.constructor, protos.inflect.constructor);
+    },
+    
+    'Properly registers helper aliases': function() {
+      assert.deepEqual(app.mainHelper.constructor, app.helpers.main.constructor);
+    },
+    
     "Properly loads extensions in lib/": function() {
       assert.equal(app.hello, 99);
       assert.equal(protos.hello, 101);
     },
     
-    "Properly registers view partials": function() {
+    'Properly registers view partials': function() {
       var partials = app.views.partials;
       assert.isFunction(partials.layout_partial);
       assert.equal(partials.layout_partial.engine, 'EJS');
