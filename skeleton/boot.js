@@ -23,15 +23,16 @@ Protos.bootstrap(__dirname, {
   events: {
     init: function(app) {
       
-      // Load extensions in lib/
-      app.libExtensions();
-      
       // Load middleware
       app.use('logger');
       app.use('markdown');
       app.use('body_parser');
       app.use('cookie_parser');
       app.use('static_server');
+      
+      // Load extensions in lib/
+      app.libExtensions();
+
     }
   }
   
