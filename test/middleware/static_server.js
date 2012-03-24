@@ -131,7 +131,7 @@ vows.describe('Static File Server (middleware)').addBatch({
     'Responds with 206 for Partial Content requests': function(results) {
       var r1 = results[11], // HTTP/1.1 206 Partial Content
           r2 = results[12]; // HTTP/1.1 416 Requested Range Not Satisfiable
-      assert.equal(r1[0], 'fghij');
+      assert.equal(r1[0], 'fghijk');
       assert.equal(r1[1].status, '206 Partial Content');
       assert.equal(r2[0], '');
       assert.equal(r2[1].status, '416 Requested Range Not Satisfiable');

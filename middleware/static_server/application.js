@@ -128,10 +128,11 @@ Application.prototype._serveStaticFile = function(path, req, res) {
             streamArgs.push({start: start, end: end});
             len = end - start + 1;
             res.statusCode = 206; // HTTP/1.1 206 Partial Content
-            headers['Content-Length'] = (end - start);
+            headers['Content-Length'] = (end - start + 1);
             headers['Content-Range'] =  "bytes " + start + "-" + end + "/" + stats.size;
           } else {
             res.statusCode = 416; // HTTP/1.1 416 Requested Range Not Satisfiable
+            delete headers['Content-Length'];
             headers.Connection = 'close';
             res.sendHeaders(headers);
             res.end('');
