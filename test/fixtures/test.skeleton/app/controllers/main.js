@@ -121,6 +121,14 @@ function MainController(app) {
   // Route chain accepting multiple methods + flattens callbacks
   get('/route-chain-b', cb1, [[cb2], [cb3]], 'post', 'put');
   
+  /* Request Misc */
+  
+  get('/request/title', {msg: 'alpha_dashes'}, function(req, res) {
+    var msg = req.queryData.msg;
+    if (msg) req.setPageTitle(msg);
+    res.render('page-title', true);
+  });
+  
 }
 
 module.exports = MainController;
