@@ -7,23 +7,6 @@ app.logging = false;
 
 vows.describe('Session (middleware) » Unit Tests').addBatch({
   
-  'Session::md5': {
-    
-    topic: function() {
-      // Enable session
-      app.use('cookie_parser');
-      app.use('session', {storage: 'redis', salt: 'abc1234'});
-      return true;
-    },
-
-    'Returns valid md5 hashes': function() {
-      // MD5 ("hello") = 5d41402abc4b2a76b9719d911017c592
-      var hash = '5d41402abc4b2a76b9719d911017c592';
-      assert.equal(app.session.md5('hello'), hash);
-    }
-
-  },
-  
   'Session::createHash': {
     
     'Returns valid {sessId} for guest sessions': function() {

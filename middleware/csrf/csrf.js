@@ -32,8 +32,7 @@
   
  */
  
-var app = protos.app,
-    md5 = app.session.md5;
+var app = protos.app;
 
 require('./request.js');
  
@@ -106,7 +105,7 @@ Csrf.prototype.getToken = function(req, token) {
  */
 
 Csrf.prototype.createHash = function() {
-  return md5(Math.random().toString());
+  return app.md5(Math.random().toString());
 }
 
 module.exports = Csrf;

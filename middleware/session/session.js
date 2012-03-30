@@ -24,7 +24,6 @@ var app = protos.app;
 
 var _ = require('underscore'),
     util = require('util'),
-    crypto = require('crypto'),
     node_uuid = require('node-uuid'),
     slice = Array.prototype.slice;
 
@@ -90,7 +89,7 @@ Session.prototype.create = function(req, res, data, persistent, callback) {
   }
   app.debug( guest ? 'Creating guest session' : 'Creating session' );
   userAgent = req.headers['user-agent'] || this.config.defaultUserAgent;
-  userAgentMd5 = this.md5(userAgent);
+  userAgentMd5 = app.md5(userAgent);
   hashes = this.createHash(userAgent, guest);
 
   if (guest) {
@@ -283,7 +282,7 @@ Request Headers: \n%s\n", req.socket.remoteAddress, sessId, sessHash, req.method
           } else { // Else (session hash not detected)
 
             userAgent = req.headers['user-agent'] || self.config.defaultUserAgent;
-            ua_md5 = self.md5(userAgent);
+            ua_md5 = app.md5(userAgent);
 
             if (ua_md5 == data.ua_md5) { // If user agent's md5 matches the one in session
               hashes = self.createHash(userAgent);
@@ -391,19 +390,7 @@ Session.prototype.createGuestSession = function(req, res, data, callback) {
 
 Session.prototype.getFingerprint = function(req, sessId) {
   var userAgent = (req.headers['user-agent'] || this.config.defaultUserAgent);
-  return this.md5(userAgent + sessId + this.config.salt);
-}
-
-/**
-  Generates an MD5 hash of a given string
-
-  @param {string} string
-  @returns {string} md5 hash
-  @private
-*/
-
-Session.prototype.md5 = function(string) {
-  return crypto.createHash('md5').update(string).digest('hex');
+  return app.md5(userAgent + sessId + this.config.salt);
 }
 
 /**
@@ -416,11 +403,11 @@ Session.prototype.md5 = function(string) {
 */
 
 Session.prototype.createHash = function(userAgent, guest) {
-    var sessId = this.md5(node_uuid());
+    var sessId = app.md5(node_uuid());
     if (guest) {
       return {sessId: sessId};
     } else {
-      var fingerprint = this.md5(userAgent + sessId + this.config.salt);
+      var fingerprint = app.md5(userAgent + sessId + this.config.salt);
       return {sessId: sessId, fingerprint: fingerprint};
     }
 }

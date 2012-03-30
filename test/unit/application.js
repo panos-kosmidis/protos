@@ -356,6 +356,47 @@ vows.describe('lib/application.js').addBatch({
   }
 
 }).addBatch({
+  
+  'Application::createHash': {
+    
+    topic: function() {
+
+      var hashes = {
+        md5: app.createHash('md5', "Hello World"),                        // Default md5 hash
+        whirlpool: app.createHash('whirlpool:hex', "Hello World"),        // Whirlpool hash, digested as hex (default)
+        sha256_utf8: app.createHash('sha256:base64', "Café del Mar", 'utf8'),  // sha256 hash, digested as base64, utf8 input encoding
+        sha256_ascii: app.createHash('sha256:base64', "Café del Mar", 'ascii')  // sha256 hash, digested as base64, ascii input encoding
+      };
+      
+      return hashes;
+
+    },
+    
+    "Calculates Hashes w/ multiple algorithms and input/digest encodings": function(hashes) {
+      assert.strictEqual(hashes.md5, 'b10a8db164e0754105b7a99be72e3fe5');
+      assert.strictEqual(hashes.whirlpool, 'b77b284bffc952efee36a94397a0ce11e8624668e33b7020a80eb2fb21096f0a08518c50d023de12b010c2e30b93b5837dc471d899608d786fe9a6b60112ea4a');
+      assert.strictEqual(hashes.sha256_utf8, 'x5FUEkXkvqlBMk5j6L6drmhu/hRRWIOjosUEEp/hTMU=');
+      assert.strictEqual(hashes.sha256_ascii, 'gPuwtRDXGV5hpZ+WbxIlOYKMVhPCztI1KTgKqE+vPPs=');
+    },
+    
+  }
+  
+}).addBatch({
+  
+  'Application::md5': {
+    
+    topic: function() {
+      var md5 = app.md5('Hello World');
+      return md5;
+    },
+    
+    "Returns valid md5 hashes (hex)": function(md5) {
+      assert.equal(md5, 'b10a8db164e0754105b7a99be72e3fe5');
+    }
+
+  }
+  
+}).addBatch({
 
   'Application::curl': {
 
