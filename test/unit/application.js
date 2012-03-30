@@ -363,7 +363,7 @@ vows.describe('lib/application.js').addBatch({
 
       var hashes = {
         md5: app.createHash('md5', "Hello World"),                              // Default md5 hash
-        sha512: app.createHash('sha512:hex', "Hello World"),                    // Whirlpool hash, digested as hex (default)
+        sha512: app.createHash('sha512:hex', "Hello World"),                    // sha512 hash, digested as hex (default)
         sha256_utf8: app.createHash('sha256:base64', "Café del Mar", 'utf8'),   // sha256 hash, digested as base64, utf8 input encoding
         sha256_ascii: app.createHash('sha256:base64', "Café del Mar", 'ascii')  // sha256 hash, digested as base64, ascii input encoding
       };
