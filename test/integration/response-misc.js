@@ -24,7 +24,7 @@ vows.describe('Response Misc').addBatch({
       app.config.rawViews = false;
       
       multi.clientRequest('/');
-      multi.curl('-i -G -d "x-custom-header=1&x-another-header=2&x-some-header=3" /setheaders');
+      multi.curl('-i -G -d "X-Custom-Header=1&X-Another-Header=2&x-lowercase-header=3" /setheaders');
       
       multi.exec(function(err, results) {
         promise.emit('success', err || results);
@@ -49,11 +49,17 @@ vows.describe('Response Misc').addBatch({
       assert.equal(headers.status, '200 OK');
     },
     
+    'Default Application headers can be overridden': function(results) {
+      var headers = results[1].trim().split(/\r\n/);
+      assert.isTrue(headers.indexOf('Content-Type: text/plain') >= 0);
+      assert.isTrue(headers.indexOf('X-Powered-By: {PROTOS}') >= 0);
+    },
+    
     'OutgoingMessage::setHeaders works properly': function(results) {
       var headers = results[1].trim().split(/\r\n/);
-      assert.isTrue(headers.indexOf('x-custom-header: 1') >= 0);
-      assert.isTrue(headers.indexOf('x-another-header: 2') >= 0);
-      assert.isTrue(headers.indexOf('x-some-header: 3') >= 0);
+      assert.isTrue(headers.indexOf('X-Custom-Header: 1') >= 0);
+      assert.isTrue(headers.indexOf('X-Another-Header: 2') >= 0);
+      assert.isTrue(headers.indexOf('x-lowercase-header: 3') >= 0);
     }
     
   }

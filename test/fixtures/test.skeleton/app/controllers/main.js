@@ -56,6 +56,11 @@ function MainController(app) {
   /* Header Tests */
   
   get('/setheaders', function(req, res, params) {
+    
+    // Override Application's default headers (found in app.config.headers) on app/config/base.js
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('X-Powered-By', '{PROTOS}');
+    
     res.setHeaders(req.queryData);
     res.sendHeaders();
     res.end('');
