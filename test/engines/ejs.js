@@ -4,7 +4,9 @@ var app = require('../fixtures/bootstrap');
 var engine = 'ejs';
 
 app.addFilter(engine + '_template', function(data) {
-  data = app.addEnginePartials(engine, data, '<%- main_%s(locals) %>');
+  if (data.indexOf('[skip]') === -1) {
+    data = app.addEnginePartials(engine, data, '<?- main_%s(locals) ?>');
+  }
   return data;
 });
 
