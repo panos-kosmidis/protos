@@ -23,14 +23,14 @@ OutgoingMessage.prototype.setCookie = function(name, val, opts) {
 
   if (opts == null) opts = {};
   pairs = [name + "=" + (encodeURIComponent(val))];
-  removeCookie = protos.util.isTypeOf(opts.expires, 'number') && opts.expires < 0;
+  removeCookie = (typeof opts.expires == 'number') && opts.expires < 0;
   if (opts.domain == null) opts.domain = app.domain;
   if (opts.domain == 'localhost') opts.domain = null;
   if (opts.path == null) opts.path = '/';
 
-  opts.expires = (protos.util.isTypeOf(opts.expires, 'number')
+  opts.expires = (typeof opts.expires == 'number')
   ? new Date(Date.now() + (opts.expires*1000))
-  : null);
+  : null;
 
   if (opts.domain != null) pairs.push("domain=" + opts.domain);
   pairs.push("path=" + opts.path);

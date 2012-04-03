@@ -41,15 +41,6 @@ vows.describe('lib/utility.js').addBatch({
     
   },
   
-  'Utility::isTypeOf': {
-    
-    'Returns valid booleans': function() {
-      assert.isTrue(protos.util.isTypeOf(99, 'number'));
-      assert.isFalse(protos.util.isTypeOf(99, 'function'));
-    }
-    
-  },
-  
   'Utility::parseRange': {
     
     'Parses range strings': function() {
