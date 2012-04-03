@@ -66,6 +66,29 @@ vows.describe('Response Misc').addBatch({
   
 }).addBatch({
   
+  'Bad Requests': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      app.clientRequest({
+        path: 'http://google.com',
+        method: 'GET'
+      }, function(err, buffer, headers) {
+        promise.emit('success', [err, buffer, headers])
+      });
+      
+      return promise;
+    },
+    
+    'Responds with HTTP/400 For malformed requests': function(results) {
+      assert.deepEqual(results, [ null, '', { connection: 'close', 'transfer-encoding': 'chunked' } ]);
+    }
+    
+  }
+  
+}).addBatch({
+  
   'Cache Control': {
     
     topic: function() {
