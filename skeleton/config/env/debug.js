@@ -3,7 +3,9 @@
 
 function Debug(app) {
   
-  // Note: The node debugger is automatically enabled on the debug environment
+  // Enable node's debug mode. Access the node inspector
+  // by pointing your browser to http://localhost:3000
+  protos.enableDebugger(); 
   
 }
 

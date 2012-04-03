@@ -3,10 +3,10 @@
 
 function Production(app) {
 
-  // Enable view caching in production
+  // Enable view caching
   app.viewCaching = true;
   
-  // Remove port number when running in production
+  // Remove port number
   app.use('production_url');
 
 }
