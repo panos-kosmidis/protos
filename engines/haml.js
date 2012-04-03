@@ -1,7 +1,11 @@
 
 /* Haml */
 
-var haml = require('hamljs'),
+// require('hamljs') is broken
+// https://github.com/isaacs/npm/issues/1903
+// https://github.com/visionmedia/haml.js/issues/41
+
+var haml = protos.require('./node_modules/hamljs/lib/haml.js'),
     util = require('util');
     
 // https://github.com/visionmedia/haml.js
