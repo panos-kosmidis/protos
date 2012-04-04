@@ -3,6 +3,7 @@ var app =require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
     util = require('util'),
+    http = require('http'),
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
 
@@ -470,14 +471,19 @@ vows.describe('lib/application.js').addBatch({
           r2 = results[1];
       assert.equal(r1[0], 'SUCCESS');
       assert.equal(r1[1].status, '200 OK');
+      assert.equal(r1[2], 200);
+      assert.isTrue(r1[3] instanceof http.IncomingMessage);
       assert.equal(r2[0], 'BAD REQUEST');
       assert.equal(r2[1].status, '400 Bad Request');
+      assert.equal(r2[2], 400);
+      assert.isTrue(r2[3] instanceof http.IncomingMessage);
     },
 
     'Allows sending custom headers': function(results) {
       var r = results[2];
       assert.equal(r[0], 'SUCCESS');
       assert.equal(r[1].status, '200 OK');
+      assert.equal(r[2], 200);
     }
 
   }
