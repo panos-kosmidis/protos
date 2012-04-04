@@ -130,6 +130,7 @@ vows.describe('Response Misc').addBatch({
       var promise = new EventEmitter();
       
       multi.curl('-i /redirect/test');
+      multi.curl('-i /redirect/test?statusCode=301');
       multi.curl('-i /redirect/home');
       multi.curl('-i /redirect/login');
       
@@ -144,17 +145,23 @@ vows.describe('Response Misc').addBatch({
     },
     
     'OutgoingMessage::redirect works properly': function(results) {
-      var r = results[0];
-      assert.isTrue(r.indexOf('Location: ' + app.url('/test')) >= 0);
+      var r1 = results[0],
+          r2 = results[1];
+      assert.isTrue(r1.indexOf('HTTP/1.1 302 Moved Temporarily') >= 0);
+      assert.isTrue(r1.indexOf('Location: ' + app.url('/test')) >= 0);
+      assert.isTrue(r2.indexOf('HTTP/1.1 301 Moved Permanently') >= 0);
+      assert.isTrue(r2.indexOf('Location: ' + app.url('/test')) >= 0);
     },
     
     'Application::home redirects properly': function(results) {
-      var r = results[1];
+      var r = results[2];
+      assert.isTrue(r.indexOf('HTTP/1.1 302 Moved Temporarily') >= 0);
       assert.isTrue(r.indexOf('Location: ' + app.url('/')) >= 0);
     },
     
     'Application::login redirects properly': function(results) {
-      var r = results[2];
+      var r = results[3];
+      assert.isTrue(r.indexOf('HTTP/1.1 302 Moved Temporarily') >= 0);
       assert.isTrue(r.indexOf('Location: ' + app.url(app.loginUrl)) >= 0);
     }
     

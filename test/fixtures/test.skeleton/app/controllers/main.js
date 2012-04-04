@@ -103,7 +103,7 @@ function MainController(app) {
   get('/redirect/:context', {context: /^(test|home|login)$/}, function(req, res, params) {
     switch (params.context) {
       case 'test':
-        res.redirect('/test');
+        res.redirect('/test', req.queryData.statusCode);
         break;
       case 'home':
         app.home(res);
