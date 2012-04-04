@@ -74,15 +74,15 @@ vows.describe('Response Misc').addBatch({
       app.clientRequest({
         path: 'http://google.com',
         method: 'GET'
-      }, function(err, buffer, headers) {
-        promise.emit('success', [err, buffer, headers]);
+      }, function(err, buffer, headers, statusCode, response) {
+        promise.emit('success', [err, buffer, headers, statusCode]);
       });
       
       return promise;
     },
     
     'Ignores malformed HTTP requests': function(results) {
-      assert.deepEqual(results, [ null, '', { connection: 'close', status: '400 Bad Request', 'transfer-encoding': 'chunked'} ]);
+      assert.deepEqual(results, [ null, '', { connection: 'close', status: '400 Bad Request', 'transfer-encoding': 'chunked'}, 400 ]);
     }
     
   }
