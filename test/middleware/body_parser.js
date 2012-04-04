@@ -22,7 +22,7 @@ function successfulUpload(r) {
 
 function uploadExceedsLimit(r) {
   assert.isTrue(r.indexOf('HTTP/1.1 100 Continue') >= 0);
-  assert.isTrue(r.indexOf('HTTP/1.1 400 Bad Request') >= 0);
+  assert.isTrue(r.indexOf('HTTP/1.1 413 Request Entity Too Large') >= 0);
   assert.isTrue(r.indexOf('Upload limit exceeded: 0.125 MB') >= 0);
 }
 
