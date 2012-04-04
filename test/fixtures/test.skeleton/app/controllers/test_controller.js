@@ -120,7 +120,7 @@ function TestController(app) {
         res.sendHeaders();
         res.end(inspect(f));
         files.removeAll();
-      } else app.badRequest(res);
+      } else res.httpMessage(400);
      });
   }, 'put'); // Also register for PUT requests
 }

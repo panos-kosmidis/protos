@@ -56,6 +56,6 @@ Controller.prototype.getRequestData = function(req, token, callback) {
     }
     
   } else {
-    app.badRequest(res);
+    res.httpMessage(400);
   }
 }
