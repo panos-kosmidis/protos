@@ -105,7 +105,7 @@ vows.describe('View Rendering').addBatch({
               break;
             case '/raw-http-message':
               res.sendHeaders();
-              res.rawHttpMessage('{RAW MESSAGE}');
+              res.httpMessage('{RAW MESSAGE}');
               break;
           }
         });
@@ -151,7 +151,7 @@ vows.describe('View Rendering').addBatch({
         assert.equal(hdr.status, '500 Internal Server Error');
       },
       
-      'Application::rawHttpMessage works properly': function(results) {
+      'Application::httpMessage works properly': function(results) {
         var res = results[4], buf = res[0].trim(), hdr = res[1];
         assert.isTrue(buf.indexOf('<!DOCTYPE html>') === -1);
         assert.equal(buf, '<p>{RAW MESSAGE}</p>');
@@ -211,7 +211,7 @@ vows.describe('View Rendering').addBatch({
       assert.equal(hdr.status, '500 Internal Server Error');
     },
     
-    'Application::rawHttpMessage works properly': function(results) {
+    'Application::httpMessage works properly': function(results) {
       var res = results[4], buf = res[0].trim(), hdr = res[1];
       assert.isTrue(buf.indexOf('<!DOCTYPE html>') >= 0);
       assert.isTrue(buf.indexOf('<p>{RAW MESSAGE}</p>') >= 0);

@@ -78,7 +78,7 @@ app.on('csrf_check', function(req, token, fields) {
   
   if (!isValid) {
     req.stopRoute(); // In plain english: "I'll handle the request from here..."
-    req.response.rawHttpMessage(this.csrf.config.onFailure);
+    req.response.httpMessage(this.csrf.config.onFailure);
   }
 });
 

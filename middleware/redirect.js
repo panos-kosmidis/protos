@@ -22,7 +22,7 @@ function Redirect(url, middleware) {
       req.stopRoute();
       res.setHeaders({'Connection': 'close'}); // Make sure connection is closed
       if (req.method == 'GET' || req.method == 'HEAD') res.redirect(url);
-      else res.rawHttpMessage({statusCode: 400, raw: true});
+      else res.httpMessage({statusCode: 400, raw: true});
     });
     
     app.on('startup_message', function() {

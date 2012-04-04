@@ -51,7 +51,7 @@ IncomingMessage.prototype.exceededUploadLimit = function() {
       app.emit('upload_limit_exceeded', this, res);
       if (this.__stopRoute === true) return true;
       res.setHeaders({ Connection: 'close' });
-      res.rawHttpMessage({
+      res.httpMessage({
         statusCode: 400,
         message: "Upload limit exceeded: " + (uploadSize / (1024 * 1024)) + " MB",
         raw: true

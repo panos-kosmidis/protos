@@ -31,7 +31,7 @@ function SessionController(app) {
     app.session.config.typecastVars.push(params.value); // automatically typecast
     req.session[params.varname] = params.value;
     res.sendHeaders();
-    res.rawHttpMessage({
+    res.httpMessage({
       message: '{OK}',
       raw: true
     });
