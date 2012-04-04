@@ -114,6 +114,14 @@ function MainController(app) {
     }
   });
   
+  /* Detect Ajax */
+  
+  get('/detect-ajax', function(req, res) {
+    if (req.isAjax) res.setHeader('X-Ajax-Request', 'true');
+    res.sendHeaders();
+    res.end('');
+  });
+  
   /* Route Functions chaining */
   
   var cb1 = function(req, res, params) { req.counter = 24; req.next(); }
