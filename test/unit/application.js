@@ -488,4 +488,25 @@ vows.describe('lib/application.js').addBatch({
 
   }
 
+}).addBatch({
+  
+  'HEAD Requests': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      
+      app.curl('-I /', function(err, buffer) {
+        promise.emit('success', err || buffer);
+      });
+      
+      return promise;
+    },
+    
+    "Responds properly to HEAD requests": function(buffer) {
+      assert.isTrue(buffer.indexOf('HTTP/1.1 301 Moved Permanently') >= 0);
+      assert.isTrue(buffer.indexOf('Location: ' + app.url('/')) >= 0);
+    }
+    
+  }
+  
 }).export(module);
