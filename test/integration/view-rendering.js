@@ -98,12 +98,7 @@ vows.describe('View Rendering').addBatch({
               res.sendHeaders();
               app.serverError(res);
               break;
-            case '/raw-server-error':
-              res.statusCode = 500;
-              res.sendHeaders();
-              app.rawServerError(res, '{HTTP/500 ERROR}');
-              break;
-            case '/raw-http-message':
+            case '/http-message':
               res.sendHeaders();
               res.httpMessage('{RAW MESSAGE}');
               break;
@@ -113,8 +108,7 @@ vows.describe('View Rendering').addBatch({
         multi.clientRequest('/bad-request');
         multi.clientRequest('/not-found');
         multi.clientRequest('/server-error');
-        multi.clientRequest('/raw-server-error');
-        multi.clientRequest('/raw-http-message');
+        multi.clientRequest('/http-message');
 
         multi.exec(function(err, results) {
           promise.emit('success', err || results);
@@ -137,15 +131,8 @@ vows.describe('View Rendering').addBatch({
         assert.equal(hdr.status, '500 Internal Server Error');
       },
 
-      'Application::rawServerError works properly': function(results) {
-        var res = results[3], buf = res[0].trim(), hdr = res[1];
-        assert.isTrue(buf.indexOf('<!DOCTYPE html>') === -1);
-        assert.equal(buf.trim(), '<p>{HTTP/500 ERROR}</p>');
-        assert.equal(hdr.status, '500 Internal Server Error');
-      },
-
       'Application::httpMessage works properly': function(results) {
-        var res = results[4], buf = res[0].trim(), hdr = res[1];
+        var res = results[3], buf = res[0].trim(), hdr = res[1];
         assert.isTrue(buf.indexOf('<!DOCTYPE html>') === -1);
         assert.equal(buf, '<p>{RAW MESSAGE}</p>');
         assert.equal(hdr.status, '200 OK');
@@ -190,15 +177,8 @@ vows.describe('View Rendering').addBatch({
       assert.equal(hdr.status, '500 Internal Server Error');
     },
 
-    'Application::rawServerError works properly': function(results) {
-      var res = results[3], buf = res[0].trim(), hdr = res[1];
-      assert.isTrue(buf.indexOf('<!DOCTYPE html>') >= 0);
-      assert.isTrue(buf.indexOf('<p>{HTTP/500 ERROR}</p>') >= 0);
-      assert.equal(hdr.status, '500 Internal Server Error');
-    },
-
     'Application::httpMessage works properly': function(results) {
-      var res = results[4], buf = res[0].trim(), hdr = res[1];
+      var res = results[3], buf = res[0].trim(), hdr = res[1];
       assert.isTrue(buf.indexOf('<!DOCTYPE html>') >= 0);
       assert.isTrue(buf.indexOf('<p>{RAW MESSAGE}</p>') >= 0);
       assert.equal(hdr.status, '200 OK');
