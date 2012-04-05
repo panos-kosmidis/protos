@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en-US" id="top">
+<head>
+<title>Protos Web Framework</title>
+<meta charset="utf-8" />
+
+<meta name='description' content='Web Application Framework for node.js'/>
+<meta name='keywords' content='mvc, web, application, framework, node, nodejs, node.js, js, javascript, restful, middleware' />
+
+<link rel="stylesheet" type="text/css" href="css/client.min.css" />
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" />
+</head>
+<body id="features">
+  
+<div id="header" class="fw">
+  <div class="wrap">
+    <a id="logo" href="index.html"><img alt="Protos" width="325" height="75" src="images/logo.png" /></a>
+    <span>Web Application Framework for <a href="http://nodejs.org">node.js</a></span>
+  </div><!-- .wrap -->
+</div><!-- header -->
+
+<div id="nav-wrap">
+  <ul id="nav">
+    <li class="active"><a href="index.html">Features</a></li>
+    <li><a href="guide.html">Guide</a></li>
+    <li><a href="middleware.html">Middleware</a></li>
+    <li><a href="https://groups.google.com/group/protos-web-framework">Support</a></li>
+    <li><a href="https://github.com/derdesign/protos">Github</a></li>
+  </ul><!-- nav -->
+</div><!-- nav-wrap -->
+
+<span id="expander"></span>
+<a id="top-btn" href="#top">&uarr;</a>
+<div id="toc-sidebar"></div>
+
+<a id="fork-ribbon" href="http://github.com/derdesign/protos"><img src="images/fork-ribbon.png" alt="Fork me on GitHub"></a>
+
+<div id="content"><div class="ovf">
+
+<p>Protos is an open source Web Application Development framework, focused on high performance, integration, ease of
+deployment, maintainability and security.</p>
+
+<p>It aims to integrate several open source packages and combine their power &amp; functionality, to bring a common set of
+utilities and functionality to all applications, reducing their dependencies.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Powerful Routing</li>
+<li>Controller Authentication &amp; Route Filters</li>
+<li>RESTful Methods support</li>
+<li>Environment based Configuration</li>
+<li>Fast Configuration with bootstrap file</li>
+<li>Multi Core Cluster support</li>
+<li>Easy Deployment with JSON or Command line</li>
+<li>MongoDB, MySQL &amp; Redis Development Stack</li>
+<li>Application Helpers</li>
+<li>Application Models supporting ORM &amp; Relationships</li>
+<li>Database Drivers &amp; Storages</li>
+<li>Query Caching in Drivers by using Storages</li>
+<li>Built-in Support for multiple Template Engines</li>
+<li>View Partials Support</li>
+<li>JSON Responses Support</li>
+<li>Custom &amp; Dynamic Headers</li>
+<li>Built-in &amp; Adjustable Cache-Control settings</li>
+<li>Built-in Proxy Server for Applications</li>
+<li>Built-in Node Inspector for debugging</li>
+<li>Executable used to create/manage/deploy applications &amp; servers</li>
+<li>Full Suite of Functional tests</li>
+<li>Organized Application directory structure</li>
+</ul>
+
+
+<h2>Development Stack</h2>
+
+<p>Protos provides a set of APIs that allow the framework to be extended in all sorts of ways. Use it either to contribute
+new functionality &amp; components to it, or to enhance it with the needs of your team/organization.</p>
+
+<h3>Drivers</h3>
+
+<p>You have at your disposal the <em>Database Drivers</em>, which provide a common set of methods to operate the backend database,
+implementing the <em>Models API</em>, which allows the Driver to connect with <em>Models</em>.</p>
+
+<h3>Storages</h3>
+
+<p><em>Storages</em> are used for caching, session data and anything you can think of. These abstract databases with fast read/write
+operations, such as MongoDB and Redis. Storages are also used as the <em>caching layer</em> for Drivers on the <em>Query Cache</em> functionality.</p>
+
+<h3>Models</h3>
+
+<p>Models use Drivers under the hood to handle the low level manipulation of their data. They provide automatic validation of data.
+You can set your own validation rules with ease on a per-model basis.</p>
+
+<p>The Models can relate with eaach other by using Relationships. These are used to connect models in specific ways, storing only the
+references to their related models. You can then retrieve the related models either individually, or in groups.</p>
+
+<p>Each relationship add a set predefined methods using a common convention, that help you maniuplate the relationships between
+the model objects you&rsquo;re working with.</p>
+
+<p>Model (and Relationships) database-agnostic, you can change the underlying database driver used by the model, and no changes are required. This
+means you can use a database backend for development, and another for production (just to give an example). No changes needed on deployment.</p>
+
+<h3>Overview</h3>
+
+<p>Here&rsquo;s the Development Stack the framework provides, in a nutshell:</p>
+
+<ul>
+<li><strong>Drivers</strong> &nbsp; <em><a href="https://github.com/derdesign/protos/blob/master/drivers/mongodb.js">MongoDB</a>, <a href="https://github.com/derdesign/protos/blob/master/drivers/mysql.js">MySQL</a></em></li>
+<li><strong>Storages</strong> &nbsp; <em><a href="https://github.com/derdesign/protos/blob/master/storages/mongodb.js">MongoDB</a>, <a href="https://github.com/derdesign/protos/blob/master/storages/redis.js">Redis</a></em></li>
+<li><strong>Models</strong> &nbsp; <em>Use any Driver supported</em></li>
+<li><strong>Query Cache (Drivers)</strong> &nbsp; <em>Use any Storage supported</em></li>
+<li><strong>Query Cache (Models)</strong> &nbsp; <em>Handled by underlying Driver</em></li>
+<li><strong>Caching</strong> &nbsp; <em>Use any Storage supported</em></li>
+<li><strong>Sessions</strong> &nbsp; <em>Use any Storage supported</em></li>
+<li><strong>Response Caching</strong> &nbsp; <em>Use any Storage supported</em></li>
+<li><strong>Logging</strong> &nbsp; <em><a href="https://github.com/derdesign/protos/blob/master/middleware/logger/transport-mongodb.js">MongoDB</a>,
+<a href="https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js">Redis</a> (additionally
+<a href="https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js">File</a>, <a href="https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js">Console</a> via Middleware)</em></li>
+</ul>
+
+
+<h2>Middleware</h2>
+
+<p>The Application&rsquo;s functionality can be extended with the following (ready to use) components:</p>
+
+<ul>
+<li><a href="/middleware#asset_compiler">asset_compiler</a> &nbsp; <em>Compiles LESS, Stylus and CoffeeScript, Supports Watch/Compress/Minify.</em></li>
+<li><a href="/middleware#aws">aws</a> &nbsp; <em>Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)</em></li>
+<li><a href="/middleware#bcrypt">bcrypt</a> &nbsp; <em>Blowfish encryption support</em></li>
+<li><a href="/middleware#body_parser">body_parser</a> &nbsp; <em>Parse request bodies and file uploads in POST/PUT requests</em></li>
+<li><a href="/middleware#cookie_parser">cookie_parser</a> &nbsp; <em>Parse cookie headers, Integrates with Sessions &amp; Auth</em></li>
+<li><a href="/middleware#csrf">csrf</a> &nbsp; <em>Cross-Site Request Forgery protection, integrates with Controller Validation</em></li>
+<li><a href="/middleware#logger">logger</a> &nbsp; <em>Application/Request logger, supporting several transports such as MongoDB, Redis, File &amp; console</em></li>
+<li><a href="/middleware#mailer">mailer</a> &nbsp; <em>Send email using SMTP, Amazon SES or Sendmail</em></li>
+<li><a href="/middleware#markdown"> markdown </a> &nbsp; <em>Parse markdown syntax</em></li>
+<li><a href="/middleware#production_url">production_url</a> &nbsp; <em>Remove port number from application-generated URLs</em></li>
+<li><a href="/middleware#redirect">redirect</a> &nbsp; <em>Quick redirection support (useful for &ldquo;maintenance mode&rdquo;)</em></li>
+<li><a href="/middleware#response_cache">response_cache</a> &nbsp; <em>Response caching into supported Storages (Redis, MongoDB, etc)</em></li>
+<li><a href="/middleware#session">session</a> &nbsp; <em>Full session support with Storages, guest sessions and regeneration</em></li>
+<li><a href="/middleware#shortcode">shortcode</a> &nbsp; <em>Allows custom content to be inserted into views using shortcodes</em></li>
+<li><a href="/middleware#socket_io">socket_io</a> &nbsp; <em>Socket.io Integration with applications</em></li>
+<li><a href="/middleware#static_server">static_server</a> &nbsp; <em>Complete Static Server solution, supporting Ranges, Conditional GETs, etc.</em></li>
+</ul>
+
+
+<h2>Template Engines</h2>
+
+<p>There is a lot of flexibility when it comes to template engines. To use a view engine, just add the extension
+to the template and you&rsquo;re set. You don&rsquo;t need to install any npm dependencies.</p>
+
+<p>View Partials can be used across template engines. This means you can use Jade partials within Swig templates. Or CoffeeKup
+partials within EJS templates (and vice versa). There are a few exceptions with mustache engines (due to their <em>logicless</em>
+nature), such as Hogan and Handlebars.</p>
+
+<p>You are not limited by the default view extensions the framework provides. You can specify your own view extensions in the
+application&rsquo;s configuration.</p>
+
+<p>The following view engines are fully integrated with the Framework:</p>
+
+<ul>
+<li><a href="https://github.com/mauricemach/coffeekup">CoffeeKup</a></li>
+<li><a href="https://github.com/olado/doT">DoT</a></li>
+<li><a href="https://github.com/sstephenson/eco">Eco</a></li>
+<li><a href="https://github.com/visionmedia/ejs">EJS</a></li>
+<li><a href="https://github.com/visionmedia/haml.js">Haml</a></li>
+<li><a href="https://github.com/9elements/haml-coffee">Haml-Coffee</a></li>
+<li><a href="https://github.com/wycats/handlebars.js">Handlebars</a></li>
+<li><a href="https://github.com/twitter/hogan.js">Hogan.js</a></li>
+<li><a href="https://github.com/visionmedia/jade">Jade</a></li>
+<li><a href="https://github.com/shinetech/jazz">Jazz</a></li>
+<li><a href="https://github.com/kof/node-jqtpl">JQuery Templates</a></li>
+<li><a href="https://github.com/LuvDaSun/jshtml">JSHtml</a></li>
+<li><a href="https://github.com/c9/kernel">Kernel</a></li>
+<li><a href="https://github.com/chjj/liquor">Liquor</a></li>
+<li><a href="https://github.com/paularmstrong/swig">Swig</a></li>
+<li><a href="https://github.com/gsf/whiskers.js/tree">Whiskers</a></li>
+</ul>
+
+
+<h2>Resources</h2>
+
+<ul>
+<li>Follow <a href="http://twitter.com/derdesign">@derdesign</a> on Twitter for updates.</li>
+<li>This site has been developed using Protos, check out <a href="http://github.com/derdesign/protos-docs">its source</a>.</li>
+<li>Report issues on the <a href="https://github.com/derdesign/protos/issues">github issues</a> page.</li>
+<li>For Support, refer to the <a href="https://groups.google.com/group/protos-web-framework">Mailing List</a>.</li>
+</ul>
+
+
+</div></div><!-- .ovf | content -->
+
+<div id="footer">
+  <div class="wrap">
+    <span class="copyright">
+      &copy; 2012 Ernesto M&eacute;ndez. &nbsp; Powered by Protos v0.0.4
+    </span>
+  </div><!-- .wrap -->
+</div><!-- footer -->
+
+<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+
+
+<script type="text/javascript" src="js/client.min.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-10838231-18']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+</body>
+</html>

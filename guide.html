@@ -1,0 +1,2651 @@
+<!DOCTYPE html>
+<html lang="en-US" id="top">
+<head>
+<title>Protos Web Framework &raquo; Guide</title>
+<meta charset="utf-8" />
+
+<meta name='description' content='Web Application Framework for node.js'/>
+<meta name='keywords' content='mvc, web, application, framework, node, nodejs, node.js, js, javascript, restful, middleware' />
+
+<link rel="stylesheet" type="text/css" href="css/client.min.css" />
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" />
+</head>
+<body id="guide">
+  
+<div id="header" class="fw">
+  <div class="wrap">
+    <a id="logo" href="index.html"><img alt="Protos" width="325" height="75" src="images/logo.png" /></a>
+    <span>Web Application Framework for <a href="http://nodejs.org">node.js</a></span>
+  </div><!-- .wrap -->
+</div><!-- header -->
+
+<div id="nav-wrap">
+  <ul id="nav">
+    <li><a href="index.html">Features</a></li>
+    <li class="active"><a href="guide.html">Guide</a></li>
+    <li><a href="middleware.html">Middleware</a></li>
+    <li><a href="https://groups.google.com/group/protos-web-framework">Support</a></li>
+    <li><a href="https://github.com/derdesign/protos">Github</a></li>
+  </ul><!-- nav -->
+</div><!-- nav-wrap -->
+
+<span id="expander"></span>
+<a id="top-btn" href="#top">&uarr;</a>
+<div id="toc-sidebar"></div>
+
+<a id="fork-ribbon" href="http://github.com/derdesign/protos"><img src="images/fork-ribbon.png" alt="Fork me on GitHub"></a>
+
+<div id="content"><div class="ovf">
+
+<h2>Installation</h2>
+
+<pre><code>$ npm install protos
+</code></pre>
+
+<p>To have global access to the protos(1) executable, you can install the framework globally:</p>
+
+<pre><code>$ sudo npm install -g protos
+</code></pre>
+
+<p>Global installation is the recommended installation method. If the installation fails, it might be because
+you don&rsquo;t have <em>libxml2</em> installed on your sistem.</p>
+
+<p>Your applications will automatically inherit all <a href="https://github.com/derdesign/protos/blob/master/package.json">the dependencies</a> the framework provides:</p>
+
+<pre><code>var hiredis = protos.require('hiredis');
+</code></pre>
+
+<h2>Creating an Application</h2>
+
+<p>To quickly create an application and get started:</p>
+
+<pre><code>$ protos create myapp
+</code></pre>
+
+<p>You can specify more options to the create command:</p>
+
+<pre><code>$ protos create myapp --domain protos.org --js jquery prototype --css bootstrap
+</code></pre>
+
+<p>The command above will create an an application in the <em>myapp/</em> directory. Will download automatically the
+jQuery and Prototype libraries, and store then in <em>myapp/public/js</em> and Twitter&rsquo;s Bootstrap CSS framework into
+<em>myapp/public/css/bootstrap/</em>.</p>
+
+<p>The <code>--domain</code> switch will automatically set the domain in your application&rsquo;s config.</p>
+
+<p>To create the application with a default set of Models &amp; Controllers:</p>
+
+<pre><code>$ protos create myapp --model users accounts --controller blog admin profile
+</code></pre>
+
+<p>For a full list of options and commands, run <code>protos --help</code>.</p>
+
+<h2>Creating Application Resources</h2>
+
+<p>The protos command also allows you to create <a href="#applicaton-controllers">Controllers</a>, <a href="#application-views_view-helpers">Helpers</a>,
+<a href="#application-models-api">Models</a>, <a href="#application-views">Views</a> and <a href="#view-partials">Partials</a>.
+You <em>must</em> be within your application&rsquo;s path to be able to generate new components.</p>
+
+<h3>Creating Controllers</h3>
+
+<p>Controllers are created with the <code>protos controller</code> command. This will also create the <em>Helpers</em> and <em>Views</em>:</p>
+
+<pre><code>$ protos controller blog admin
+</code></pre>
+
+<p>If you don&rsquo;t want helpers to be automatically created, use the <code>--nohelper</code> switch.</p>
+
+<p>Here&rsquo;s what the command above creates:</p>
+
+<pre><code>» Created myapp/app/controllers/blog.js
+» Created myapp/app/controllers/admin.js
+» Created myapp/app/helpers/blog.js
+» Created myapp/app/helpers/admin.js
+» Created myapp/app/views/blog/blog-index.html
+» Created myapp/app/views/admin/admin-index.html
+</code></pre>
+
+<h3>Creating Models</h3>
+
+<p>Models are created with the <code>protos model</code> command:</p>
+
+<pre><code>$ protos model posts comments
+</code></pre>
+
+<p>Here&rsquo;s what the command above creates:</p>
+
+<pre><code>» Created myapp/app/models/posts.js
+» Created myapp/app/models/comments.js
+</code></pre>
+
+<h3>Creating Helpers</h3>
+
+<p>Helpers are created with the <code>protos helper</code> command:</p>
+
+<pre><code>$ protos helper navigation sidebar
+</code></pre>
+
+<p>Here&rsquo;s what the command above creates:</p>
+
+<pre><code>» Created myapp/app/helpers/navigation.js
+» Created myapp/app/helpers/sidebar.js
+</code></pre>
+
+<h3>Creating Views</h3>
+
+<p>Views are created with the <code>protos view</code> command, using the <code>{controller-alias}/view-name{.ext}</code> convention:</p>
+
+<pre><code>$ protos view main/info blog/posts blog/comments.html admin/accounts
+</code></pre>
+
+<p>Here&rsquo;s the output of the command above:</p>
+
+<pre><code>» Created myapp/app/views/main/main-info.html
+» Created myapp/app/views/blog/blog-posts.html
+» Created myapp/app/views/blog/comments.html
+» Created myapp/app/views/admin/admin-accounts.html
+</code></pre>
+
+<p>You can use the <code>--ext</code> option to create your views using specific extensions:</p>
+
+<pre><code>$ protos view main/user main/test --ext jade
+</code></pre>
+
+<p>This will create your .jade templates:</p>
+
+<pre><code>» Created myapp/app/views/main/main-user.jade
+» Created myapp/app/views/main/main-test.jade
+</code></pre>
+
+<h3>Creating View Partials</h3>
+
+<p>View Partials are created with the <code>protos partial</code> command. It uses the same convention as the views:</p>
+
+<pre><code>$ protos view blog/post admin/sidebar
+</code></pre>
+
+<p>Here&rsquo;s the output of the command above:</p>
+
+<pre><code>» Created myapp/app/views/blog/_post.html
+» Created myapp/app/views/admin/_sidebar.html
+</code></pre>
+
+<p>As with views, you can also specify the <code>--ext</code> option to create your partials using custom extensions.</p>
+
+<h3>Creating Static Views</h3>
+
+<p>Static Views are created with the <code>protos static</code> command:</p>
+
+<pre><code>$ protos static about contact portfolio
+</code></pre>
+
+<p>Here&rsquo;s the output of the command above:</p>
+
+<pre><code>» Created myapp/app/views/__static/about.html
+» Created myapp/app/views/__static/contact.html
+» Created myapp/app/views/__static/portfolio.html
+</code></pre>
+
+<p>As with views, you can also specify the <code>--ext</code> option to create static views using custom extensions.</p>
+
+<h3>Downloading CSS &amp; JavaScript Libraries</h3>
+
+<p>You can fetch any JavaScript or CSS Library supported by the framework. For example, run the following command anywhere
+within your application&rsquo;s path:</p>
+
+<pre><code>$ protos fetch --js prototype jquery
+</code></pre>
+
+<p>This will download the latest versions of <a href="http://jquery.com/">jQuery</a> &amp; <a href="http://prototypejs.org/">Prototype</a> and place
+them inside your application&rsquo;s <code>public/js</code> directory.</p>
+
+<p>To install CSS Libraries &amp; Frameworks, you do as such:</p>
+
+<pre><code>$ protos fetch --css bootstrap blueprint
+</code></pre>
+
+<p>This time, you will be downloading the latest versions of <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> and
+<a href="http://blueprintcss.org">Blueprint</a> CSS Frameworks.</p>
+
+<p>You can use both <code>--css</code> and <code>--js</code> on a single command.</p>
+
+<p>The framework supports client-side libraries via a simple JSON format:</p>
+
+<ul>
+<li><a href="https://github.com/derdesign/protos/blob/master/client/javascript.json">Supported JavaScript Libraries</a></li>
+<li><a href="https://github.com/derdesign/protos/blob/master/client/css.json">Supported CSS Frameworks</a></li>
+</ul>
+
+
+<p>If you&rsquo;re interested in getting your library supported by the framework, send a Pull Request on
+<a href="http://github.com/derdesign/protos">github</a>.</p>
+
+<h2>Running the Application&rsquo;s Server</h2>
+
+<p>Application scan be run either by calling node directly with the application&rsquo;s directory (or boot file) as input,
+or by using the protos command to start the server.</p>
+
+<h3>Using the node executable</h3>
+
+<p>To quickly start an application&rsquo;s server, you can call node with the application&rsquo;s directory as parameter:</p>
+
+<pre><code>$ node myapp/
+</code></pre>
+
+<p>If you&rsquo;re inside the application, you can call the boot file directly:</p>
+
+<pre><code>$ node boot.js
+</code></pre>
+
+<p>You can also run the application in a specific environment:</p>
+
+<pre><code>$ NODE_ENV=production node myapp/
+</code></pre>
+
+<h3>Using the protos executable</h3>
+
+<p>Applications can also be started using the protos command:</p>
+
+<pre><code>$ protos server myapp/
+</code></pre>
+
+<p>If you&rsquo;re located anywhere within your application&rsquo;s path</p>
+
+<pre><code>$ protos server
+</code></pre>
+
+<p>Additionally, you can specify which environment to use:</p>
+
+<pre><code>$ protos server --env production
+</code></pre>
+
+<p>You can run the server by forking into a new node process:</p>
+
+<pre><code>$ protos server myapp/ --fork --logpath server.log
+</code></pre>
+
+<p>The server&rsquo;s stdout stream will then be redirected into the logpath you specify.</p>
+
+<p>Each application can have more sophisticated logging mechanisms by using the <a href="/middleware#logger">Logger Middleware</a>.</p>
+
+<h2>Protos Executable</h2>
+
+<p>If you installed Protos globally with <code>npm -g install protos</code>, you have access to the <code>protos(1)</code> executable:</p>
+
+<pre><code>$ protos
+Usage: protos [action] [arguments]
+
+Actions: [create, server, deploy, fetch, inspector] [controller, helper, model, view, partial, static]
+
+  --domain        Domain to attach the application to (create)
+  --css           Bundle client side CSS frameworks (create)
+  --js            Bundle client side JavaScript libraries/frameworks (create)
+  --model         Include models on application (create)
+  --controller    Include controllers on application (create)
+  --mustache      Use the .mustache extension for generated views (create)
+  --fork          Creates a new node process when starting servers (server)
+  --port          Port to use when proxying multiple servers (server)
+  --env           Environment to use when running server (server)
+  --logpath       File to save output when forking a new process (server)
+  --nohelper      Don't create helpers when generating controllers (controller)
+  --ext           Extension to use for generated normal/static/partial views (view)
+
+Example:
+
+ $ protos create myapp --css bootstrap --js jquery backbone --model users --controller admin user
+
+ Generate an application skeleton in the current directory, with the assets,
+ models and controllers specified in the command.
+
+ $ protos server myapp --fork --logpath server.log
+
+ Starts the application's server and forks a new node process.
+
+ For documentation, refer to http://protos.der-design.com
+
+ protos@0.0.2 /usr/local/lib/node_modules/protos
+</code></pre>
+
+<p>If you did not install the framework globally, you can access the <code>protos(1)</code> command by running <code>bin/protos</code> inside the
+framework&rsquo;s directory.</p>
+
+<h2>Deploying a Cluster Server</h2>
+
+<p>Protos provides a built-in proxy that will automatically direct requests for all your applications. Behind the scenes,
+it uses the <a href="https://github.com/substack/bouncy">Bouncy</a> to handle the redirection.</p>
+
+<p>You can deploy your applications &amp; servers using the command line or a JSON file.</p>
+
+<h3>Using the commmand line</h3>
+
+<p>Each application runs in a separate node process, isolated from other applications. This is a secure deployment strategy,
+to prevent collisions between your applications &amp; libraries.</p>
+
+<p>Applications can define how many <strong>node processes</strong> they will use in their respective <code>multiProcess</code> bootstrap option.
+This way, you can manually specify how many cores each application will use.</p>
+
+<p>This is how you run a cluster server from the command line using the <code>app:port</code> convention:</p>
+
+<pre><code>$ protos server mysite:8081 yoursite:8082 --port 80 --fork --logpath server.log --env production
+</code></pre>
+
+<p>This will run a proxy server on port 80, redirecting all requests to applications/ports specified.</p>
+
+<h3>Using a JSON file</h3>
+
+<p>To deploy your applications using JSON, create a JSON file (preferably where the application directories live).</p>
+
+<p>For example: create a <strong>cluster.json</strong> file with the following contents:</p>
+
+<pre><code>{
+  "fork": "true",
+  "env": "production",
+  "port": "80",
+  "logpath": "server.log",
+  "routes": {
+    "mysite": "8081",
+    "yoursite": "8082"
+  }
+}
+</code></pre>
+
+<p>These settings are analogous to the command line example. This method is very convenient, since it allows you
+to keep the deployment configuration in a single JSON file.</p>
+
+<p>To run a cluster server using a JSON deployment file, run the following:</p>
+
+<pre><code>$ protos deploy cluster.json
+</code></pre>
+
+<p>You are not limited to <em>cluster.json</em> as the filename. The JSON file can be saved with any filename.</p>
+
+<h2>Running the Node Inspector</h2>
+
+<p>You can easily debug your applications using the built-in <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>. This means
+you can use the regular Webkit Inspector to debug your Node.js/Protos applications. Cool!</p>
+
+<blockquote><p>Starting your application in the debug environment will automatically launch the Node Debugger. This means you can jump
+right into the inspector as soon as you start your application.</p></blockquote>
+
+<p>To start the inspector:</p>
+
+<pre><code>protos inspector start
+</code></pre>
+
+<p>To stop the inspector:</p>
+
+<pre><code>protos inspector stop
+</code></pre>
+
+<p>Node inspector listens by default on <a href="http://localhost:3000">http://localhost:3000</a></p>
+
+<h2>Application Structure</h2>
+
+<p>The following tree contains the skeletal application structure, just after running <code>protos create myapp</code>.</p>
+
+<pre><code>myapp/
+├── app
+│   ├── controllers
+│   │   └── main.js
+│   ├── helpers
+│   │   └── main.js
+│   ├── models
+│   │   └── users.js
+│   └── views
+│       ├── __layout
+│       │   ├── footer.html
+│       │   └── header.html
+│       ├── __restricted
+│       │   ├── 404.html
+│       │   ├── 500.html
+│       │   └── msg.html
+│       ├── __static
+│       │   └── readme.md
+│       └── main
+│           └── main-index.html
+├── boot.js
+├── config
+│   ├── base.js
+│   ├── database.js
+│   ├── env
+│   │   ├── debug.js
+│   │   ├── development.js
+│   │   └── production.js
+│   ├── regex.js
+│   └── storage.js
+├── data
+│   └── readme.md
+├── incoming
+│   └── readme.md
+├── init.js
+├── lib
+│   ├── application.js
+│   ├── request.js
+│   └── response.js
+├── log
+├── middleware
+│   └── readme.md
+├── package.json
+├── public
+│   ├── favicon.ico
+│   └── robots.txt
+├── scripts
+│   ├── automate.js
+│   └── readme.md
+└── test
+    └── readme.md
+</code></pre>
+
+<h3>app.js</h3>
+
+<p>This is the ideal place to store your extensions to the Application constructor&rsquo;s <a href="https://github.com/derdesign/protos/blob/master/lib/application.js">prototype</a>. This file is optional.</p>
+
+<h3>boot.js</h3>
+
+<p>This is the Application&rsquo;s <a href="#the-applications-bootstrap-file-bootjs">bootstrap</a> file. It is used to specify your
+application&rsquo;s configuration, such as hostname, port, number of node processes to use, etc.</p>
+
+<p>The bootstrap file is very flexible, since it also allows you to run code on each environment. Useful if you want to
+load different middleware configurations on each environment.</p>
+
+<h3>init.js</h3>
+
+<p>The function in this file gets executed <em>after</em> the application initializes (and after the <code>init</code> event).</p>
+
+<h3>package.json</h3>
+
+<p>Package information for the application. If you remove this file, make sure you include an <code>index.js</code> file, which will
+add compatibility to run the application by passing the directory where the application resides.</p>
+
+<h3>app/</h3>
+
+<p>The app/ directory is used to store all the logic behind your application.</p>
+
+<ul>
+<li><strong>controllers</strong>: Contains controller files</li>
+<li><strong>helpers</strong>: Contains helper files</li>
+<li><strong>models</strong>: Contains model files</li>
+<li><strong>views</strong>: Contain view &amp; layout files</li>
+</ul>
+
+
+<h3>app/views</h3>
+
+<p>This is where all the views live. There are some special directories:</p>
+
+<ul>
+<li><strong>__layout</strong>: Used to store the layout components, such as header, footer et al</li>
+<li><strong>__restricted</strong>: This is where the templates such as errors &amp; notifications are stored</li>
+<li><strong>__static</strong>: This is where the static views are located</li>
+</ul>
+
+
+<p>Any other directories not mentioned above are considered to be <strong>controller namespaces</strong>.</p>
+
+<h3>app/views/{controller-alias}</h3>
+
+<p>This is where the views for <em>controller-alias</em> will be stored. These <em>must</em> match controller aliases in order for the
+views to render correctly. This means that <em>BlogController</em> will expect <em>app/views/blog/</em> to exist, and so on.</p>
+
+<p>If the controller&rsquo;s <strong>views directory</strong> is not found, you&rsquo;ll get an HTTP/500 Error. These directories are automatically
+created for you.</p>
+
+<h3>config/</h3>
+
+<p>This is where all of the application&rsquo;s configuration files and environment scripts are located.</p>
+
+<p>You can find more information on the <a href="#application-configuration">Application Configuration</a> section.</p>
+
+<h3>config/env/</h3>
+
+<p>Files matching the current environment will be looked up here. For example: <em>development.js</em>, <em>production.js</em>, etc. The code
+in these scripts will run <strong>before</strong> the environment functions in the <a href="#the-applications-bootstrap-file-bootjs">bootstrap</a> file.</p>
+
+<h3>data/</h3>
+
+<p>Any kind of data related to the application. This directory has been included for convenience purposes. You can store any
+type of scripts and/or information here.</p>
+
+<h3>incoming/</h3>
+
+<p>Directory to hold File Uploads. This is the upload location for the <a href="/middleware#body_parser">Body Parser Middleware</a>.</p>
+
+<h3>lib/</h3>
+
+<p>These are called <em>Application Extensions</em>, loaded when calling <code>app.loadExtensions()</code> on the <a href="#the-applications-bootstrap-file-bootjs">bootstrap</a> file.</p>
+
+<p>The ideal usage for these <em>libraries</em> is to extend the core functionality of Node&rsquo;s classes, as well as extending the Application&rsquo;s methods and properties. You
+can also use this directory to extend your application with any new classes and methods.</p>
+
+<h3>log/</h3>
+
+<p>Directory that holds the Application&rsquo;s log files. This is the storage location for the <a href="/middleware#logger">Logger Middleware</a>.</p>
+
+<h3>middleware/</h3>
+
+<p>Directory that holds the application-specific middleware. Any middleware specified here will override the framework&rsquo;s
+middleware as long as it has the same name. This directory is optional.</p>
+
+<h3>public/</h3>
+
+<p>Public directory used to serve static content</p>
+
+<h3>scripts/</h3>
+
+<p>Application-specific scripts</p>
+
+<h3>test/</h3>
+
+<p>Directory to store your application&rsquo;s test suites</p>
+
+<h2>Application Configuration</h2>
+
+<p>The application can be configured by editing the <strong>bootstrap</strong> file (boot.js), or by modifying its configuration files.</p>
+
+<h3>Configuration Files</h3>
+
+<p>The configuration files are stored in the config/ directory. Here&rsquo;s an explanation on what each file contains:</p>
+
+<ul>
+<li><strong>base.js</strong>: Base application configuration, directly accessed via <code>app.config</code></li>
+<li><strong>database.js</strong>: Settings related to the databases.</li>
+<li><strong>regex.js</strong>: Regular Expressions to be used by the application</li>
+<li><strong>storage.js</strong>: Settings related to the storages</li>
+<li><strong>env/</strong>: Holds scripts for each environment</li>
+</ul>
+
+
+<p>Each file you add into the config/ directory, will be added as a property of the <code>app.config</code> object. You can access
+the database config in <code>app.config.database</code>, the regex config in <code>app.config.regex</code> and the storages config in
+<code>app.config.storage</code>.</p>
+
+<p>If you add a new configuration file in the config/ directory, let&rsquo;s say: <em>users.js</em>, then you can access this configuration
+in the <code>app.config.users</code> object.</p>
+
+<p>You can also remove any of the configuration files, as long as you add an extra property into the <em>base.js</em> file. For example,
+if you remove the <em>database.js</em> file, make sure you add a <code>database</code> key inside the base configuration object in <em>base.js</em>.</p>
+
+<p>This convention is really flexible if you want to separate your configuration by keeping it in logical sections &amp; files. It
+enforces greater application maintainability.</p>
+
+<h3>Database Configuration</h3>
+
+<p>There is something special to know about the <em>database.js</em> and <em>storage.js</em> files. Protos introduces the term
+<strong>resource path</strong>, to refer to a specific configuration.</p>
+
+<p>The database configuration object <em>must</em> contain a <em>default</em> property, which contains the <em>resource path</em> to the configuration
+that will be assumed to be the default for the databases.</p>
+
+<p>For example:</p>
+
+<pre><code>{
+  default: 'mongodb',
+  mongodb: {
+    host: 'localhost',
+    port: 27017
+  }
+}
+</code></pre>
+
+<p>This configuration tells the application that it will use <code>mongodb</code> as the default driver. The application will then look
+for a &ldquo;mongodb&rdquo; property, located in the configuration. Such resource can be accessed as <code>drivers/mongodb</code>.</p>
+
+<p>You can have multiple configurations for one same database. Consider the following example configuration:</p>
+
+<pre><code>{
+  default: 'mongodb:users',
+  mongodb: {
+    users: {
+      host: 'users.host.com',
+      port: 27017
+    },
+    clients: {
+      host: 'clients.host.com,
+      port: 27017
+    }
+  }
+}
+</code></pre>
+
+<p>This configuration exposes two database resources: <code>drivers/mongodb:users</code> and <code>drivers/mongodb:clients</code>.</p>
+
+<p>This configuration automatically generates the Drivers, which are used to manipulate the databases. The automatically generated
+drivers can be found in <code>app.drivers</code>. Storages can be located in <code>app.storages</code>.</p>
+
+<p>The same <strong>configuration conventions</strong> apply to the Storages configuration, in the
+<em>storages.js</em> file.</p>
+
+<h2>The Application&rsquo;s Bootstrap File (boot.js)</h2>
+
+<p>This file is used to start your application. It is very slim and can do lots of things. It is automatically provided to you
+when creating your applications. Here&rsquo;s what it looks like:</p>
+
+<pre><code>var Protos = require('../');
+
+Protos.bootstrap(__dirname, {
+
+  // Server configuration
+  server: {
+    host: 'localhost',
+    port: 8080,
+    multiProcess: false,
+    stayUp: false
+  },
+
+  // Application environments
+  environments: {
+    default: 'development',
+    development: function(app) {
+      app.debugLog = false;
+    }
+  },
+
+  // Application events
+  events: {
+    init: function(app) {
+
+      // Load middleware
+      app.use('logger');
+      app.use('markdown');
+      app.use('body_parser');
+      app.use('cookie_parser');
+      app.use('static_server');
+
+      // Load extensions in lib/
+      app.libExtensions();
+
+    }
+  }
+
+});
+
+module.exports = protos.app;
+</code></pre>
+
+<p>Here&rsquo;s a detailed explanation of the several configuration sections:</p>
+
+<h3>Server Configuration</h3>
+
+<ul>
+<li><strong>host</strong> &nbsp; <em>Hostname to bind your application to</em></li>
+<li><strong>port</strong> &nbsp; <em>Port your app will listen. Might get overidden on deployment or by the <code>PORT_OVERRIDE</code> env</em></li>
+<li><strong>multiProcess</strong> &nbsp; <em>How many node processes the application will use. If <code>true</code> will use all available cores</em></li>
+<li><strong>stayUp</strong> &nbsp; <em>Whether or not the server should exit on exceptions. If <code>true</code> will enable for all environments. You can
+specify the environment (string) to enable this feature, or the environments (array) in which the feature will be enabled</em></li>
+</ul>
+
+
+<h3>Application Environments</h3>
+
+<ul>
+<li><strong>default</strong> &nbsp; <em>Environment to use when running the application without specifying an environment</em></li>
+<li><strong>development</strong> &nbsp; <em>Function to call when running on the <code>development</code> environment</em></li>
+<li><strong>production</strong> &nbsp; <em>Function to call when running on the <code>production</code> environment</em></li>
+<li><strong>{environment-name}</strong> &nbsp; <em>You can run code for any environment by specifying a function and its name</em></li>
+</ul>
+
+
+<h3>Application Events</h3>
+
+<ul>
+<li><strong>init</strong> &nbsp; <em>Function to call when the application initializes</em></li>
+<li><strong>{event-name}</strong> &nbsp; <em>You can run code for any event by specifying a function and the event name</em></li>
+</ul>
+
+
+<p>The Application&rsquo;s bootstrap file is the <em>ideal place</em> to load your middleware. This is, because you can quickly configure
+the middleware (and configurations to use) directly in the <em>boot.js</em> file, without having to edit other files. This turns out very
+useful when editing via SSH.</p>
+
+<p>The boostrap file is ideal also to enable debugging messages in the application by setting <code>app.debugLog</code> to true.</p>
+
+<h2>Applicaton Controllers</h2>
+
+<p>Protos inherits a few things from the <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC Architecture</a>.
+Controllers are used to <em>group</em> common routes for a specific <em>namespace</em>, or <em>URL namespace</em>. For example, consider the following URLs:</p>
+
+<pre><code>http://myapp.com/blog/post
+http://myapp.com/blog/archive
+http://myapp.com/blog/publish?title=Cool+Title&amp;author=Ernie
+http://myapp.com/awesome
+http://myapp.com/admin/dashboard
+http://myapp.com/admin/account
+</code></pre>
+
+<p>If you were to create a Protos application for these, you have two approaches: Using a single Controller, or using a
+controller for each of your URL namespaces.</p>
+
+<h3>Using a single Controller</h3>
+
+<p>If you don&rsquo;t want to deal with multiple controllers, you can use the <strong>MainController</strong>, which is used to group all routes
+that belong to the root namespace, or <code>/</code>.</p>
+
+<p>Here&rsquo;s how you would define all these in MainController:</p>
+
+<pre><code>function MainController(app) {
+
+  get('/blog/post', callback);
+  get('/blog/archive', callback);
+  post('/blog/publish', validation, callback);
+  get('/awesome', callback);
+  get('/admin/dashboard', callback);
+  get('/admin/account', callback);
+
+}
+</code></pre>
+
+<p>In the code above, it is worth mentioning that only the <em>function</em> source has been included. Any other requirements for node,
+such as <code>module.exports = MainController;</code> have been omitted. The examples that follow will also use the same approach.</p>
+
+<p>In the example above, validation is assumed to be an Object <em>containing  the validation rules</em>, and callback should be the
+function to be called when the route is matched.</p>
+
+<h3>Using multiple Controllers</h3>
+
+<p>The proper way to do things is to use a controller for each of your application&rsquo;s <em>URL namespaces</em>. If we recall the
+example above, we would need to use the following controlles in our Application:</p>
+
+<ul>
+<li><strong>BlogController</strong>: <em>to handle requests for the blog/ namespace</em></li>
+<li><strong>AdminController</strong>: <em>to handle requests for the admin/ namespace</em></li>
+<li><strong>MainController</strong>: <em>to handle requests for /awesome</em></li>
+</ul>
+
+
+<p>Routes that don&rsquo;t match a specific controller (such as <em>/awesome</em>), should go in MainController.</p>
+
+<p>If you were to create these controllers, you could use the protos executable:</p>
+
+<pre><code>$ protos controller blog admin
+</code></pre>
+
+<p>This will create the necessary files to fully support these controllers. When you use <code>protos controller</code>, you use
+the <em>URL namespace</em> the controller should use.</p>
+
+<p>The code you need for each controller is outlined below:</p>
+
+<p><em>&bull; app/controllers/main.js</em></p>
+
+<pre><code>function MainController(app) {
+
+  get('/awesome', callback);
+
+}
+</code></pre>
+
+<p><em>&bull; app/controllers/blog.js</em></p>
+
+<pre><code>function BlogController(app) {
+
+  get('/post', callback);
+  get('/archive', callback);
+  post('/publish', validation, callback);
+
+}
+</code></pre>
+
+<p><em>&bull; app/controllers/admin.js</em></p>
+
+<pre><code>function AdminController(app) {
+
+  get('/dashboard', callback);
+  get('/account', callback);
+
+}
+</code></pre>
+
+<p>The routes specified for a controller, are relative to the controller&rsquo;s namespace.</p>
+
+<h3>Special Controller Aliases</h3>
+
+<p>If you want to handle routes with dashes, let&rsquo;s say:</p>
+
+<pre><code>http://myapp.com/account-summary/show
+http://myapp.com/account-summary/set
+</code></pre>
+
+<p>Then, you can create the controller like this:</p>
+
+<pre><code>$ protos controller account-summary
+</code></pre>
+
+<p>The framework will create <strong>AccountSummaryController</strong>, <strong>AccountSummaryHelper</strong> and all the views needed.</p>
+
+<p>Here&rsquo;s the output of the command above:</p>
+
+<pre><code>» Created myapp/app/controllers/account-summary.js
+» Created myapp/app/helpers/account-summary.js
+» Created myapp/app/views/account-summary/account-summary-index.html
+</code></pre>
+
+<h3>Related Resources</h3>
+
+<p>If you&rsquo;ve noticed in the commands above, every time you create a controller, a helper is created for the controller&rsquo;s
+alias (which is, the <em>URL namespace</em> the controller handles).</p>
+
+<p>This done for <em>convenience purposes only</em>, and it doesn&rsquo;t mean that each controller needs its own helper. This is just
+a way of grouping common <em>view helpers</em> using a <em>prefix</em> that matches the controller alias being accessed.</p>
+
+<p>This will be covered with more detail in the <a href="#application-views_view-helpers">Helpers Section</a>.</p>
+
+<h2>Routes</h2>
+
+<p>Routes define your application&rsquo;s structure. This allows using any HTTP Method to create RESTful Applications.</p>
+
+<p>Each route defined is relative to the controller namespace where it has been defined.</p>
+
+<p>The route functions are not global, they are local to each <em>controller</em>. This is a similar concept as with node&rsquo;s <code>__filename</code>,
+<code>__dirname</code> and <code>__module</code> which are local to each <em>module</em>.</p>
+
+<p>The examples that follow are <em>controller-agnostic</em>. Have that in mind when reading the examples. Know that they can be used with
+any controller or with MainController.</p>
+
+<p>Routes defined on MainController are referred to as <em>global routes</em>.</p>
+
+<h3>Route Functions</h3>
+
+<p>There is a route function for each HTTP Method available. The HTTP Methods supported are:</p>
+
+<ul>
+<li>GET <em>&rarr; handled by <code>get()</code></em></li>
+<li>POST <em>&rarr; handled by <code>post()</code></em></li>
+<li>PUT <em>&rarr; handled by <code>put()</code></em></li>
+<li>DELETE <em>&rarr; handled by <code>delete()</code></em></li>
+<li>OPTIONS <em>&rarr; handled by <code>options()</code></em></li>
+<li>TRACE <em>&rarr; handled by <code>trace()</code></em></li>
+</ul>
+
+
+<p>This convention helps you develop RESTful Applications or APIs with ease.</p>
+
+<blockquote><p>On this document, you will probably see the route functions be referred as <em>Route Methods</em>. This is because of how they are
+implemented internally in the framework. Whenever you see the term &ldquo;Route Method&rdquo;, have in mind that it refers to the actual
+<em>Route Functions</em>.</p></blockquote>
+
+<h3>Route Function Arguments</h3>
+
+<p>The route functions can receive various types of arguments:</p>
+
+<pre><code>get( {route}, {validation?}, {messages?}, {callback*}, {method*} );
+</code></pre>
+
+<p>The <em>validation</em> and <em>messages</em> parameters are optional. To specify <em>messages</em>, you need to specify <em>validation</em>.</p>
+
+<p>You can specify as many callbacks as you want, and these will run in chain, asynchronously. Also, you can specify an array
+of callbacks (which will end up flattened).</p>
+
+<p>The callbacks assigned to a specific route, are usually referred to as <em>Route Callbacks</em>, not to be confused with the
+<em>Route Functions</em> (or <em>Route Methods</em>).</p>
+
+<p>This section only covers arguments. The sub-sections below will cover usage with more detail.</p>
+
+<h3>Simple Routes</h3>
+
+<p>A simple route is the one that only has <em>(route, callback)</em>, such as:</p>
+
+<pre><code>get('/hello', function(req, res) {
+  res.render('index');
+});
+</code></pre>
+
+<p>This route will cover the <code>/{namespace}/hello</code> route, and if it&rsquo;s global, it will then be mapped to <code>/hello</code>. The callback
+specified will run <strong>if and only if</strong> the route and authentication (more on this later) are matched.</p>
+
+<h3>Routes with Multiple Callbacks</h3>
+
+<p>You can run multiple callbacks as such:</p>
+
+<pre><code>get('/resource', incrCounter, authUser, prepareData, renderView);
+</code></pre>
+
+<p>In this case, the functions <em>incrCounter</em>, <em>authUser</em>, <em>prepareData</em> and <em>renderView</em> will run in order. Each one of these
+functions receive the exact same parameters of a Route Function.</p>
+
+<p>To pass control to the next <em>Route Function</em> in the chain, you can call <code>req.next()</code>:</p>
+
+<pre><code>function authUser(req, res, params) {
+  // ... do something ...
+  req.next();
+}
+</code></pre>
+
+<p>Otherwise you can let the function take over and decide what to do with the response, in any position of the chain:</p>
+
+<pre><code>function prepareData(rqe, res, params) {
+  // ... get valid ...
+  if (valid) req.next();
+  else app.serverError(res, new Error("Invalid Data"));
+}
+</code></pre>
+
+<h3>Regular Expressions</h3>
+
+<p>This is an important section, since it covers topic that matter for your application&rsquo;s security.</p>
+
+<p>You can specify validation for a specific URL Fragment, for example:</p>
+
+<pre><code>get('/user/:user/:location', {user: 'alpha', location: 'alpha'}, function(req, res, params) {
+  res.json(params);
+});
+</code></pre>
+
+<p>As you notice, the <em>validation</em> parameter contains two keys matching the route fragments to validate. These are assigned the
+<code>alpha</code> value, which is the validation criteria. The validation criteria can be one of the following:</p>
+
+<ul>
+<li>A <em>Regular Expression Alias</em></li>
+<li>A Regular Expression Object or Literal</li>
+</ul>
+
+
+<p>A <em>Regular Expression Alias</em> is a regular expression that has been defined and named in the application&rsquo;s regular
+expressions configuration: <code>app/config/regex.js</code>, which are also available in the <code>app.regex</code> object.</p>
+
+<p>Any key present in the application&rsquo;s regex object is considered to be a <em>Regular Expression Alias</em>.</p>
+
+<p>Each RegExp alias will validate a fragment of the URL. Internally, a master regular expression is created to validate
+the entire URL.</p>
+
+<p>There are some requirements for normal regular expressions to be used in routes:</p>
+
+<ul>
+<li>The RegExp must not contain regular expression flags. That is: <code>i</code>, <code>g</code>, <code>m</code>, etc.</li>
+<li>The RegExp must contain <strong>start/end</strong> matches, since each <em>fragment</em> is compared in isolation from others.</li>
+</ul>
+
+
+<p>That being said, the folowing regexes are valid:</p>
+
+<pre><code>/^(one|two|three)$/
+/^john-doe$/
+</code></pre>
+
+<p>And these are invalid:</p>
+
+<pre><code>/(one|two|three)/
+/john-doe/
+</code></pre>
+
+<p>Failure to meet the conditions outlined above, would result in your routes being accessed in undesirable situations, which
+might represent a security threat to your application, since sensitive data might be exposed.</p>
+
+<h3>Validation of Route Parameters</h3>
+
+<p>Consider the following example:</p>
+
+<pre><code>get('/user/:user/:location', {user: 'alpha', location: 'alpha'}, function(req, res, params) {
+  res.json(params);
+});
+</code></pre>
+
+<p>Whenever you match url fragments, the <em>Route Callbacks</em> will be provided with an extra argument: <code>params</code>, which is an
+object containing the fragment keys and the provided values. For example:</p>
+
+<pre><code>http://myapp.com/user/ernie/dashboard
+</code></pre>
+
+<p>The <code>params</code> argument will contain the following information:</p>
+
+<pre><code>{
+  user: "ernie",
+  location: "dashboard"
+}
+</code></pre>
+
+<h3>Accessing Raw Query Data</h3>
+
+<p>Routes can define validation for query parameters. Let&rsquo;s suppose your application should handle this URL:</p>
+
+<pre><code>http://myapp.com/purchase/99?quantity=1&amp;color=red
+</code></pre>
+
+<p>Then, the route we need looks like this:</p>
+
+<pre><code>get('/purchase/:id', {id: 'integer', quantity: 'integer', color: /^(red|green|blue)$/}, 
+function(req, res, params) {
+  console.log(params);
+  res.json(req.queryData);
+});
+</code></pre>
+
+<p>The validation process is a two-step process:</p>
+
+<ol>
+<li>The <em>URL Fragment</em> is validated</li>
+<li>The Query Parameters are validated (manually)</li>
+</ol>
+
+
+<p>The following URL would get HTTP/404, since the <code>:id</code> fragment fails to validate:</p>
+
+<pre><code>http://myapp.com/purchase/99a?quantity=1&amp;color=red
+</code></pre>
+
+<p>The validation for <em>Query Parameters</em> does not happen automatically as with the url fragments validation. You can access
+the query data before validating in <code>req.queryData</code>.</p>
+
+<p>The URL above would render the following JSON response:</p>
+
+<pre><code>{
+  "quantity": "1",
+  "color": "red1"
+}
+</code></pre>
+
+<p>As you can see, <code>req.queryData</code> contains <strong>only</strong> the <em>Query Parameters</em>, <em>not</em> the URL fragments.</p>
+
+<p>On the other hand, in the console you will see the following:</p>
+
+<pre><code>{ id: '99', quantity: undefined, color: undefined }
+</code></pre>
+
+<p>The <code>params</code> object (printed on the console) contains the value for the <code>id</code> <em>route parameter</em>. The keys belonging to the
+<em>query parameters</em> are set to <code>undefined</code>.</p>
+
+<h3>Validation of Query Parameters</h3>
+
+<p>Following up with the previous example, we are not interested in validating the query parameters. In the previous example,
+this URL should still access the route:</p>
+
+<pre><code>http://myapp.com/purchase/99?quantity=BLAH&amp;color=maroon
+</code></pre>
+
+<p>Why is that? You may ask. That is, because we were accessing <em>Unvalidated</em> (or raw) data. The Route parameter <code>:id</code> has
+been validated. The <em>Query Parameters</em> are not yet validated, unless you want to. This is what this section is about.</p>
+
+<p>To validate query parameters, the Controller instance provides a method for this: <code>getQueryData</code>.</p>
+
+<pre><code>get('/purchase/:id', {id: 'integer', quantity: 'integer', color: /^(red|green|blue)$/}, 
+function(req, res, params) {
+  this.getQueryData(req, function(fields) {
+    res.json(fields);
+  });
+});
+</code></pre>
+
+<p>It is important to mention, that <em>Route Callbacks</em> <strong>run on the controller instance&rsquo;s context</strong>. This means, the <code>this</code> object
+points to the controller instance currently accessing the route.</p>
+
+<p>This means you have access to all the methods provided by <a href="https://github.com/derdesign/protos/blob/master/lib/controller.js">Controller</a>.</p>
+
+<p>Using <code>this.getQueryData</code> ensures that the <em>Query Parameters</em> are validated exactly the same as the <em>Route Parameters</em>. Your
+application will automatically respond with HTTP/404 on failure to validate both url fragments &amp; query parameters.</p>
+
+<p>The validated fields are passed in the <code>fields</code> argument of the <code>getQueryData</code> callback.</p>
+
+<p>Validation is also closely integrated with the <a href="/middleware#csrf">CSRF Middleware</a>. This means, you can provide an extra
+argument to <code>getQueryData</code>, and that is the <em>CSRF Token</em>, which will add an extra layer of validation. For more info,
+check out the CSRF Middleware <a href="/middleware#csrf">documentation</a>.</p>
+
+<h3>Validation of URL &amp; Query Parameters</h3>
+
+<p>In the example above, this is exactly what has been done: Validate Query Parameters as well as Query Data.</p>
+
+<p>There is only one thing to have in mind when you&rsquo;re validating both request &amp; query params:</p>
+
+<blockquote><p>The URL Fragments and Query Parameter names should be <strong>different</strong>, to prevent validation collisions. This is to prevent any
+unexpected behavior that can arise from this approach.</p></blockquote>
+
+<h3>Validation Messages</h3>
+
+<p>On validation failure, users will be responded with HTTP/400. You can specify an error message to display when data fails
+to validate. Here&rsquo;s how you do it:</p>
+
+<pre><code>get('/json', {
+  file: 'alpha', 
+  rev: 'integer'
+}, {
+  file: "You must supply a valid filename",
+  rev: function(rev) { return "Invalid revision: " + rev; }
+}, 
+function(req, res) {
+  this.getQueryData(req, function(fields) {
+    res.json(fields);
+  });
+});
+</code></pre>
+
+<p>This is very powerful, and can be used in many scenarios. For example, if the following URL is accessed:</p>
+
+<pre><code>http://myapp.com/json?file=99&amp;rev=INVALID
+</code></pre>
+
+<p>It will fail to validate, and you will get the message <em>&ldquo;You must supply a valid filename&rdquo;</em>.</p>
+
+<p>If a valid file is specified, and invalid revision number:</p>
+
+<pre><code>http://myapp.com/json?file=tuesday_log&amp;rev=INVALID
+</code></pre>
+
+<p>It will fail to validate, and you will get the message: <em>&ldquo;Invalid revision: INVALID&rdquo;</em>.</p>
+
+<p>The validation messages will be displayed either in HTML or in plain text, depending on the type of request:</p>
+
+<ul>
+<li>For normal Requests, the response will be sent in <em>HTML</em>.</li>
+<li>For <code>XMLHttpRequest</code>s (AJAX), the response will be sent in <em>Plain Text</em>.</li>
+</ul>
+
+
+<p>This behavior allows your application to use its own validation mechanisms to validate form data.</p>
+
+<h3>Routes with multiple methods</h3>
+
+<p>You can specify a route that allows multiple HTTP Methods. Any extra arguments you pass after the <em>Route Callback</em>,
+are assumed to be strings that represent which additional methods will be allowed for the route:</p>
+
+<pre><code>get('/', function(req, res) {
+  res.json({
+    msg: "Hello World!",
+    method: req.method
+  });
+}, 'post', 'put');
+</code></pre>
+
+<p>If you access <code>http://myapp.com/</code> using <code>POST</code>, here&rsquo;s the response you will receive:</p>
+
+<pre><code>{
+  "msg": "Hello World!",
+  "method": "POST"
+}
+</code></pre>
+
+<p>This functionality may become very useful in some situations.</p>
+
+<h2>Controller Authentication &amp; Filters</h2>
+
+<blockquote><p>Controller filters add an additional <em>authentication layer</em> to your Controllers. By analyzing the <em>request</em> and <em>response</em>
+objects, you can determine whether or not the user is allowed to access the controller&rsquo;s resources.</p></blockquote>
+
+<p>Let&rsquo;s say we have the following Controller:</p>
+
+<pre><code>function MainController(app) {
+
+  get('/', function(req, res) {
+    res.end("WELCOME!");
+  });
+
+  get('/:page', {page: 'alpha'}, function(req, res, params) {
+    res.json(params);
+  });
+
+}
+</code></pre>
+
+<p>This will respond with <em>&ldquo;WELCOME&rdquo;</em> when accessing <em>/</em>, and will send a JSON response when a regular page is accessed. We&rsquo;ll
+implement a very basic authentication, using a GET parameter called <code>pass</code> using a <em>Filter</em>.</p>
+
+<p>This is the controller code, after the filter has been implemented:</p>
+
+<pre><code>function MainController(app) {
+
+  this.authFilter(function(req, res, promise) {
+    if (req.queryData.pass === '1234') promise.emit('success');
+    else res.rawHttpMessage(403, true);
+  });
+
+  get('/', function(req, res) {
+    res.end("WELCOME!");
+  });
+
+  get('/:page', {page: 'alpha'}, function(req, res, params) {
+    res.json(params);
+  });
+
+}
+</code></pre>
+
+<p>Now, if you try to access any of your controller&rsquo;s resources without providing the <code>pass</code> query parameter, you will not be
+able to access the routes, and will be responded with a <code>403 Forbidden</code> message.</p>
+
+<p>In this case, we&rsquo;re using <code>req.queryData.pass</code> to get the <code>pass</code> query parameter, we&rsquo;re not doing any validation on it, just
+getting it right as it was received. If you need validation, then <code>this.getQueryData</code> should be used.</p>
+
+<p>The Authentication Filters run before any Route Functions are executed. Have this in mind when designing your Applications.</p>
+
+<h3>Implementation Details</h3>
+
+<p>There are a few important things to know about Controller Filters to be able to use them at full potential:</p>
+
+<ul>
+<li>You add them by doing <code>this.authFilter(callback)</code> from within any controller</li>
+<li>A Controller can have multiple authentication filters by running <code>this.authFilter</code> multiple times.</li>
+<li>The <em>Filter Callback</em> runs in the <em>Controller&rsquo;s Context</em></li>
+<li>The <em>Filter Callback</em> receives three parameters:  <em>request</em>, <em>response</em> and <em>promise</em></li>
+<li>If validation succeeded, you emit the <code>success</code> event on the promise</li>
+<li>If validation fails, you need to send a response manually</li>
+</ul>
+
+
+<h3>Auth Filters &amp; Sessions</h3>
+
+<p>When using the <a href="/middleware#session">Sessions Middleware</a>, it automatically provides a authentication filter for you, which
+deeply integrates with both the controller and your application.</p>
+
+<p>If/when you enable the <em>Sessions Middleware</em>, you can specify a property in your controllers, to determine
+if such controller requires authentication: the <code>authRequired</code> property.</p>
+
+<h3>The authRequired property</h3>
+
+<p>This only applies if the <em>Sessions Middleware</em> is enabled. It has no effect otherwise.<br/>
+For a detailed documentation on this property, refer to the <em>Sessions Middleware</em> <a href="/middleware#session">documentation</a>.</p>
+
+<h2>Application Views</h2>
+
+<p>This section covers everything you need to know about views. Views are rendered by calling <code>res.render</code> from of your
+<em>Route Callbacks</em>. The view paths will be resolved depending on the <em>view</em> specified, as well as the running <em>Controller</em>.</p>
+
+<h3>View Lookup</h3>
+
+<p>It is important to master the view lookup process to be able to use views at their full potential. The table below shows the
+argument passed to <code>res.render</code>, and the corresponding resolved path.</p>
+
+<p>In the table below:</p>
+
+<ul>
+<li>The controller is assumed to be <em>MainController</em>. View paths are relative to <em>app/views/</em>.</li>
+<li>The view extensions are automatically detected, unless manually specified.</li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Parameter of <code>res.render()</code> </th>
+<th> Resolved View Path </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> index </td>
+<td>  main/main-index.html</td>
+</tr>
+<tr>
+<td></td>
+<td> index.html </td>
+<td>  main/index.html</td>
+</tr>
+<tr>
+<td></td>
+<td> @header </td>
+<td>  __layout/header.html</td>
+</tr>
+<tr>
+<td></td>
+<td> @header.mustache </td>
+<td>  __layout/header.mustache</td>
+</tr>
+<tr>
+<td></td>
+<td> @dir/view </td>
+<td>  __layout/dir/view.html</td>
+</tr>
+<tr>
+<td></td>
+<td> @dir/view.mustache </td>
+<td>  __layout/dir/view.mustache</td>
+</tr>
+<tr>
+<td></td>
+<td> #404 </td>
+<td>  __restricted/404.html</td>
+</tr>
+<tr>
+<td></td>
+<td> #404.mustache </td>
+<td>  __restricted/404.mustache</td>
+</tr>
+<tr>
+<td></td>
+<td> #dir/view </td>
+<td>  __restricted/dir/view.html</td>
+</tr>
+<tr>
+<td></td>
+<td> #dir/view.mustache </td>
+<td>  __restricted/dir/view.mustache</td>
+</tr>
+<tr>
+<td></td>
+<td> main/index </td>
+<td>  main/main-index.html</td>
+</tr>
+<tr>
+<td></td>
+<td> /main/index </td>
+<td>  main/main-index.html</td>
+</tr>
+<tr>
+<td></td>
+<td> main/index.html </td>
+<td>  main/index.html</td>
+</tr>
+<tr>
+<td></td>
+<td> /static </td>
+<td>  __static/static.html</td>
+</tr>
+<tr>
+<td></td>
+<td> /static.mustache </td>
+<td>  __static/static.mustache</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>You can see how views are used by having a look at the Controllers from the <a href="https://github.com/derdesign/protos/tree/master/test/fixtures/test.skeleton/app/controllers">Test Suite</a>.</p>
+
+<h3>View Parameters</h3>
+
+<p>When rendering views with <code>res.render</code>, you can pass extra parameters to the view. For example:</p>
+
+<pre><code>res.render('index', {
+  activePage: 'features',
+  message: "Hello World!"
+});
+</code></pre>
+
+<p>These parameters will be available as locals within the view.</p>
+
+<h3>View Locals</h3>
+
+<p>When rendering views, you have a set of <em>local variables</em> you have access to inside views:</p>
+
+<ul>
+<li><strong>protos</strong> &nbsp; <em>Protos global (available as local)</em></li>
+<li><strong>app</strong> &nbsp; <em>Application singleton</em></li>
+<li><strong>req</strong> &nbsp; <em>Request Object</em></li>
+<li><strong>res</strong> &nbsp; <em>Response Object</em></li>
+<li><strong>params</strong> &nbsp; <em>Pointer to <code>req.params</code></em></li>
+<li><strong>session</strong> &nbsp; <em>Pointer to <code>req.session</code></em></li>
+<li><strong>cookies</strong> &nbsp; <em>Pointer to <code>req.cookies</code></em></li>
+<li><strong>locals</strong> &nbsp; <em>View locals object (circular reference)</em></li>
+</ul>
+
+
+<h3>Raw Views</h3>
+
+<p>Protos introduces the concept of <em>Raw Views</em>, to the views that don&rsquo;t render a header/footer. These are still rendered in
+<code>text/html</code>, but only the requested view is rendered, not the other template parts.</p>
+
+<blockquote><p>By default, the Application has <em>Raw Views</em> disabled. You can enable <em>Raw Views</em> globally within your application, by
+editing <strong>config/base.js</strong> and setting <code>rawViews</code> to true.</p></blockquote>
+
+<p>The <em>raw</em> parameter is passed to <code>res.render</code> as a boolean in its last argument:</p>
+
+<pre><code>res.render('index', {
+  activePage: 'features',
+  message: "Hello World!"
+}, true);
+</code></pre>
+
+<p>There are some template engines that force <em>Raw Views</em>, due to their inner workings. These are:</p>
+
+<ul>
+<li>Haml</li>
+<li>Haml-Coffee</li>
+<li>Jade</li>
+</ul>
+
+
+<p>If you&rsquo;re using any of these Template Engines, then the templates won&rsquo;t be <em>MultiPart</em>. In other words, you will need to
+do the templating and inclusion of header/footer and other parts from within the view itself. You can still use view
+partials normally.</p>
+
+<h3>View Extensions</h3>
+
+<p>The following table shows the view extensions for each Template Engine:</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Template Engine </th>
+<th>  Engine Alias </th>
+<th> View Extensions </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> CoffeeKup </td>
+<td> coffeekup </td>
+<td> coffeekup, ck.html</td>
+</tr>
+<tr>
+<td></td>
+<td> DoT </td>
+<td> dot </td>
+<td> dot, dot.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Eco </td>
+<td> eco </td>
+<td> eco, eco.html</td>
+</tr>
+<tr>
+<td></td>
+<td> EJS </td>
+<td> ejs </td>
+<td> ejs, ejs.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Haml </td>
+<td> haml </td>
+<td> haml, haml.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Haml-Coffee </td>
+<td> hamlcoffee </td>
+<td> hamlc, haml.coffee, hamlc.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Handlebars </td>
+<td> handlebars </td>
+<td> handlebars, handlebars.html, hb.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Hogan.js </td>
+<td> hogan </td>
+<td> hogan, hogan.html, hg.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Jade </td>
+<td> jade </td>
+<td> jade, jade.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Jazz </td>
+<td> jazz </td>
+<td> jazz, jazz.html</td>
+</tr>
+<tr>
+<td></td>
+<td> jQuery Templates </td>
+<td> jqtpl </td>
+<td> jqtpl, jqtpl.html, jq.html</td>
+</tr>
+<tr>
+<td></td>
+<td> JSHtml </td>
+<td> jshtml </td>
+<td> jshtml</td>
+</tr>
+<tr>
+<td></td>
+<td> Kernel </td>
+<td> kernel </td>
+<td> kernel, kernel.html, k.html, khtml</td>
+</tr>
+<tr>
+<td></td>
+<td> Liquor </td>
+<td> liquor </td>
+<td> liquor, liquor.html, lq.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Swig </td>
+<td> swig </td>
+<td> swig, swig.html, sw.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Whiskers </td>
+<td> whiskers </td>
+<td> whiskers, whiskers.html, wk.html</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<blockquote><p>You can edit and set new extensions by editing your Application&rsquo;s <strong>config/base.js</strong>, under the <em>engines</em> section. Each
+property you set will refer to the engine extension, and the value is the <em>Engine Alias</em>.</p></blockquote>
+
+<h3>Static Views</h3>
+
+<p>You can create routes in your application without actually creating them in Controllers. You can also place a file in the
+<em>app/views/__static</em> directory.</p>
+
+<p>Let&rsquo;s say your application should handle the following URLs, which mostly contain static content:</p>
+
+<pre><code>http://myapp.com/portfolio
+http://myapp.com/about
+</code></pre>
+
+<p>If you want to keep your routes clean, you don&rsquo;t need to add a simple route to handle these. Just create the following files:</p>
+
+<pre><code>app/views/__static/portfolio.html
+app/views/__static/about.html
+</code></pre>
+
+<p>Each time you access the URLs above, these templates will be used.</p>
+
+<h2>View Partials</h2>
+
+<p>View Partials are one of the beauties of Protos. You can mix &amp; match any view engine. Your application doesn&rsquo;t actually
+care which template engine you use, you can still use partials.</p>
+
+<p>One thing to have in mind, your template&rsquo;s rendering engines will work just fine. This section covers the <em>View Partials</em>, as
+implemented across all the view engines within Protos.</p>
+
+<p>Important things to know about view partials:</p>
+
+<ul>
+<li>Are exposed as local functions within your views</li>
+<li>Can be located anywhere within the controller&rsquo;s <em>views directory</em> path</li>
+<li>Can be located anywhere within the <em>__layout</em> directory path</li>
+<li>Their filenames should start with an underscore</li>
+<li>The view extension determines the template engine to be used</li>
+<li>Partial functions <em>must</em> receive the <em>locals</em> object as argument</li>
+</ul>
+
+
+<p>To learn to create view partials, refer to the <a href="#creating-application-resources_creating-view-partials">Creating View Partials</a> section.</p>
+
+<blockquote><p>The View Partials are exposed as local functions within your views. Most views allow running regular JavaScript functions and
+receiving parameters passed as their <em>locals</em>. Protos uses this common approach and exploits its full potential.</p></blockquote>
+
+<h3>Automatic Watching for Changes</h3>
+
+<p>On all environments except <strong>production</strong>, the framework re-compiles the view partial functions whenever any changes are made to the template files.</p>
+
+<h3>Exposed Functions</h3>
+
+<p>The table below shows the location and the explosed function name. Paths are relative to <em>app/views</em>.</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> View Partial File </th>
+<th> Exposed View Function </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> main/_partial.html </td>
+<td> main_partial</td>
+</tr>
+<tr>
+<td></td>
+<td> blog/post/_comment.html </td>
+<td> blog_post_comment</td>
+</tr>
+<tr>
+<td></td>
+<td> __layout/_sidebar.html </td>
+<td> layout_sidebar</td>
+</tr>
+<tr>
+<td></td>
+<td> __layout/widget/rss.html </td>
+<td> layout_widget_rss</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>To render a view partial inside a view, just call the function. The following example uses the Liquor engine to import a view
+partial into the view:</p>
+
+<pre><code>&lt;div class="post-comment"&gt;
+  #{blog_post_comment(locals.comments)}
+&lt;/div&gt;&lt;!-- .post-comment --&gt;
+</code></pre>
+
+<h2>View Helpers</h2>
+
+<p>View helpers are also functions that are exposed into the views. They are similar in functionality to view partials, but
+they end up in the views in a slightly different way.</p>
+
+<blockquote><p>View Helpers are generated from the Methods of the Helpers defined in your Application.</p></blockquote>
+
+<p>Let&rsquo;s say you have created the following <em>Helpers</em> in your Application:</p>
+
+<p>&bull; <em>app/helpers/main.js</em></p>
+
+<pre><code>function MainHelper(app) {
+
+  this.hello_world = function(data) {
+    return JSON.stringify(data);
+  }
+
+}
+</code></pre>
+
+<p>&bull; <em>app/helpers/accounts.js</em></p>
+
+<pre><code>function AccountsHelper(app) {
+
+  this.show_info = function(data) {
+    return JSON.stringify(data);
+  }
+
+}
+</code></pre>
+
+<p>&bull; <em>app/helpers/dashboard.js</em></p>
+
+<pre><code>function DashboardHelper(app) {
+
+  this.render_widget = function(data) {
+    return JSON.stringify(data);
+  }
+
+}
+</code></pre>
+
+<p>Then, your views will have the following methods exposed:</p>
+
+<ul>
+<li><code>$hello_world</code></li>
+<li><code>$accounts_show_info</code></li>
+<li><code>$dashboard_render_widget</code></li>
+</ul>
+
+
+<p>The following are important things to know about View Helpers:</p>
+
+<ul>
+<li>Are added into the views from the <em>Helper Methods</em> defined in your Application</li>
+<li>The methods exposed by <em>MainHelper</em> are not prefixed</li>
+<li>The methods exposed by the other helpers are prefixed with the <em>helper alias</em></li>
+</ul>
+
+
+<h3>Default View Helpers</h3>
+
+<p>The framework provides a default set of helpers you can use:</p>
+
+<ul>
+<li><strong>$sanitize</strong>: <em>Sanitizes input</em></li>
+<li><strong>$escape</strong>: <em>Escapes input</em></li>
+<li><strong>$safe_str_</strong>: <em>Sanitizes &amp; Escapes input</em></li>
+</ul>
+
+
+<h3>Accessing View Helpers</h3>
+
+<p>All of the application&rsquo;s helpers can be accessed via the <code>app.helpers</code> object, using the helper alias. Also,
+helpers can be accessed using alias properties in the Application&rsquo;s singleton. For example:</p>
+
+<ul>
+<li><code>app.helpers.main</code> &raquo; <code>app.mainHelper</code></li>
+<li><code>app.helpers.utils</code> &raquo; <code>app.utilsHelper</code></li>
+<li><code>app.helpers.custom-stuff</code> &raquo; <code>app.customStuffHelper</code></li>
+</ul>
+
+
+<h2>Application Models &amp; API</h2>
+
+<p>Models provide an abstraction of data operations. Protos Models have <em>ORM</em> built-in. They are <em>database-agnostic</em> by nature, which
+means you can define your data structure in the model, and you don&rsquo;t need to care about the underlying database.</p>
+
+<p>Models use Drivers behind the scenes to perform database operations. The Drivers themselves perform low-level operations in the
+database to manipulate the model&rsquo;s data.</p>
+
+<h3>Defining the Driver</h3>
+
+<p>Each model needs a driver. Models by default inherit the <em>default</em> driver, configured in <em>config/database.js</em>.</p>
+
+<p>To connect the model with a Driver, you need to provide the Driver&rsquo;s <em>resource path</em>:</p>
+
+<pre><code>this.driver = 'mongodb:users'
+</code></pre>
+
+<p>For more info on <em>resource paths</em>, please refer to the <a href="#application-configuration">Application Configuration</a> section.</p>
+
+<h3>Defining Properties</h3>
+
+<p>The model&rsquo;s properties defines is structure and data types. These are used for <em>automatic typecasting</em> and <em>validation</em> purposes.</p>
+
+<p>The <code>properties</code> property defines the model&rsquo;s information. Here&rsquo;s how you set it up:</p>
+
+<pre><code>this.properties = {
+  user    : {type: 'string', required: true, validates: 'alnum_underscores'},
+  pass    : {type: 'string', required: true, validates: 'password'},
+  friends : {type: 'integer', validates: 'integer', default: 0},
+  valid   : {type: 'boolean', default: true},
+  date    : {type: 'timestamp', validates: 'timestamp', default: function() { return new Date(); }},
+  object  : {type: 'object', default: {a: 1, b: 2, c: 3}},
+  array   : {type: 'array', default: [1,2,3,4]}
+}
+</code></pre>
+
+<p>The following table explains the different keywords:</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Property </th>
+<th> Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> <strong>type</strong>     </td>
+<td> Type of data. Available types are: (string|integer|boolean|timestamp|object|array)</td>
+</tr>
+<tr>
+<td></td>
+<td> <strong>required</strong> </td>
+<td> Whether or not  the field is required</td>
+</tr>
+<tr>
+<td></td>
+<td> <strong>validates</strong> </td>
+<td> Regular Expression or Alias used to validate the property</td>
+</tr>
+<tr>
+<td></td>
+<td> <strong>default</strong> </td>
+<td> Sets the default value for the property. Accepts both values &amp; functions</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<blockquote><p>The model will automatically typecast values to their respective JavasCript Native Objects.</p></blockquote>
+
+<p>One of the most powerful things about Protos&rsquo;s model implementation, are the <em>Object Types</em>. You can safely store <em>JavaSript
+Hashes</em> and <em>Arrays</em> into model properties.</p>
+
+<p>The <em>type</em> keyword will define how the data will be typecasted. You still need to set validation rules, since validation is
+a separate process.</p>
+
+<p>When validating, here&rsquo;s how the framework knows which Regular Expression to use:</p>
+
+<ol>
+<li>RegExp Literal</li>
+<li>Model-Specific Validation</li>
+<li>Application Regular Expression Alias</li>
+</ol>
+
+
+<h3>Defining Validation</h3>
+
+<p>The Model Validation uses the same approach as <a href="#routes">Route Validation</a>. It will use the Regular Expressions defined
+by the application. Any <em>Regular Expression Alias</em> can be used to validate fields.</p>
+
+<p>There is an extra layer of validation provided by models: the <code>validation</code> property, which defines
+Model-Specific validation rules. Imagine it as <em>Regular Expression Aliases</em> that are only avaliable to the model.</p>
+
+<p>Here&rsquo;s how you define the validation in a model:</p>
+
+<pre><code>this.validation = {
+  'account': function(str) {
+    return checkAccount(str);
+  },
+  'username: /^(ernie|james)$/
+}
+</code></pre>
+
+<p>You can then use these validation aliases freely to validate your model&rsquo;s properties. Defining validation for the model is optional,
+you can either use RegExp Literals, or the Applications' Regular Expressions.</p>
+
+<h3>The Model API</h3>
+
+<p>The table below shows the Methods provided by all Model instances:</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Parameters </th>
+<th> Function </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> new &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+<td> o, cdata, callback &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+<td> Creates a new model object. Saves into the database, then creates the model with the provided data.</td>
+</tr>
+<tr>
+<td></td>
+<td> create </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>new</em></td>
+</tr>
+<tr>
+<td></td>
+<td> insert </td>
+<td> o, cdata, callback </td>
+<td> Same behavior as new, but instead of returning a new object, returns the ID for the new database entry.</td>
+</tr>
+<tr>
+<td></td>
+<td> add </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>insert</em></td>
+</tr>
+<tr>
+<td></td>
+<td> get </td>
+<td> o, cdata, callback </td>
+<td> Gets an new model object.</td>
+</tr>
+<tr>
+<td></td>
+<td> find </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>get</em></td>
+</tr>
+<tr>
+<td></td>
+<td> getAll </td>
+<td> o, cdata, callback </td>
+<td> Gets all records from the database</td>
+</tr>
+<tr>
+<td></td>
+<td> findAll </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>getAll</em></td>
+</tr>
+<tr>
+<td></td>
+<td> save </td>
+<td> o, cdata, callback </td>
+<td> Saves the model data into the Database.</td>
+</tr>
+<tr>
+<td></td>
+<td> update </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>save</em></td>
+</tr>
+<tr>
+<td></td>
+<td> delete </td>
+<td> o, cdata, callback </td>
+<td> Deletes the model data from the database.</td>
+</tr>
+<tr>
+<td></td>
+<td> destroy </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>delete</em></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>Here&rsquo;s the meaning of the Parameters:</p>
+
+<ul>
+<li><strong>o</strong> &nbsp; <em>Object containing the model properties to query</em></li>
+<li><strong>cdata</strong> &nbsp; <em><a href="#database-drivers_cache-keywords">Cache Data</a> to pass to the driver: [ cacheID, cacheInvalidate, cacheTimeout ]</em></li>
+<li><strong>callback</strong> &nbsp; <em>Callback to call upon completion</em></li>
+</ul>
+
+
+<h3>Application&rsquo;s Model Methods</h3>
+
+<p>Models can be accessed in several ways. All models expose things in a similar way, so explaining with a single model would
+be enough to understand the concept. For the sake of this example, we&rsquo;ll assume <em>UsersModel</em>.</p>
+
+<p>The <em>UsersModel</em> instance can be accessed via <code>app.usersModel</code> and <code>app.models.usersModel</code>. Each model instance has the methods
+documented in the previous section.</p>
+
+<p>The table below shows the model methods and their equivalent:</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th>  Equivalent </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> app.model.newUser </td>
+<td> app.usersModel.new</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.createUser </td>
+<td> app.usersModel.create</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.insertUser </td>
+<td> app.usersModel.insert</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.addUser </td>
+<td> app.usersModel.add</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.getUser </td>
+<td> app.usersModel.get</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.findUser </td>
+<td> app.usersModel.find</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.findAllUsers </td>
+<td> app.usersModel.findAll</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.saveUser </td>
+<td> app.usersModel.save</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.updateUser </td>
+<td> app.usersModel.update</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.deleteUser </td>
+<td> app.usersModel.delete</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.destroyUser </td>
+<td> app.usersModel.destroy</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>The Model Generator Concept</h3>
+
+<p>Protos introduces the <em>&ldquo;Model Generator&rdquo;</em> concept. In JavaScript &amp; Node.js, most callbacks are asynchronous. This makes the
+usual ORM approach to create an object and <em>then</em> synchronously saving its settings is not that intuitive with most database
+modules running asynchronously.</p>
+
+<p>Each <em>Model Instance</em> is itself a <em>Model Generator</em>. The term can also be interchangeable with <em>Model Factory</em>.</p>
+
+<p>The Model Object does not operate directly on model objects. <em>Model Objects</em> (introduced on the next section) use the methods
+provided by the Model API, to perform the CRUD operations.</p>
+
+<blockquote><p>Model Generators are used to retrieve a group of<em> Models Objects</em>. The returned objects will be directly related to the parameters
+you pass to the Model Generator&rsquo;s method.</p></blockquote>
+
+<p>The term exists to make a <em>distinction</em> between the object that <em>generates</em>, and the object that is <em>generated</em>.</p>
+
+<h3>The Model Object Concept</h3>
+
+<p>Model Objects are individually retrieved by <em>Model Generators</em>. They contain a set of methods totally different from the ones
+found in the <em>Model Generator</em>.</p>
+
+<blockquote><p>Relationships defined in Models expose their own methods into the Model Objects created by the Models</p></blockquote>
+
+<p>The sections below will explain in detail which methods are exposed by each relationship. If multiple relationships are set
+on the model (either <em>Inbound</em> or <em>Outbound</em>), their specific methods will end up in the Model Object.</p>
+
+<p>You can access the Model Object&rsquo;s prototype via the <code>modelObjectProto</code> on the Model Instance. In this case, the term &ldquo;Model&rdquo; refers
+to the <em>Model Generator</em>. The object is itself bound to the <code>__proto__</code> property of all model instances. The real prototype is
+found on <code>modelObjectProto.constructor.prototype</code>.</p>
+
+<p>Each Model Object as a <code>generator</code> property, which points to the <em>Model Generator</em> that created it.</p>
+
+<p>Model Objects are analogous to the models you see in other Application Frameworks or ORM Implementations. The following table
+shows the Methods provided by the Model Object&rsquo;s <em>Prototype</em>:</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Arguments </th>
+<th> Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> save </td>
+<td> cdata, callback </td>
+<td> Saves the model data</td>
+</tr>
+<tr>
+<td></td>
+<td> update </td>
+<td> cdata, callback </td>
+<td> Alias of <em>save</em></td>
+</tr>
+<tr>
+<td></td>
+<td> sync </td>
+<td> cdata, callback </td>
+<td> Alias of <em>save</em> </td>
+</tr>
+<tr>
+<td></td>
+<td> delete </td>
+<td> cdata, callback </td>
+<td> Removes model</td>
+</tr>
+<tr>
+<td></td>
+<td> remove </td>
+<td> cdata, callback </td>
+<td> Alias of <em>delete</em></td>
+</tr>
+<tr>
+<td></td>
+<td> destroy </td>
+<td> cdata, callback </td>
+<td> Alias of <em>delete</em></td>
+</tr>
+<tr>
+<td></td>
+<td> createMulti </td>
+<td> options </td>
+<td> Creates a multi-wrapped object from Model Object</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>Here&rsquo;s the meaning of the Parameters:</p>
+
+<ul>
+<li><strong>cdata</strong> &nbsp; <em><a href="#database-drivers_cache-keywords">Cache Data</a> to pass to the driver: [ cacheID, cacheInvalidate, cacheTimeout ]</em></li>
+<li><strong>callback</strong> &nbsp; <em>Callback to call upon completion</em></li>
+<li><strong>options</strong> &nbsp; <em>Options to pass to the Multi constructor</em></li>
+</ul>
+
+
+<h3>Query Caching</h3>
+
+<p>Models inherit query caching because they have a Driver under the hood. This means that they automatically receive the
+caching functionality. 100% Free.</p>
+
+<h3>Model Relationships</h3>
+
+<p>Protos implements relationships between models. Relationships allow <em>Model Objects</em> to connect with other model objects, adding
+the additional ability to perform actions on such relationships.</p>
+
+<p>Relationships only affect <em>Model Objects</em>. Each relationship, depending if it is <em>Inbound</em> or <em>Outbound</em>, will modify either
+the source or the destination model.</p>
+
+<blockquote><p>The Relationships implementation makes use of <strong>Linguistic Inflection</strong>, so the names should be specified in a specific form, either
+<em>plural</em> or <em>singular</em> depending on the relationship being established.</p></blockquote>
+
+<p>An <strong>Inbound</strong> Relationship is where the <em>source</em> model is the target receiving the link to the <em>destination</em> model.</p>
+
+<p>An <strong>Outbound</strong> Relationship is where the <em>destination</em> model is the target receiving the link to the <em>source</em> model.</p>
+
+<p>The sections below explain the relationships, and their specific requirements and exposed methods.</p>
+
+<h3>hasOne Relationship</h3>
+
+<p>This is an <em>Inbound</em> relationship, affecting the model which establishes the connection. This relationship consists on the following:</p>
+
+<blockquote><p>The model establishing a connection, receives a one-to-one connection with the target model. A <em>string</em> property will be assigned into the
+Model Generator, which will define the link to the destination model.</p></blockquote>
+
+<p>Here&rsquo;s how you set a <em>hasOne</em> relationship:</p>
+
+<pre><code>this.hasOne = 'user';
+</code></pre>
+
+<p>The target model <em>must</em> be specified in <em>singular form</em>. This relationship will set a <code>user</code> property into the <em>Model Generator</em>, which
+links to a <em>Model Object</em> of <em>UsersModel</em>.</p>
+
+<p>Additionally, you can set the relationship to an <em>alias</em> of the target model. This allows you to use a different property other
+than the singular form of the target model:</p>
+
+<pre><code>this.hasOne = 'buddy(user)';
+</code></pre>
+
+<p>This will set a <code>buddy</code> property into the <em>Model Generator</em>, which links to a <em>Model Object</em> of <em>UsersModel</em>.</p>
+
+<p>Based on the property assigned, the <em>Model Object</em>&rsquo;s prototype will be extended with new methods. The following table outlines
+the inherited methods on the <em>Model Object</em> establishing the relationship. A property of <code>user</code> is assumed to be added:</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Arguments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Provides </th>
+<th> Description </th>
+<th>  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> getUser </td>
+<td> callback </td>
+<td> err, model </td>
+<td> Gets the linked model</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> setUser </td>
+<td> model/id, callback </td>
+<td> err </td>
+<td> Links model to self</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> removeUser </td>
+<td> callback </td>
+<td> err </td>
+<td> Breaks the relationship with model</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> deepRemoveUser </td>
+<td> callback </td>
+<td> err </td>
+<td> Breaks relationship with model and deletes the unlinked model from database</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>Assuming <em>AccountsModel</em> has set the relationship, the following example shows how to use the relationship:</p>
+
+<pre><code>app.model.getAccount({id: 99}, function(err, account) {
+  account.deepRemoveUser(function(err) {
+    if (err) throw err;
+    else console.exit("Successfully unlinked &amp; removed user from account"); // Account now has no user linked
+  });
+});
+</code></pre>
+
+<h3>hasMany Relationship</h3>
+
+<p>This is an <em>Inbound</em> relationship, affecting the model which establishes the connection. This relationship consists on the following:</p>
+
+<p>The model establishing the connection receives a one-to-many connection with the target model. An <em>array</em> property will be assigned
+into the Model Generator, which will define the links to the destination model.</p>
+
+<p>Here&rsquo;s how you set a <em>hasMany</em> relationship:</p>
+
+<pre><code>this.hasMany = 'users';
+</code></pre>
+
+<p>You can also specify an array of target models:</p>
+
+<pre><code>this.hasMany = ['groups', 'buddies(users)']
+</code></pre>
+
+<p>Aliases work exactly the same for this relationship as well. The only difference is that <em>plural form</em> must be used to define the target models.</p>
+
+<p>The example above will set a <code>groups</code> array property into the <em>Model Generator</em>, which contains links to <em>Model Objects</em> of <em>GroupsModel</em>. Additionally,
+a <code>users</code> property will be added, containing links to <em>Model Objects</em> of <em>UsersModel</em>.</p>
+
+<p>Based on the property assigned, the <em>Model Object</em>&rsquo;s prototype will be extended with new methods. The following table outlines
+the inherited methods on the <em>Model Object</em> establishing the relationship. A property of <code>buddies</code> is assumed to be added:</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Arguments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Provides&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Description </th>
+<th>  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> addBuddy </td>
+<td> model/id, callback </td>
+<td> err </td>
+<td> Appends a link to model in self. Restricts to a single item.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> addBuddies </td>
+<td> array, callback </td>
+<td> err </td>
+<td> Connects Models or ID&rsquo;s connected in array with self</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> getBuddy </td>
+<td> model/id, callback </td>
+<td> err, model </td>
+<td> Gets a linked model</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> getBuddies </td>
+<td> array, callback </td>
+<td> err, models </td>
+<td> Retrieves the specified models (as long as a connection exists)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> removeBuddy </td>
+<td> model/id, callback </td>
+<td> err </td>
+<td> Unlinks the model from self. Restricts to a single item.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> removeBuddies </td>
+<td> array, callback </td>
+<td> err </td>
+<td> Breaks the relationsip with the specifeid models/ids (as long as a connection exists)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> deepRemoveBuddy </td>
+<td> model/id, callback </td>
+<td> err </td>
+<td> Breaks relationship with model and deletes the unlinked model from database. Restricts to a single item.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> deepRemoveBuddies </td>
+<td> array, callback </td>
+<td> err </td>
+<td> Breaks relationship with models and deletes the unlinked models from database.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>Assuming <em>UsersModel</em> set the relationship, the following example shows how to use the relationship:</p>
+
+<pre><code>// we got buddy earlier
+
+app.model.getUser({name: 'ernie'}, function(err, user) {
+  if (err) throw err;
+  else user.addBuddy(buddy, function(err) {
+     if (err) throw err;
+     else console.exit("Buddy and User are now pals");
+  });
+});
+</code></pre>
+
+<h3>belongsTo Relationship</h3>
+
+<p>This is an <em>Outbound</em> relationship. Setting this relationship is exactly the same as setting a <em>hasOne</em> relationship, but swapping
+source and destination models.</p>
+
+<p>For example:</p>
+
+<pre><code>// Relationship being set from UsersModel
+
+this.belongsTo = 'company.boss'
+</code></pre>
+
+<p>Assuming the relationship is being set by <em>UsersModel</em>, this would translate to:</p>
+
+<pre><code>// Relationship as translated into CompaniesModel
+
+this.hasOne = 'boss(user)';
+</code></pre>
+
+<p>The same rules for <em>hasOne</em> apply. You need to specify <code>{target-model}.{target-property}</code>. Both the <em>target model</em> and <em>target property</em>
+should be specified in <em>Singular Form</em>.</p>
+
+<h3>belongsToMany Relationship</h3>
+
+<p>This is an <em>Outbound</em> relationship. Setting this relationship is exactly the same as setting a <em>hasMany</em> relationship, but swapping
+the source and destination models.</p>
+
+<p>For example:</p>
+
+<pre><code>// Relationship as being set from UsersModel
+
+this.belongsToMany = 'company.employees'
+</code></pre>
+
+<p>Assuming the relationship is being set from <em>UsersModel</em>, this would translate to:</p>
+
+<pre><code>// Relationship as translated into CompaniesModel
+
+this.hasMany = 'employees(users)';
+</code></pre>
+
+<p>The same rules for <em>hasMany</em> apply. You need to specify <code>{target-model}.{target-property}</code>. The <em>target model</em> is specified in
+<em>Singular Form</em>, and the <em>target property</em> should be specified in <em>plural form</em>.</p>
+
+<h2>Database Drivers</h2>
+
+<p>Drivers provide a set of methods to operate with the underlying database, as well as a <em>Model API Implementation</em>, which allows
+the driver to be used with a Model.</p>
+
+<p>Besides handling model internal operations, Drivers can be used by themselves. Here&rsquo;s how you get a <em>Driver Instance</em> so you
+can work with it:</p>
+
+<pre><code>app.getResource('drivers/mongodb:users', function(driver) {
+  console.exit(driver);
+});
+</code></pre>
+
+<p>You specify the <em>resource path</em> to the Driver you want to use. Such driver uses the configuration specified in
+<em>config/database.js</em>. Driver instances are available via <code>app.drivers</code>.</p>
+
+<p>Protos implements the following Drivers, which can be used to power Models:</p>
+
+<ul>
+<li><a href="https://github.com/derdesign/protos/blob/master/drivers/mongodb.js">MongoDB</a></li>
+<li><a href="https://github.com/derdesign/protos/blob/master/drivers/mysql.js">MySQL</a></li>
+</ul>
+
+
+<p>If you&rsquo;re interested in contributing a new Database Driver, you&rsquo;re welcome to do so. You have a clean API to work with, so
+it&rsquo;s pretty easy to implement new Database Drivers into the framework. Also, the source has been documented properly.</p>
+
+<h3>Query Caching</h3>
+
+<p>You can attach a Storage into a Driver, which will be used as the underlying <em>Cache Storage</em> for such driver.</p>
+
+<p>The Storage you define in the Driver&rsquo;s configuration will be inherited by the Model that uses it.</p>
+
+<p>To enable query caching in a driver, just specify the <em>Resource Path</em> pointing to the storage you want to use
+as the caching layer. This is done in the Database configuration, on <em>config/database.js</em>.</p>
+
+<h3>Cache Keywords</h3>
+
+<p>The following extra properties can be specified to trigger cache operations:</p>
+
+<ul>
+<li><strong>cacheID</strong> &nbsp; This will set the ID for the current cache. If the cache is not stored, the retrieved query will then be cached.
+Any subsequent queries will return the cached result. This will happen until the cache is <em>invalidated</em>.</li>
+<li><strong>cacheInvalidate</strong> &nbsp; This will invalidate a cacheID, and will force any subsequent queries to regenerate the cache for the specified ID.</li>
+<li><strong>cacheTimeout</strong> &nbsp; Amount of seconds in which the cacheID will be invalidated. The effect will be the same as cacheInvalidate. This only works if the storage
+backend supports TTL Expiration.</li>
+</ul>
+
+
+<p>This approach is both useful and interesting. Imagine you have a heavy query in your homepage, you need to retrieve 100 records in a
+rather expensive query. You can then cache the query using the ID <code>homepage_query</code>.</p>
+
+<p>The cache will always be valid, <em>unless</em> a new user is added. So, whenever you add a new user you need to <em>invalidate</em> the <code>homepage_query</code>, so
+the next time the homepage is accessed, the cache will be regenerated, this time accounting for the new user that has just been
+created.</p>
+
+<p>Internally, this all is done behind the scenes, and in a very organized way. You don&rsquo;t need to set any timeouts (even though you can), since
+the cache will remain valid until something invalidates it.</p>
+
+<h3>Cache storage</h3>
+
+<p>This example uses the <a href="https://github.com/derdesign/protos/blob/master/drivers/mongodb.js">MongoDB</a> driver to cache the <code>homepage_query</code>:</p>
+
+<pre><code>mongodb.queryAll({
+  collection: 'users',
+  fields: {'user': 1, 'pass': 1},
+  cacheID: 'homepage_query',
+}, function(err, docs) {
+  console.log([err, docs]);
+});
+</code></pre>
+
+<p>Any subsequent queries you perform with this cacheID, will return the cached content if it exists, otherwise it will query the
+records and cache the results into the <code>homepage_query</code> ID. This will happen until the cache is invalidated.</p>
+
+<h3>Cache Invalidation</h3>
+
+<p>This example uses the <a href="https://github.com/derdesign/protos/blob/master/drivers/mongodb.js">MongoDB</a> driver to invalidate the <code>homepage_query</code> cache:</p>
+
+<pre><code>mongodb.insertInto({
+  collection: 'users',
+  values: {user: 'hello', pass: 'passme'},
+  cacheInvalidate: 'homepage_query'
+}, function(err, docs) {
+  console.log([err, docs]);
+});
+</code></pre>
+
+<p>This query will invalidate the <code>homepage_query</code> cache, and will force any subsequent requests to regenerate it.</p>
+
+<h2>Storages API</h2>
+
+<p>Storages provide a common transport which can be used as a caching layer, or as a storage layer for the Application,
+Drivers and Models.</p>
+
+<p>Storages are configured in <em>config/storage.js</em>. Here&rsquo;s how you get a storage:</p>
+
+<pre><code>app.getResource('storages/redis:session', function(storage) {
+  console.exit(storage);
+});
+</code></pre>
+
+<p>All storages implement a common API, that provide a layer of abstraction between two endpoints. The following table explains
+the Storage API Methods:</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Arguments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Provides&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> get </td>
+<td> key, callback </td>
+<td> err, results </td>
+<td> Retrieves one or more records from the storage backend (key accepts string/array)</td>
+</tr>
+<tr>
+<td></td>
+<td> getHash </td>
+<td> key, callback </td>
+<td> err, hash </td>
+<td> Retrieves a hash from the storage backend</td>
+</tr>
+<tr>
+<td></td>
+<td> set </td>
+<td> key, value, callback </td>
+<td> err </td>
+<td> Inserts one or more records into the storage backend. Key can also be an object with keys/values (skip value)</td>
+</tr>
+<tr>
+<td></td>
+<td> setHash </td>
+<td> key, hash, callback </td>
+<td> err </td>
+<td> Inserts a hash (object) into the storage backend</td>
+</tr>
+<tr>
+<td></td>
+<td> updateHash </td>
+<td>  key, object, callback </td>
+<td> err </td>
+<td> Updates a hash with new values in object</td>
+</tr>
+<tr>
+<td></td>
+<td> deleteFromHash </td>
+<td> hash, key, callback </td>
+<td> err  </td>
+<td> Deletes one or more keys from a specific hash</td>
+</tr>
+<tr>
+<td></td>
+<td> delete </td>
+<td> key, callback </td>
+<td> err </td>
+<td> Deletes one or more records from the storage backend</td>
+</tr>
+<tr>
+<td></td>
+<td> rename </td>
+<td> oldkey, newkey </td>
+<td> err </td>
+<td> Renames a key</td>
+</tr>
+<tr>
+<td></td>
+<td> expire </td>
+<td> key, timeout, callback </td>
+<td> err  </td>
+<td>  Makes a specific key expire in a certain amount of time (only on backends that support TTL)</td>
+</tr>
+<tr>
+<td></td>
+<td> multi </td>
+<td> config </td>
+<td> N/A </td>
+<td> Allows execution of multiple storage operations</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>All the methods have the same effect, regardless of which storage backend you use. You are guaranteed to receive the same results.</p>
+
+<h3>Available Storages</h3>
+
+<p>Protos provides the following Storages:</p>
+
+<ul>
+<li><a href="https://github.com/derdesign/protos/blob/master/storages/mongodb.js">MongoDB</a></li>
+<li><a href="https://github.com/derdesign/protos/blob/master/storages/redis.js">Redis</a></li>
+</ul>
+
+
+<p>For more information about the Storage API, you can check out <a href="https://github.com/derdesign/protos/blob/master/lib/storage.js">its source</a>.</p>
+
+<h2>Application &amp; Framework Methods</h2>
+
+<p>Protos provides several methods in the Application Singleton that you can use right away in your applications. You can start
+using these with your applications. Full documentation can be found in the source code.</p>
+
+<h3>Application API</h3>
+
+<p>For a list of the methods implemented in the application singleton, refer to the
+<a href="https://github.com/derdesign/protos/blob/master/lib/application.js">application.js</a> source.</p>
+
+<h3>Protos API</h3>
+
+<p>To see the available methods provided by the framework&rsquo;s internals, refer to the sources in <a href="https://github.com/derdesign/protos/tree/master/lib">lib/</a></p>
+
+</div></div><!-- .ovf | content -->
+
+<div id="footer">
+  <div class="wrap">
+    <span class="copyright">
+      &copy; 2012 Ernesto M&eacute;ndez. &nbsp; Powered by Protos v0.0.4
+    </span>
+  </div><!-- .wrap -->
+</div><!-- footer -->
+
+<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+
+
+<script type="text/javascript" src="js/client.min.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-10838231-18']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+</body>
+</html>

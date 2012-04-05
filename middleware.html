@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en-US" id="top">
+<head>
+<title>Protos Web Framework &raquo; Middleware</title>
+<meta charset="utf-8" />
+
+<meta name='description' content='Web Application Framework for node.js'/>
+<meta name='keywords' content='mvc, web, application, framework, node, nodejs, node.js, js, javascript, restful, middleware' />
+
+<link rel="stylesheet" type="text/css" href="css/client.min.css" />
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" />
+</head>
+<body id="middleware">
+  
+<div id="header" class="fw">
+  <div class="wrap">
+    <a id="logo" href="index.html"><img alt="Protos" width="325" height="75" src="images/logo.png" /></a>
+    <span>Web Application Framework for <a href="http://nodejs.org">node.js</a></span>
+  </div><!-- .wrap -->
+</div><!-- header -->
+
+<div id="nav-wrap">
+  <ul id="nav">
+    <li><a href="index.html">Features</a></li>
+    <li><a href="guide.html">Guide</a></li>
+    <li class="active"><a href="middleware.html">Middleware</a></li>
+    <li><a href="https://groups.google.com/group/protos-web-framework">Support</a></li>
+    <li><a href="https://github.com/derdesign/protos">Github</a></li>
+  </ul><!-- nav -->
+</div><!-- nav-wrap -->
+
+<span id="expander"></span>
+<a id="top-btn" href="#top">&uarr;</a>
+<div id="toc-sidebar"></div>
+
+<a id="fork-ribbon" href="http://github.com/derdesign/protos"><img src="images/fork-ribbon.png" alt="Fork me on GitHub"></a>
+
+<div id="content"><div class="ovf">
+
+<h2>asset_compiler</h2>
+
+<p>Provides the application with asset compilation features.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://lesscss.org/">http://lesscss.org/</a></li>
+<li><a href="http://coffeescript.org/">http://coffeescript.org/</a></li>
+<li><a href="http://learnboost.github.com/stylus/">http://learnboost.github.com/stylus/</a></li>
+</ul>
+
+
+<h3>Configuration options</h3>
+
+<ul>
+<li><strong>minify</strong> &nbsp; <em>Assets to be minified. {target: [sources]}</em></li>
+<li><strong>watchOn</strong> &nbsp; <em>Array containing environments in which the assets will be automatically compiled on change</em></li>
+<li><strong>compile</strong> &nbsp; <em>Extensions to compile and/or watch.</em></li>
+<li><strong>compileExts</strong> &nbsp; <em>Object containing the target extensions of compiled assets. Contains {ext: outExt}</em></li>
+<li><strong>compilers</strong> &nbsp; <em>Object containing the functions that compile the target extensions.</em></li>
+<li><strong>uglifyOpts</strong> &nbsp; <em>UglifyJS options</em></li>
+</ul>
+
+
+<p>If the <code>compile</code> array is found in the middleware configuration object, then the default assets (such as
+less, coffee &amp; stylus) will be disabled and replaced with your own extensions. This allow to only watch
+for .coffee files, for example.</p>
+
+<h3>Adding Extensions &amp; Compilers</h3>
+
+<p>You can define your own extensions and compilers to be used by the application. Protos provides a solid
+platform in which you can extend upon, and integrate your own asset compilers. Here&rsquo;s how you do it:</p>
+
+<ol>
+<li>Add the custom extension in the <code>compile</code> array</li>
+<li>Add the target extension of the compiled file in the <code>compiledExts</code> object</li>
+<li>Add the Compiler function, receiving [source, callback] into the <code>compilers</code> object. The function should run the callback with [err, code]</li>
+</ol>
+
+
+<p>These are the steps required to register your own extension to compile/watch. You will now be able to
+compile and watch the files with your custom extension.</p>
+
+<p>You don&rsquo;t need to worry about preventing access to the source of your custom extension, since the middleware
+will automatically respond with HTTP/404 on access to the resource.</p>
+
+<p>Also, your custom compiler automatically has watch support. If you make any changes to your source file, the
+resource will be automatically compiled.</p>
+
+<h3>Asset Minification &amp; Compression</h3>
+
+<p>You can compile several assets into multiple JavaScript or CSS Files, as such:</p>
+
+<pre><code>app.use('asset_compiler', {
+  minify: {
+    'client.min.css': ['css/blueprint.css', 'print.less', 'layout.less', 'sidebar.styl'],
+    'client.min.js': ['js/client.js', 'js/responsive.coffee', 'js/events.coffee'],
+    'compat.min.js': 'js/compat.js'
+  }
+});
+</code></pre>
+
+<p>The paths you specify, are relative to your application&rsquo;s public/ directory. The example above will output two files into your
+application&rsquo;s public/ directory:</p>
+
+<pre><code>/public/client.min.css
+/public/client.min.js
+/public/compat.min.js
+</code></pre>
+
+<p>The target compilation assets (the ones being merged &amp; minified) won&rsquo;t be served by the Static File Server, and an HTTP/404
+response will be sent upon access to such resources.</p>
+
+<p>This means that nobody will be able to access <em>print.less</em>, <em>js/client.js</em> or any of the files that are being merged. These
+files are automatically blocked, since their content is accessed via their minified/compiled counterparts.</p>
+
+<h3>Debug Messages</h3>
+
+<p>Set <code>app.debugLog</code> to true if you want to inspect the logs emitted by this middleware.</p>
+
+<h2>body_parser</h2>
+
+<p>Parse request bodies and file uploads in POST/PUT requests.</p>
+
+<p>The files uploaded will be stored in your app&rsquo;s <code>incoming/</code> directory.</p>
+
+<h3>Configuration Options</h3>
+
+<ul>
+<li><strong>maxFieldSize</strong> &nbsp; <em>Max amount of bytes to allow for each field</em></li>
+<li><strong>maxUploadSize</strong> &nbsp; <em>Max number of bytes to allow for uploads</em></li>
+<li><strong>keepUploadExtensions</strong> &nbsp; <em>If set to true (default) will keep extensions for uploaded files</em></li>
+</ul>
+
+
+<h3>Controller::getRequestData</h3>
+
+<p>The middleware exposes a new method for controllers: <code>getRequestData</code>, which retrieves POST fields &amp; files, with validation &amp;
+CSRF protection. If the CSRF token is specified, the request will be validated against it. On failure to validate, an HTTP/400 response will be sent.</p>
+
+<p>The method works similarly as the <a href="/guide#routes_validation-of-route-parameters">getQueryData</a> method, originally provided by Controller.</p>
+
+<p>The request fields will be validated against the route&rsquo;s validation rules.</p>
+
+<h3>FileManager Class</h3>
+
+<p>The middleware provides the <em>FileManager</em>, which is used to remove unwanted file uploads. For the available methods, you
+can check out <a href="https://github.com/derdesign/protos/blob/master/middleware/body_parser/file_manager.js">its source</a>.</p>
+
+<h3>Usage</h3>
+
+<pre><code>app.use('body_parser, options);
+</code></pre>
+
+<h3>Examples:</h3>
+
+<p>To receive POST/PUT data in your application, here&rsquo;s how you do it:</p>
+
+<pre><code>post('/upload', function(req, res) {
+  this.getRequestData(req, function(fields, files) {
+    files.removeAll();
+    res.json(files);
+  });
+});
+</code></pre>
+
+<p>On this example, <code>fields</code> contains the parsed fields, and files is a <em>FileManager</em> instance, you can use to manipulate your files.
+As can be seen in the code, any uploaded files are removed with <code>files.removeAll()</code>. That is, in case you are not expecting any files,
+just fields. This is important from a security perspective.</p>
+
+<p>This module integrates seamlessly with the <a href="#csrf">CSRF Middleware</a>. If you want to add an extra layer of security and validate
+the request by checking the CSRF Token, you pass it as an argument to <code>getRequestData</code>:</p>
+
+<pre><code>post('/upload', function(req, res) {
+  this.getRequestData(req, token, function(fields, files) {
+    files.removeAll();
+    res.json(files);
+  });
+});
+</code></pre>
+
+<p>It is important to mention that your <code>incoming/</code> directory will stay clean, since the uploaded files of an invalidated request
+due to invalid CSRT Token are automatically removed with <code>FileManager::removeAll()</code>.</p>
+
+<p>The amount of files uploaded can be accessed via <code>files.length</code>.</p>
+
+<p>To remove any empty files uploaded, use <code>files.removeEmpty()</code>.</p>
+
+<p>To iterate over the uploaded files, do:</p>
+
+<pre><code>files.forEach(function(file) {
+  console.log(file);
+});
+</code></pre>
+
+<p>You can get a specific file object (that is, a File instance provided by formidable):</p>
+
+<pre><code>var thumb = files.get('thumbnail');
+console.log(thumb.size);
+</code></pre>
+
+<p>There is a more sophisticated method of <em>FileManager</em>, called <code>expect</code>, which validates the existence of uploaded files. That is, to add an extra
+layer of security and make sure you&rsquo;re receiving the files you are expecting. For more info and documentation on this feature/method,
+refer to <a href="https://github.com/derdesign/protos/blob/master/middleware/body_parser/file_manager.js">its source</a>.</p>
+
+<h2>cookie_parser</h2>
+
+<p>Parses cookie headers, Integrates with Sessions &amp; Authentication. It adds methods to the <em>OutgoingMessage</em> objects (or better said,
+the <em>request</em> objects).</p>
+
+<p>To see all the cookie manipulation methods, check out <a href="https://github.com/derdesign/protos/tree/master/middleware/cookie_parser">the source</a>.</p>
+
+<h2>csrf</h2>
+
+<p>Provides Cross-Site Request Forgery protection for applications.</p>
+
+<h3>Configuration Options</h3>
+
+<ul>
+<li><strong>tokenSuffix</strong> &nbsp; <em>Suffix to append to csrf tokens</em></li>
+<li><strong>onFailure</strong> &nbsp; <em>Error code to respond on token validation failure</em></li>
+</ul>
+
+
+<h3>Usage example</h3>
+
+<p>The ideal usage is to create the csrf token before rendering the view,
+this allows the token to be present in logicless templates (e.g. mustachioed
+template engines, such as hogan):</p>
+
+<pre><code>res.render('form', {
+ myToken: req.csrfToken('protect')
+});
+</code></pre>
+
+<p>You can also use the csrf middleware directly:</p>
+
+<pre><code> res.render('form', {
+   myToken: app.csrf.getToken(req, 'protect')
+ });
+</code></pre>
+
+<p>Additionally, you can create the token from inside any template engine
+that supports logic. The following example uses the liquor engine:</p>
+
+<pre><code>&lt;input type="hidden" name="protect_key" value="#{req.csrfToken('protect')}" /&gt;
+</code></pre>
+
+<p>The middleware integrates nicely with the <a href="#session">Session</a> and <a href="#body_parser">Body Parser</a> middlewares.</p>
+
+<h2>logger</h2>
+
+<p>Application logger. Also provides request logging functionality, supporting custom logging formats.</p>
+
+<p>The logging functions are exposed by the middleware object, and connected to the
+<code>info_log</code> and <code>error_log</code> events of the application. Error logs are conveniently printed with a stack trace,
+for proper inspection.</p>
+
+<p>The log events are emitted by <code>app.log</code>. If an <code>Error</code> instance is passed to it,
+the <code>error_log</code> event is automatically emitted with the error in question.</p>
+
+<p>The middleware provides the following transports:</p>
+
+<ul>
+<li><a href="https://github.com/derdesign/protos/blob/master/middleware/logger/transport-mongodb.js">MongoDB</a></li>
+<li><a href="https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js">Redis</a></li>
+<li><a href="https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js">File</a></li>
+<li><a href="https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js">Console</a></li>
+</ul>
+
+
+<h3>Configuration Options</h3>
+
+<ul>
+<li><strong>accessLog</strong> &nbsp; <em>If set to true (default), will save requests to the access.log file</em></li>
+<li><strong>accessLogConsole</strong> &nbsp; <em>If set to true (default), will log requests to the console</em></li>
+<li><strong>accessLogFormat</strong> &nbsp; <em>Function to use to format the logs</em></li>
+</ul>
+
+
+<h3>Log Levels</h3>
+
+<p>To set a log level, you specify the log level alias, ending with &lsquo;Level&rsquo;, for example:</p>
+
+<pre><code>app.use('logger', {
+  noticeLevel: {
+    console: true,
+    file: 'notice.log'
+  },
+  my_coolLevel: {
+    console: true
+  },
+  criticalLevel: {
+    file: 'critical.log',
+    console: true,
+    mongodb: true
+  }
+});
+</code></pre>
+
+<p>Each level adds its own methods you can use to log messages. For example, the levels set on the example
+code above, will set the following methods in the app singleton:</p>
+
+<pre><code>app.noticeLog(log);
+app.myCoolLog(log);
+app.criticalLog(log);
+</code></pre>
+
+<p>Each method accepts printf-like arguments. Additionally, the middleware sets events for the levels you
+specify in the config. For example, the following events will be set with the config used above:</p>
+
+<pre><code>notice_log
+my_cool_log
+critical_log
+</code></pre>
+
+<p>You can hook your own functions to manage the logs sent to each level.</p>
+
+<h3>Log Locations</h3>
+
+<pre><code>  Info log:   log/info.log
+ Error log:   log/error.log
+Access log:   log/access.log
+</code></pre>
+
+<p>By default, the path is relative to the application&rsquo;s log/ directory. You can also specify absolute paths for
+logs using the file transport.</p>
+
+<h2>response_cache</h2>
+
+<p>Caches views into a specific storage backend.</p>
+
+<h3>Configuration Options</h3>
+
+<ul>
+<li><strong>storage</strong> &nbsp; Resource string pointing to the storage backend to use, or Storage instance.</li>
+</ul>
+
+
+<h3>Examples</h3>
+
+<pre><code>app.use('response_cache', {
+  storage: 'redis'
+});
+</code></pre>
+
+<p>In this example, the &lsquo;redis&rsquo; resource string points to the storage configuration
+specified in <code>config/storage.js</code>.</p>
+
+<h3>Usage example</h3>
+
+<pre><code>res.useCache('faq_cache');
+res.render('faq');
+</code></pre>
+
+<h3>Invalidating Caches</h3>
+
+<p>Caches are automatically flushed every time you start the application. This ensures you have the latest version of the
+cache, just in case the view contents have changed.</p>
+
+<p>The middleware attaches itself into <code>app.response_cache</code>. This object will later on contain all the caches you set in the
+views when using <code>res.useCache(cacheID)</code>.</p>
+
+<p>Once a cache is stored, its ID is added to the <code>app.response_cache</code> object. This will prevent the cache from being regenerated. You can use
+this option  conveniently to purge caches, just by deleting its respective key.</p>
+
+<h2>session</h2>
+
+<p>Provides complete session management for applications.</p>
+
+<h3>Configuration Options</h3>
+
+<ul>
+<li><strong>guestSessions</strong> &nbsp; <em>If set to true, will enable sessions for guest users</em></li>
+<li><strong>regenInterval</strong> &nbsp; <em>Interval to regenerate the sessionId (seconds)</em></li>
+<li><strong>permanentExpires</strong> &nbsp; <em>Permanent sessions timeout (seconds)</em></li>
+<li><strong>temporaryExpires</strong> &nbsp; <em>Temporary (browser) sessions timeout (seconds)</em></li>
+<li><strong>guestExpires</strong> &nbsp; <em>Guest sessions timeout (seconds)</em></li>
+<li><strong>typecastVars</strong> &nbsp; <em>Session properties to automatically typecast when loading session data</em></li>
+<li><strong>sessCookie</strong> &nbsp; <em>Default session cookie name</em></li>
+<li><strong>hashCookie</strong> &nbsp; <em>Default session hash name</em></li>
+<li><strong>defaultUserAgent</strong> &nbsp; <em>Default user agent when not set</em></li>
+<li><strong>salt</strong> &nbsp; <em>Salt used to generate session hashes</em></li>
+<li><strong>storage</strong> &nbsp; <em>Resource Path pointing to the Storage to use</em></li>
+</ul>
+
+
+<h3>Session Conventions</h3>
+
+<p>Protos can automatically detect if a user is logged in or not, depending on the values stored in the session.</p>
+
+<blockquote><p>If the <code>user</code> property is present in the session data, the user is assumed to be logged in</p></blockquote>
+
+<p>When creating guest sessions, the session data will automatically set its default to <code>{guest: 1}</code>. This means the session
+belongs to a guest user.</p>
+
+<h3>Controller Authentication</h3>
+
+<p>When the Session middleware is enabled, the controllers start interpreting the <code>authRequired</code> property.</p>
+
+<p>The <code>authRequired</code> property acts as the <em>first layer</em> of the Controller Filters. This means, any controller filters you have
+set, won&rsquo;t be executed if the user is not logged in. That is, as long as <code>authRequired</code> is set to true.</p>
+
+<p>Even if sessions are enabled, if <code>authRequred</code> is set to false, it won&rsquo;t have any effect on the controller, and any controller
+filters will work normally.</p>
+
+<h3>Creating Sessions</h3>
+
+<p>To create a session, you do the following:</p>
+
+<pre><code>// Determines if session will be persistent
+var pers = true;
+
+app.session.create(req, res, {user: "ernie"}, pers, function(session, hashes, expires) {
+  res.json([session, hashes, expires]);
+});
+</code></pre>
+
+<p>Simple as that. You specify both <em>request</em> and <em>response</em> objects. That is in case the user has tampered the session cookies
+in some way, or the session data is invalid. This allows the session middleware to use the request and response objects to
+automatically set and remove cookies, as well as redirect the users.</p>
+
+<p>The session can be either <em>persistent</em> or temporary, depending on the boolean value you specify. The persistent value is
+specified after the <em>session data</em>.</p>
+
+<p>Remember, to log in a user make sure you set his/her username on the session data.</p>
+
+<h3>Creating Guest Sessions</h3>
+
+<p>To create a guest session:</p>
+
+<pre><code>app.session.createGuestSession(req, res, function(session, hashes, expires) {
+  res.json([session, hashes, expires]);
+});
+</code></pre>
+
+<p>If you want to create a guest session with initial data, here&rsquo;s how you do it:</p>
+
+<pre><code>app.session.createGuestSession(req, res, {visits: 0, banned: false}, function(session, hashes, expires) {
+  res.json([session, hashes, expires]);
+});
+</code></pre>
+
+<p>It uses <code>app.session.create</code> behind the scenes to create the session. As said before, it automatically adds the <code>guest</code> property
+to the data set to 1.</p>
+
+<h2>static_server</h2>
+
+<p>Fully featured static server for applications, supporting Partial Content requests and Conditional GET.</p>
+
+<p>The middleware reads static content from your application&rsquo;s <code>public/</code> directory.</p>
+
+<h3>Configuration options</h3>
+
+<ul>
+<li><strong>eTags</strong> &nbsp; <em>If set to true, will include the default eTag header. If you specify a function as the value, it will be used to generate the eTag header</em></li>
+<li><strong>acceptRanges</strong> &nbsp; <em>If set to true (default), responds to partial content requests</em></li>
+</ul>
+
+
+<h3>Forcing File Download</h3>
+
+<p>The Middleware extends the <em>request</em> objects and adds a <code>download</code> method, which allows you to force the download of a file.
+Here&rsquo;s how you use this feature:</p>
+
+<pre><code>res.download(app.fullPath('/robots.txt'), 'robots.txt');
+</code></pre>
+
+<h2>aws</h2>
+
+<p>Amazon Web Services middleware. Provides clients to all of Amazon&rsquo;s web services (ES3, EC2, etc).</p>
+
+<h3>References:</h3>
+
+<ul>
+<li><a href="https://github.com/SaltwaterC/aws2js">https://github.com/SaltwaterC/aws2js</a><br/></li>
+<li><a href="https://github.com/SaltwaterC/aws2js/wiki/S3-Client">https://github.com/SaltwaterC/aws2js/wiki/S3-Client</a><br/></li>
+<li><a href="https://github.com/SaltwaterC/aws2js/wiki/EC2-Client">https://github.com/SaltwaterC/aws2js/wiki/EC2-Client</a></li>
+</ul>
+
+
+<h3>Configuration Options</h3>
+
+<ul>
+<li><strong>accessKey</strong> &nbsp; <em>AWS access key</em></li>
+<li><strong>secretKey</strong> &nbsp; <em>AWS secret key</em></li>
+<li><strong>clients</strong> &nbsp; <em>Object containing the clients to configure</em></li>
+</ul>
+
+
+<h3>Example:</h3>
+
+<pre><code>app.use('aws', {
+  accessKey: 'username',
+  secretKey: 'password',
+  clients: {
+    thumbs: {
+      type: 's3',
+      setBucket: 'my.cool.bucket',
+    },
+    cloud: {
+      type: 'ec2',
+      setRegion: 'ap-southeast-1'
+    }
+  }
+});
+</code></pre>
+
+<h3>Client Configuration</h3>
+
+<p>In the example above, each client configuration receives a &lsquo;type&rsquo; property, which
+is the AWS Client to use. For more info on the supported clients, refer to the
+aws2js module documentation (link in References section).</p>
+
+<p>The rest of the properties of each client configuration are the specific methods
+supported by the client in question. In the example above (on the s3 client, thumbs)
+the &lsquo;setBucket&rsquo; option is set to &lsquo;my.cool.bucket&rsquo;.</p>
+
+<p>This is the same as manually running <code>s3.setBucket('my.cool.bucket')</code> after loading
+the aws client. In other words, the methods and arguments for the aws client are exposed
+as properties. If the argument is passed as an array, then <code>Function.prototype.apply</code> will
+be used to pass the arguments to the aws client.</p>
+
+<p>Upon instantiation, each defined client will be available in <code>app.aws.{client}</code>. The clients
+are instances of aws2js clients. For more info, consult the References section above.</p>
+
+<h2>bcrypt</h2>
+
+<p>Provides Blowfish encryption capabilities for the application.</p>
+
+<h3>References:</h3>
+
+<ul>
+<li><a href="https://github.com/ncb000gt/node.bcrypt.js">https://github.com/ncb000gt/node.bcrypt.js</a><br/></li>
+<li><a href="http://codahale.com/how-to-safely-store-a-password/">http://codahale.com/how-to-safely-store-a-password/</a></li>
+</ul>
+
+
+<h3>Configuration Options</h3>
+
+<ul>
+<li><strong>rounds</strong> &nbsp; <em>Number of rounds to process the data for</em></li>
+<li><strong>seedLength</strong> &nbsp; <em>Seed length to pass to rand bytes</em></li>
+</ul>
+
+
+<h3>Examples</h3>
+
+<p>Password hashing and comparison occurs asynchronously. Here&rsquo;s how you hash a password:</p>
+
+<pre><code>app.bcrypt.hashPassword(pass, function(err, hash) {
+  console.exit(err || hash);
+});
+</code></pre>
+
+<p>And here&rsquo;s how you check a hashed password:</p>
+
+<pre><code>app.bcrypt.checkPassword(password, hash, function(err, valid) {
+  promise.emit('success', [hash, valid]);
+});
+</code></pre>
+
+<h2>mailer</h2>
+
+<p>Provides mail functionality to the application, with full unicode support.</p>
+
+<p>Transports available are SMTP, Amazon SES (Simple Email Service) and sendmail.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://www.nodemailer.org/">http://www.nodemailer.org/</a></li>
+</ul>
+
+
+<h3>SMTP Example</h3>
+
+<pre><code>app.use('mailer', {
+  SMTP: {
+    host: 'smtp.example.com',     // required
+    port: 25,                     // optional, defaults to 25 or 465
+    use_authentication: false,    // optional, false by default
+    user: '',                     // used only when use_authentication is true 
+    pass: ''                      // used only when use_authentication is true
+  }
+});
+</code></pre>
+
+<h3>Amazon SES Example</h3>
+
+<pre><code>app.use('mailer', {
+  SES: {
+    AWSAccessKeyID: 'ACCESSKEY',  // required
+    AWSSecretKey: 'SECRETKEY',    // required
+    ServiceUrl: 'https://email.us-east-1.amazonaws.com', // optional
+  }
+});
+</code></pre>
+
+<h3>Sendmail Example (default)</h3>
+
+<pre><code>app.use('mailer', {
+  sendmail: true
+});
+
+app.use('mailer', {
+  sendmail: '/path/to/sendmail'
+});
+</code></pre>
+
+<h2>markdown</h2>
+
+<p>Provides markdown support for applications &amp; views.</p>
+
+<p>The concept of &ldquo;flag aliases&rdquo; is introduced, as a mechanism to store a group
+of discount flags for specific types of content. This allows fine grained parsing
+of markdown syntax where different requirements are needed.</p>
+
+<p>The markdown syntax is automatically sanitized, if the flag alias specified has been
+configured to be sanitized. In other words, if it&rsquo;s present in the <code>sanitize</code>
+configuration array.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://www.pell.portland.or.us/~orc/Code/discount/">http://www.pell.portland.or.us/~orc/Code/discount/</a></li>
+<li><a href="https://github.com/visionmedia/node-discount">https://github.com/visionmedia/node-discount</a></li>
+<li><a href="https://github.com/theSmaw/Caja-HTML-Sanitizer">https://github.com/theSmaw/Caja-HTML-Sanitizer</a></li>
+<li><a href="http://code.google.com/p/google-caja/source/browse/trunk/src/com/google/caja/plugin/html-sanitizer.js">http://code.google.com/p/google-caja/source/browse/trunk/src/com/google/caja/plugin/html-sanitizer.js</a></li>
+</ul>
+
+
+<h3>Configuration Options</h3>
+
+<ul>
+<li><strong>flags</strong> &nbsp; <em>containing flag aliases to set</em></li>
+<li><strong>sanitize</strong> &nbsp; <em>containing the flag aliases to sanitize</em></li>
+</ul>
+
+
+<h3>View Helpers</h3>
+
+<ul>
+<li><strong>$markdown</strong> &nbsp; <em>Parses a markdown string. Alias of <code>Markdown::parse</code></em></li>
+</ul>
+
+
+<h3>Example</h3>
+
+<pre><code>app.use('markdown', {
+  flags: {
+    content: ['noImage', 'noPants', 'autolink'],
+    comment: ['noHTML', 'noTables', 'strict']
+  },
+  sanitize: ['default', 'comments']
+});
+</code></pre>
+
+<h3>Usage example (liquor rendering engine):</h3>
+
+<pre><code>#{$markdown('## This is a **heading** level 2')}
+
+#{$markdown('This is comment text', 'comment')}
+</code></pre>
+
+<h2>production_url</h2>
+
+<p>Removes the port suffix from the application&rsquo;s url.</p>
+
+<p>This is useful if the application is running under a proxy,
+or if there are kernel level redirection rules (iptables).</p>
+
+<h2>redirect</h2>
+
+<p>Redirect all application requests to a specific URL.</p>
+
+<p>An HTTP/400 Response will be sent on requests other than GET/HEAD.</p>
+
+<h3>Example</h3>
+
+<pre><code>app.use('redirect', 'http://google.com');
+</code></pre>
+
+<h2>shortcode</h2>
+
+<p>Allows applications to filter content using shortcodes.</p>
+
+<p>The reason behind this, is to overcome JavaScript&rsquo;s limitation to
+parse multiline strings.</p>
+
+<p>You can define shortcodes using any template engine. You bind functions
+to the shortcode labels to modify the content wrapped within such
+shortcode. Spaces and line feeds are preserved.</p>
+
+<p>Shortcodes keep your view code clean, by delegating string processing
+operations to separate functions, not related to the view.</p>
+
+<h3>TODO</h3>
+
+<p>The following things might be useful, but I don&rsquo;t have the time to
+implement these features right now. In case you want to help out:</p>
+
+<ul>
+<li>Ability to pass arguments to shortcodes</li>
+</ul>
+
+
+<h3>Use Cases:</h3>
+
+<ul>
+<li>Parse markdown strings within your views (specially for <strong>huge</strong> chunks of markdown code, <a href="/guide">like this</a>)</li>
+<li>Content Sanitization &amp; Escaping, to protect against XSS Attacks</li>
+<li>Include cached content into your views</li>
+</ul>
+
+
+<h3>Example:</h3>
+
+<pre><code>var buffer = "Lorem [uppercase]ipsum[/uppercase] dolor sit [base64]AMET[/base64] et sempis";
+
+buffer = app.shortcode.replace(buffer, {
+  uppercase: function(str) {
+    return str.toUpperCase();
+  }, 
+  base64: function(str) {
+    return new Buffer(str).toString('base64');
+  }
+});
+
+console.exit(buffer); // returns: "Lorem IPSUM dolor sit QU1FVA== et sempis"
+</code></pre>
+
+<h2>socket_io</h2>
+
+<p>Provides socket.io support for applications. The middleware acts as an automatic
+and convenient configuration of socket.io, supporting namespaces.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="https://github.com/learnboost/socket.io">https://github.com/learnboost/socket.io</a></li>
+<li><a href="https://github.com/LearnBoost/socket.io-spec">https://github.com/LearnBoost/socket.io-spec</a></li>
+<li><a href="https://github.com/LearnBoost/Socket.IO/wiki/Configuring-Socket.IO">https://github.com/LearnBoost/Socket.IO/wiki/Configuring-Socket.IO</a></li>
+</ul>
+
+
+<h3>Provides</h3>
+
+<ul>
+<li><strong>app.io</strong> &nbsp; <em>SocketIO server, listening on the application&rsquo;s port</em></li>
+<li><strong>app.sockets</strong> &nbsp; <em>Contains all the SocketIO namespaces, ready to use &amp; configured</em></li>
+</ul>
+
+
+<h3>Configuration options</h3>
+
+<ul>
+<li><strong>settings</strong> &nbsp; <em>Settings to pass to the socket on initialization</em></li>
+<li><strong>sockets</strong> &nbsp; <em>Contains socket namespaces as {name: endpoint}</em></li>
+<li><strong>environments</strong> &nbsp; <em>Object containing callbacks that will run on each application environment</em></li>
+</ul>
+
+
+<h3>Example</h3>
+
+<pre><code>app.use('socket_io', {
+  settings: {
+    log: true,
+    heartbeats: true,
+    'log level': 1
+  },
+  sockets: {
+    chat: '/chat',
+    news: '/news'
+  },
+  environments: {
+    development: function(io) {
+      // Code to run on development
+    },
+    production: function(io) {
+      // Code to run on production
+    }
+  }
+});
+</code></pre>
+
+</div></div><!-- .ovf | content -->
+
+<div id="footer">
+  <div class="wrap">
+    <span class="copyright">
+      &copy; 2012 Ernesto M&eacute;ndez. &nbsp; Powered by Protos v0.0.4
+    </span>
+  </div><!-- .wrap -->
+</div><!-- footer -->
+
+<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+
+
+<script type="text/javascript" src="js/client.min.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-10838231-18']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+</body>
+</html>
