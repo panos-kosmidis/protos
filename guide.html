@@ -266,7 +266,7 @@ or by using the protos command to start the server.</p>
 
 <p>The server&rsquo;s stdout stream will then be redirected into the logpath you specify.</p>
 
-<p>Each application can have more sophisticated logging mechanisms by using the <a href="/middleware#logger">Logger Middleware</a>.</p>
+<p>Each application can have more sophisticated logging mechanisms by using the <a href="middleware.html#logger">Logger Middleware</a>.</p>
 
 <h2>Protos Executable</h2>
 
@@ -508,7 +508,7 @@ type of scripts and/or information here.</p>
 
 <h3>incoming/</h3>
 
-<p>Directory to hold File Uploads. This is the upload location for the <a href="/middleware#body_parser">Body Parser Middleware</a>.</p>
+<p>Directory to hold File Uploads. This is the upload location for the <a href="middleware.html#body_parser">Body Parser Middleware</a>.</p>
 
 <h3>lib/</h3>
 
@@ -519,7 +519,7 @@ can also use this directory to extend your application with any new classes and 
 
 <h3>log/</h3>
 
-<p>Directory that holds the Application&rsquo;s log files. This is the storage location for the <a href="/middleware#logger">Logger Middleware</a>.</p>
+<p>Directory that holds the Application&rsquo;s log files. This is the storage location for the <a href="middleware.html#logger">Logger Middleware</a>.</p>
 
 <h3>middleware/</h3>
 
@@ -1073,9 +1073,9 @@ application will automatically respond with HTTP/404 on failure to validate both
 
 <p>The validated fields are passed in the <code>fields</code> argument of the <code>getQueryData</code> callback.</p>
 
-<p>Validation is also closely integrated with the <a href="/middleware#csrf">CSRF Middleware</a>. This means, you can provide an extra
+<p>Validation is also closely integrated with the <a href="middleware.html#csrf">CSRF Middleware</a>. This means, you can provide an extra
 argument to <code>getQueryData</code>, and that is the <em>CSRF Token</em>, which will add an extra layer of validation. For more info,
-check out the CSRF Middleware <a href="/middleware#csrf">documentation</a>.</p>
+check out the CSRF Middleware <a href="middleware.html#csrf">documentation</a>.</p>
 
 <h3>Validation of URL &amp; Query Parameters</h3>
 
@@ -1219,7 +1219,7 @@ getting it right as it was received. If you need validation, then <code>this.get
 
 <h3>Auth Filters &amp; Sessions</h3>
 
-<p>When using the <a href="/middleware#session">Sessions Middleware</a>, it automatically provides a authentication filter for you, which
+<p>When using the <a href="middleware.html#session">Sessions Middleware</a>, it automatically provides a authentication filter for you, which
 deeply integrates with both the controller and your application.</p>
 
 <p>If/when you enable the <em>Sessions Middleware</em>, you can specify a property in your controllers, to determine
@@ -1228,7 +1228,7 @@ if such controller requires authentication: the <code>authRequired</code> proper
 <h3>The authRequired property</h3>
 
 <p>This only applies if the <em>Sessions Middleware</em> is enabled. It has no effect otherwise.<br/>
-For a detailed documentation on this property, refer to the <em>Sessions Middleware</em> <a href="/middleware#session">documentation</a>.</p>
+For a detailed documentation on this property, refer to the <em>Sessions Middleware</em> <a href="middleware.html#session">documentation</a>.</p>
 
 <h2>Application Views</h2>
 
