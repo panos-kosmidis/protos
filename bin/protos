@@ -883,7 +883,7 @@ Example:\n\n\
  models and controllers specified in the command.\n\n\
  $ protos server myapp --fork --logpath server.log\n\n\
  Starts the application's server and forks a new node process.\n\n\
- For documentation, refer to http://protos.der-design.com\n\n\
+ For documentation, refer to http://derdesign.github.com/protos/\n\n\
  protos@" + Protos.version + " " + Protos.path;
 
 cli.parse();
