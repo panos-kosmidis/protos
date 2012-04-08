@@ -78,7 +78,7 @@ vows.describe('Asset Compiler (middleware)').addBatch({
             promise.emit('success', err || results);
           });
           
-        }, 25);
+        }, 500);
         
       });
      
