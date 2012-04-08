@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Parses JavaScript doc comments into markdown
+// Parses markdown syntax within JavaScript comments
 
 var util = require('util'),
     underscore = require('underscore'),
