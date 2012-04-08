@@ -19,7 +19,7 @@ vows.describe('Asset Compiler (middleware)').addBatch({
       var promise = new EventEmitter();
       
       // Restore modified file before starting tests
-      var restore = fs.readFileSync(app.fullPath('../stylus.styl'), 'utf8');
+      var restore = fs.readFileSync(app.fullPath('../stylus.styl.orig'), 'utf8');
       fs.writeFileSync(app.fullPath('public/assets/stylus.styl'), restore, 'utf8');
       
       // Load dependencies
@@ -62,27 +62,26 @@ vows.describe('Asset Compiler (middleware)').addBatch({
       multi.curl('-i /target.js');
       
       multi.exec(function(err, results) {
-        
         var p = app.fullPath('public/assets/stylus.styl');
-        var styl = fs.readFileSync(p, 'utf8');
-        styl = styl.replace('border-radius(5px)', 'border-radius(100px)');
-        
-        fs.writeFile(p, styl, 'utf8', function(err) {
-          if (err) promise.emit('err');
-          setTimeout(function() {
-            process.nextTick(function() {
-              // Watches for changes of the source files (when enabled)
-              
-              fs.readFile(app.fullPath('public/assets/stylus.css'), 'utf8', function(err, buf) {
-                delete app.supports.static_server;
-                results.push(err || buf);
-                promise.emit('success', err || results);
-              });
-              
+        fs.readFile(p, 'utf8', function(err, styl) {
+          if (err) promise.emit('success', err);
+          else {
+            styl = styl.replace('border-radius(5px)', 'border-radius(100px)');
+            fs.writeFile(p, styl, 'utf8', function(err) {
+              if (err) promise.emit('success', err);
+              else {
+                fs.readFile(app.fullPath('public/assets/stylus.css'), 'utf8', function(err, buf) {
+                  if (err) promise.emit('success', err);
+                  else {
+                    delete app.supports.static_server;
+                    results.push(err || buf);
+                    promise.emit('success', err || results);
+                  }
+                });
+              }
             });
-          }, (process.platform == 'darwin') ? 25 : 1500); // Compensate for high load servers (testing env, e.g. Travis)
+          }
         });
-        
       });
      
       return promise;
