@@ -67,19 +67,19 @@ vows.describe('Asset Compiler (middleware)').addBatch({
           if (err) promise.emit('success', err);
           else {
             styl = styl.replace('border-radius(5px)', 'border-radius(100px)');
-            fs.writeFile(p, styl, 'utf8', function(err) {
+            
+            // Prepare for the change event
+            app.on('compile: public/assets/stylus.css', function(err, code) {
               if (err) promise.emit('success', err);
               else {
-                fs.readFile(app.fullPath('public/assets/stylus.css'), 'utf8', function(err, buf) {
-                  if (err) promise.emit('success', err);
-                  else {
-                    delete app.supports.static_server;
-                    results.push(err || buf);
-                    promise.emit('success', err || results);
-                  }
-                });
+                delete app.supports.static_server;
+                results.push(err || code);
+                promise.emit('success', err || results);
               }
             });
+            
+            // Write file
+            fs.writeFileSync(p, styl, 'utf8');
           }
         });
       });

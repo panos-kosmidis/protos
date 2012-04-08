@@ -82,13 +82,17 @@ for (var compiler, files, ext, i=0; i < assetExts.length; i++) {
 }
 
 function compileSrc(file, compiler) {
-  var src, outFile;
+  var src, outFile, relPath;
   src = fs.readFileSync(file, 'utf8');
   compiler(src, function(err, code) {
     if (err) app.log(err);
     outFile = file.replace(extRegex, '.' + config.compileExts[ext]);
-    fs.writeFileSync(outFile, code, 'utf8');
-    app.debug('Asset Manager: Compiled %s (%s)', app.relPath(outFile), ext);
+    relPath = app.relPath(outFile);
+    fs.writeFile(outFile, code, 'utf8', function(err) {
+      if (err) app.log(err);
+      if (app.environment != 'production') app.emit(util.format('compile: %s', relPath), err, code);
+      app.debug('Asset Manager: Compiled %s (%s)', relPath, ext);
+    });
   });
 }
 
