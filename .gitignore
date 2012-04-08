@@ -1,4 +1,7 @@
 *.DS_Store
+/build
+/doctmp
+/docs
 /work
 /npm-debug.log
 /node_modules
