@@ -66,19 +66,19 @@ vows.describe('Asset Compiler (middleware)').addBatch({
         var p = app.fullPath('public/assets/stylus.styl');
         var styl = fs.readFileSync(p, 'utf8');
         styl = styl.replace('border-radius(5px)', 'border-radius(100px)');
-        fs.writeFileSync(p, styl, 'utf8');
         
-        setTimeout(function() {
-          
-          // Watches for changes of the source files (when enabled)
-          
-          app.curl('/assets/stylus.css', function(err, buf) {
-            delete app.supports.static_server;
-            results.push(err || buf);
-            promise.emit('success', err || results);
-          });
-          
-        }, 500);
+        fs.writeFile(p, styl, 'utf8', function() {
+          setTimeout(function() {
+            process.nextTick(function() {
+              // Watches for changes of the source files (when enabled)
+              app.curl('/assets/stylus.css', function(err, buf) {
+                delete app.supports.static_server;
+                results.push(err || buf);
+                promise.emit('success', err || results);
+              });
+            });
+          }, (process.platform == 'darwin') ? 25 : 1500); // Compensate for high load servers (testing env, e.g. Travis)
+        });
         
       });
      
