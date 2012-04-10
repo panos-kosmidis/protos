@@ -1,6 +1,7 @@
 
 /**
   @module drivers
+  @namespace driver
  */
 
 var _ = require('underscore'),
@@ -12,6 +13,7 @@ var _ = require('underscore'),
   MySQL Driver class
   
   @class MySQL
+  @extends Driver
   @constructor
   @param {object} app Application instance
   @param {object} config Driver configuration

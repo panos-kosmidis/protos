@@ -170,6 +170,12 @@ body.show_protected .protected {
     display: block;
 }
 
+body.show_deprecated .section.inheritance .deprecated,
+body.show_private .section.inheritance .private,
+body.show_protected .section.inheritance .protected {
+    display: inline-block;
+}
+
 #splash_classList ul {
 	margin: 1em;
 	margin-left:2em;

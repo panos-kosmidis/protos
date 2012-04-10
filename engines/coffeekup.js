@@ -1,10 +1,23 @@
 
-/* Coffeekup  */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var ck = require('coffeekup'),
     util = require('util');
     
-// https://github.com/mauricemach/coffeekup
+/**
+  CoffeeKup engine class
+  
+  https://github.com/mauricemach/coffeekup
+  
+  @private
+  @class CoffeeKup
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function CoffeeKup(app) {
   this.app = app;
@@ -17,6 +30,7 @@ function CoffeeKup(app) {
   }, opts);
   
   this.module = ck;
+
   this.multiPart = true;
   this.extensions = ['coffeekup', 'ck.html'];
 }

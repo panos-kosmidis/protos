@@ -1,5 +1,8 @@
 
-/* MongoStorage */
+/**
+  @module storages
+  @namespace storage
+ */
 
 var _ = require('underscore'),
     util = require('util'),
@@ -8,15 +11,18 @@ var _ = require('underscore'),
     Server = mongodb.Server,
     ObjectID = mongodb.ObjectID;
 
+/**
+  MongoDB Storage class
+  
+  @class MongoStorage
+  @extends Storage
+  @constructor
+  @param {object} app Application instance
+  @param {object} config Storage configuration
+ */
+
 function MongoStorage(app, config) {
   
-  /** config: {
-      host: 'localhost',
-      port: 27017,
-      database: 'store',
-      collection: 'keyvalue'
-      } */
-
    var self = this;
    
    config = protos.extend({
@@ -26,8 +32,39 @@ function MongoStorage(app, config) {
      collection: 'keyvalue'
    }, config);
    
+   /**
+    Application instance
+    
+    @private
+    @property app
+    @type Application
+   */
+   
    this.app = app;
+   
+   /**
+    Storage Configuration
+    
+      config: {
+        host: 'localhost',
+        port: 27017,
+        database: 'store',
+        collection: 'keyvalue'
+      }
+    
+    @property config
+    @type object
+   */
+   
    this.config = config;
+   
+   /**
+    Class name
+    
+    @private
+    @property className
+    @type string
+   */
    this.className = this.constructor.name;
    
    protos.async(app); // Register async queue
@@ -78,7 +115,7 @@ function MongoStorage(app, config) {
 
 util.inherits(MongoStorage, protos.lib.storage);
 
-/** Storage API get */
+/* Storage API get */
 
 MongoStorage.prototype.get = function(key, callback) {
   var self = this;
@@ -126,7 +163,7 @@ MongoStorage.prototype.get = function(key, callback) {
   }
 }
 
-/** Storage API getHash */
+/* Storage API getHash */
 
 MongoStorage.prototype.getHash = function(key, callback) {
   var self = this;
@@ -144,7 +181,7 @@ MongoStorage.prototype.getHash = function(key, callback) {
   
 }
 
-/** Storage API set */
+/* Storage API set */
 
 MongoStorage.prototype.set = function(key, value, callback) {
   var app = this.app,
@@ -204,7 +241,7 @@ MongoStorage.prototype.set = function(key, value, callback) {
   }
 }
 
-/** Storage API setHash */
+/* Storage API setHash */
 
 MongoStorage.prototype.setHash = function(key, object, callback) {
   var app = this.app,
@@ -241,7 +278,7 @@ MongoStorage.prototype.setHash = function(key, object, callback) {
   
 }
 
-/** Storage API updateHash */
+/* Storage API updateHash */
 
 MongoStorage.prototype.updateHash = function(key, object, callback) {
   var self = this,
@@ -266,7 +303,7 @@ MongoStorage.prototype.updateHash = function(key, object, callback) {
   
 }
 
-/** Storage API deleteFromHash */
+/* Storage API deleteFromHash */
 
 MongoStorage.prototype.deleteFromHash = function(hash, key, callback) {
   var self = this,
@@ -300,7 +337,7 @@ MongoStorage.prototype.deleteFromHash = function(hash, key, callback) {
   });
 }
 
-/** Storage API delete */
+/* Storage API delete */
 
 MongoStorage.prototype.delete = function(key, callback) {
   var self = this,
@@ -321,7 +358,7 @@ MongoStorage.prototype.delete = function(key, callback) {
 
 }
 
-/** Storage API rename */
+/* Storage API rename */
 
 MongoStorage.prototype.rename = function(oldkey, newkey, callback) {
   var self = this;
@@ -340,20 +377,20 @@ MongoStorage.prototype.rename = function(oldkey, newkey, callback) {
   });
 }
 
-/** Storage API expire */
+/* Storage API expire */
 
 MongoStorage.prototype.expire = function(key, timeout, callback) {
   this.app.log("MongoStorage: MongoDB does not support key expiration");
   callback.call(this, null);
 }
 
-/** Storage API incr */
+/* Storage API incr */
 
 MongoStorage.prototype.incr = function(key, callback) {
   this.incrBy(key, 1, callback);
 }
 
-/** Storage API incrBy */
+/* Storage API incrBy */
 
 MongoStorage.prototype.incrBy = function(key, value, callback) {
   var self = this;
@@ -366,13 +403,13 @@ MongoStorage.prototype.incrBy = function(key, value, callback) {
   });
 }
 
-/** Storage API decr */
+/* Storage API decr */
 
 MongoStorage.prototype.decr = function(key, callback) {
   this.incrBy(key, -1, callback);
 }
 
-/** Storage API decrBy */
+/* Storage API decrBy */
 
 MongoStorage.prototype.decrBy = function(key, value, callback) {
   this.incrBy(key, -value, callback);

@@ -1,10 +1,22 @@
 
-/* EJS */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var ejs = require('ejs'),
     util = require('util');
 
-// https://github.com/visionmedia/ejs
+/**
+  EJS engine class
+  
+  https://github.com/visionmedia/ejs
+  
+  @class EJS
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function EJS(app) {
   this.app = app;

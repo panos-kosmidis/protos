@@ -1,10 +1,22 @@
 
-/* Handlebars */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var handlebars = require('handlebars'),
     util = require('util');
     
-// https://github.com/wycats/handlebars.js
+/**
+  Handlebars engine class
+  
+  https://github.com/wycats/handlebars.js
+  
+  @class Handlebars
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 var partials;
 

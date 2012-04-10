@@ -1,10 +1,22 @@
 
-/* Swig */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var swig = require('swig'),
     util = require('util');
 
-// https://github.com/paularmstrong/swig
+/**
+  Swig engine class
+  
+  https://github.com/paularmstrong/swig
+  
+  @class Swig
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function Swig(app) {
   this.app = app;

@@ -1,10 +1,22 @@
 
-/* Jazz */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var jazz = require('jazz'),
     util = require('util');
 
-// https://github.com/shinetech/jazz
+/**
+  Jazz engine class
+  
+  https://github.com/shinetech/jazz
+  
+  @class Jazz
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function Jazz(app) {
   this.app = app;

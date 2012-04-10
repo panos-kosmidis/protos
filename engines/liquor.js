@@ -1,10 +1,22 @@
 
-/* Liquor */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var liquor = require('liquor'),
     util = require('util');
 
-// https://github.com/chjj/liquor
+/**
+  Liquor engine class
+  
+  https://github.com/chjj/liquor
+  
+  @class Liquor
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function Liquor(app) {
   this.app = app;

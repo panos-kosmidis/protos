@@ -1,11 +1,23 @@
 /*jshint noempty: false */
 
-/* Hogan */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var hogan = require('hogan.js'),
     util = require('util');
     
-// https://github.com/twitter/hogan.js
+/**
+  Hogan engine class
+  
+  https://github.com/twitter/hogan.js
+  
+  @class Hogan
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 var partials = {};
 

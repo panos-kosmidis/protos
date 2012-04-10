@@ -1,10 +1,22 @@
 
-/* JsHtml  */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var j = require('jshtml'),
     util = require('util');
 
-// https://github.com/LuvDaSun/jshtml
+/**
+  JsHtml engine class
+  
+  https://github.com/LuvDaSun/jshtml
+  
+  @class JsHtml
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function JsHtml(app) {
   this.app = app;

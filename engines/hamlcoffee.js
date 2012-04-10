@@ -1,10 +1,22 @@
 
-/* HamlCoffee */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var hamlCoffee = require('haml-coffee'),
     util = require('util');
 
-// https://github.com/9elements/haml-coffee
+/**
+  HamlCoffee engine class
+  
+  https://github.com/9elements/haml-coffee
+  
+  @class HamlCoffee
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function HamlCoffee(app) {
   this.app = app;

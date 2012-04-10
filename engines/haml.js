@@ -1,5 +1,8 @@
 
-/* Haml */
+/**
+  @module engines
+  @namespace engine
+ */
 
 // require('hamljs') is broken
 // https://github.com/isaacs/npm/issues/1903
@@ -8,7 +11,16 @@
 var haml = protos.require('./node_modules/hamljs/lib/haml.js'),
     util = require('util');
     
-// https://github.com/visionmedia/haml.js
+/**
+  Haml engine class
+  
+  https://github.com/visionmedia/haml.js
+  
+  @class Haml
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function Haml(app) {
   this.app = app;

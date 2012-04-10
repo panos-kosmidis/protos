@@ -1,5 +1,8 @@
 
-/* Kernel */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var kernel = require('kernel'),
     util = require('util'),
@@ -8,7 +11,16 @@ var kernel = require('kernel'),
     tokenizer = kernel.tokenizer,
     helpers = kernel.helpers;
 
-// https://github.com/c9/kernel
+/**
+  Kernel engine class
+  
+  https://github.com/c9/kernel
+  
+  @class Kernel
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function Kernel(app) {
   this.app = app;

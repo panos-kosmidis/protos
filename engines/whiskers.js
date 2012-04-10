@@ -1,10 +1,22 @@
 
-/* Whiskers */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var whiskers = require('whiskers'),
     util = require('util');
 
-// https://github.com/gsf/whiskers.js/tree
+/**
+  Whiskers engine class
+  
+  https://github.com/gsf/whiskers.js/tree
+  
+  @class Whiskers
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function Whiskers(app) {
   this.app = app;

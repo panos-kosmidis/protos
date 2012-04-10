@@ -1,6 +1,7 @@
          
 /**
   @module drivers
+  @namespace driver
  */
 
 var _ = require('underscore'),
@@ -16,6 +17,7 @@ var _ = require('underscore'),
   MongoDB Driver class
  
   @class MongoDB
+  @extends Driver
   @constructor
   @param {object} app Application instance
   @param {object} config Driver configuration

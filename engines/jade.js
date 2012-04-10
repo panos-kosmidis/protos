@@ -1,11 +1,23 @@
 
-/* Jade */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var jade = require('jade'),
     util = require('util'),
     extend = protos.extend;
 
-// https://github.com/visionmedia/jade
+/**
+  Jade engine class
+  
+  https://github.com/visionmedia/jade
+  
+  @class Jade
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function Jade(app) {
   this.app = app;

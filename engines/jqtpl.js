@@ -1,10 +1,22 @@
 
-/* JqueryTemplate */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var jq = require('jqtpl'),
     util = require('util');
 
-// https://github.com/kof/node-jqtpl
+/**
+  JqueryTemplate engine class
+  
+  https://github.com/kof/node-jqtpl
+  
+  @class JqueryTemplate
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function JqueryTemplate(app) {
   this.app = app;

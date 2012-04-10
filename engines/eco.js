@@ -1,10 +1,22 @@
 
-/* Eco  */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var eco = require('eco'),
     util = require('util');
 
-// https://github.com/sstephenson/eco
+/**
+  Eco engine class
+  
+  https://github.com/sstephenson/eco
+  
+  @class Eco
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function Eco(app) {
   this.app = app;

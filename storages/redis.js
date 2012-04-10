@@ -1,28 +1,76 @@
 
-/* RedisStorage */
+/**
+  @module storages
+  @namespace storage
+ */
 
 var _ = require('underscore'),
     redis = require('redis'),
     util = require('util');
 
+/**
+  Redis Storage class
+  
+  @class RedisStorage
+  @extends Storage
+  @constructor
+  @param {object} app Application instance
+  @param {object} config Storage configuration
+ */
+
 function RedisStorage(app, config) {
   
-  /** { 
-    host: 'localhost',
-    port: 6379,
-    db: 1,
-    pass: 'password'
-   } */
-
    var self = this;
    
    config = config || {};
    config.host = config.host || 'localhost';
    config.port = config.port || 6379;
    
+   /**
+    Application instance
+    
+    @private
+    @property app
+    @type Application
+   */
+   
    this.app = app;
+   
+   /**
+    Redis database
+    
+    @private
+    @property db
+    @type integer
+    @default 0
+   */
+   
    this.db = 0;
+   
+   /**
+    Storage configuration
+    
+      config = { 
+        host: 'localhost',
+        port: 6379,
+        db: 1,
+        pass: 'password'
+      }
+    
+    @property config
+    @type object
+    */
+    
    this.config = config;
+   
+   /**
+    Class name
+    
+    @private
+    @property className
+    @type string
+   */
+   
    this.className = this.constructor.name;
    
    protos.async(app); // Register async queue
@@ -69,7 +117,7 @@ util.inherits(RedisStorage, protos.lib.storage);
 RedisStorage.prototype.options = {};
 
 
-/** Storage API get */
+/* Storage API get */
 
 RedisStorage.prototype.get = function(key, callback) {
   var self = this;
@@ -106,7 +154,7 @@ RedisStorage.prototype.get = function(key, callback) {
   }
 }
 
-/** Storage API getHash */
+/* Storage API getHash */
 
 RedisStorage.prototype.getHash = function(key, callback) {
   var self = this;
@@ -118,7 +166,7 @@ RedisStorage.prototype.getHash = function(key, callback) {
   });
 }
 
-/** Storage API set */
+/* Storage API set */
 
 RedisStorage.prototype.set = function(key, value, callback) {
   var self = this;
@@ -157,7 +205,7 @@ RedisStorage.prototype.set = function(key, value, callback) {
   }
 }
 
-/** Storage API setHash */
+/* Storage API setHash */
 
 RedisStorage.prototype.setHash = function(key, object, callback) {
   var self = this;
@@ -169,7 +217,7 @@ RedisStorage.prototype.setHash = function(key, object, callback) {
   });
 }
 
-/** Storage API updateHash */
+/* Storage API updateHash */
 
 RedisStorage.prototype.updateHash = function(key, object, callback) {
   var self = this,
@@ -187,7 +235,7 @@ RedisStorage.prototype.updateHash = function(key, object, callback) {
   this.client.hmset.apply(this.client, args);
 }
 
-/** Storage API deleteFromHash */
+/* Storage API deleteFromHash */
 
 RedisStorage.prototype.deleteFromHash = function(hash, key, callback) {
   var self = this;
@@ -196,7 +244,7 @@ RedisStorage.prototype.deleteFromHash = function(hash, key, callback) {
   });
 }
 
-/** Storage API delete */
+/* Storage API delete */
 
 RedisStorage.prototype.delete = function(key, callback) {
   var self = this;
@@ -230,7 +278,7 @@ RedisStorage.prototype.delete = function(key, callback) {
   }
 }
 
-/** Storage API rename */
+/* Storage API rename */
 
 RedisStorage.prototype.rename = function(oldkey, newkey, callback) {
   var self = this;
@@ -239,7 +287,7 @@ RedisStorage.prototype.rename = function(oldkey, newkey, callback) {
   });
 }
 
-/** Storage API expire */
+/* Storage API expire */
 
 RedisStorage.prototype.expire = function(key, timeout, callback) {
   var self = this;
@@ -248,7 +296,7 @@ RedisStorage.prototype.expire = function(key, timeout, callback) {
   });
 }
 
-/** Storage API incr */
+/* Storage API incr */
 
 RedisStorage.prototype.incr = function(key, callback) {
   var self = this;
@@ -257,7 +305,7 @@ RedisStorage.prototype.incr = function(key, callback) {
   });
 }
 
-/** Storage API incrBy */
+/* Storage API incrBy */
 
 RedisStorage.prototype.incrBy = function(key, value, callback) {
   var self = this;
@@ -267,7 +315,7 @@ RedisStorage.prototype.incrBy = function(key, value, callback) {
 }
 
 
-/** Storage API decr */
+/* Storage API decr */
 
 RedisStorage.prototype.decr = function(key, callback) {
   var self = this;
@@ -276,7 +324,7 @@ RedisStorage.prototype.decr = function(key, callback) {
   });
 }
 
-/** Storage API decrBy */
+/* Storage API decrBy */
 
 RedisStorage.prototype.decrBy = function(key, value, callback) {
   var self = this;

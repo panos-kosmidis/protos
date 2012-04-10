@@ -1,10 +1,22 @@
 
-/* Dot  */
+/**
+  @module engines
+  @namespace engine
+ */
 
 var dot = require('dot'),
     util = require('util');
 
-// https://github.com/olado/doT
+/**
+  DoT engine class
+  
+  https://github.com/olado/doT
+  
+  @class Dot
+  @extends Engine
+  @constructor
+  @param {object} app Application Instance
+ */
 
 function Dot(app) {
   this.app = app;

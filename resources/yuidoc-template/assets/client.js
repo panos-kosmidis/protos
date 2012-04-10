@@ -6,6 +6,7 @@
   var codeClose = /<\/code><\/pre>/g;
   
   $(document).ready(function() {
+    $('h3 + .summary.description').prev().addClass('module-name');
     var srcOUt = $('#srcOut');
     $('div.base64-encoded').each(function() {
       var self = $(this).removeClass('base64-encoded').addClass('base64-decoded');
