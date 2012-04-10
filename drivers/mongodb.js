@@ -1,5 +1,7 @@
          
-/* MongoDB */
+/**
+  @module drivers
+ */
 
 var _ = require('underscore'),
     util = require('util'),
@@ -10,15 +12,16 @@ var _ = require('underscore'),
     ObjectID = mongodb.ObjectID,
     Collection = mongodb.Collection;
 
-function MongoDB(app, config) {
+/**
+  MongoDB Driver class
+ 
+  @class MongoDB
+  @constructor
+  @param {object} app Application instance
+  @param {object} config Driver configuration
+ */
 
-  /** config: {
-    host: 'localhost',
-    port: 27017,
-    database: 'db_name',
-    cachePrefix: null,
-    storage: 'redis'
-    } */
+function MongoDB(app, config) {
 
     var self = this;
 
@@ -32,6 +35,21 @@ function MongoDB(app, config) {
     
     this.className = this.constructor.name;
     this.app = app;
+    
+    /**
+      Driver configuration
+    
+      config: {
+        host: 'localhost',
+        port: 27017,
+        database: 'db_name',
+        cachePrefix: null,
+        storage: 'redis'
+      }
+      
+      @property config
+      @type object
+     */
     this.config = config;
 
     protos.async(app); // Register async queue
@@ -91,7 +109,7 @@ util.inherits(MongoDB, protos.lib.driver);
 /**
   Inserts values into a collection
 
-  @example
+  Example:
 
     mongodb.insertInto({
       collection: 'users',
@@ -100,9 +118,9 @@ util.inherits(MongoDB, protos.lib.driver);
       console.log([err, docs]);
     });
 
+  @method insertInto
   @param {object} o 
   @param {function} callback
-  @public
  */
 
 MongoDB.prototype.insertInto = function(o, callback) {
@@ -129,7 +147,7 @@ MongoDB.prototype.insertInto = function(o, callback) {
 /**
   Updates items where condition is satisfied
 
-  @example
+  Example:
   
     mongodb.updateWhere({
       collection: 'users',
@@ -140,9 +158,9 @@ MongoDB.prototype.insertInto = function(o, callback) {
       console.log(err);
     });
 
+  @method updateWhere
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MongoDB.prototype.updateWhere = function(o, callback) {
@@ -177,7 +195,7 @@ MongoDB.prototype.updateWhere = function(o, callback) {
 /**
   Updates items by ID
 
-  @example
+  Example:
   
     mongodb.updateById({
       _id: 1,
@@ -195,9 +213,9 @@ MongoDB.prototype.updateWhere = function(o, callback) {
       console.log(err);
     });
 
+  @method updateById
   @param {object} o
   @param {function} callback
-  @public
 */
 
 MongoDB.prototype.updateById = function(o, callback) {
@@ -227,7 +245,7 @@ MongoDB.prototype.updateById = function(o, callback) {
 /**
   Deletes items where condition is satisfied
 
-  @example
+  Example:
   
     mongodb.deleteWhere({
       collection: 'users',
@@ -236,9 +254,9 @@ MongoDB.prototype.updateById = function(o, callback) {
       console.log(err);
     });
 
+  @method deleteWhere
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MongoDB.prototype.deleteWhere = function(o, callback) {
@@ -266,7 +284,7 @@ MongoDB.prototype.deleteWhere = function(o, callback) {
 /**
   Deletes records by ID
 
-  @example
+  Example:
   
     mongodb.deleteById({
       _id: 1,
@@ -282,9 +300,9 @@ MongoDB.prototype.deleteWhere = function(o, callback) {
       console.log(err);
     });
 
+  @method deleteById
   @param {object} o 
   @param {function} callback
-  @public
  */
 
 MongoDB.prototype.deleteById = function(o, callback) {
@@ -310,7 +328,7 @@ MongoDB.prototype.deleteById = function(o, callback) {
 /**
   Queries documents where condition is satisfied
 
-  @example
+  Example:
   
     mongodb.queryWhere({
       collection: 'users',
@@ -320,9 +338,9 @@ MongoDB.prototype.deleteById = function(o, callback) {
       console.log([err, docs]);
     });
 
+  @method queryWhere
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MongoDB.prototype.queryWhere = function(o, callback) {
@@ -354,7 +372,7 @@ MongoDB.prototype.queryWhere = function(o, callback) {
 /**
   Queries documents by ID
 
-  @example
+  Example:
   
     mongodb.queryById({
       _id: 1,
@@ -372,9 +390,9 @@ MongoDB.prototype.queryWhere = function(o, callback) {
       console.log([err, docs]);
     });
 
+  @method queryById
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MongoDB.prototype.queryById = function(o, callback) {
@@ -403,7 +421,7 @@ MongoDB.prototype.queryById = function(o, callback) {
 /**
   Queries all documents in a collection
 
-  @example
+  Example:
 
     mongodb.queryAll({
       collection: 'users',
@@ -412,9 +430,9 @@ MongoDB.prototype.queryById = function(o, callback) {
       console.log([err, docs]);
     });
 
+  @method queryAll
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MongoDB.prototype.queryAll = function(o, callback) {
@@ -438,7 +456,7 @@ MongoDB.prototype.queryAll = function(o, callback) {
   Queries documents by ID, returning an object with the ID's as keys,
   which contain the document (if found), or null if the document is not found.
 
-  @example
+  Example:
   
     mongodb.idExists({
       _id: 1,
@@ -455,9 +473,9 @@ MongoDB.prototype.queryAll = function(o, callback) {
       console.log([err, docs]);
     });
   
+  @method idExists
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MongoDB.prototype.idExists = function(o, callback) {
@@ -506,7 +524,7 @@ MongoDB.prototype.idExists = function(o, callback) {
 /**
   Counts all documents in a collection
 
-  @example
+  Example:
 
     mongodb.count({
       collection: 'users'
@@ -514,9 +532,9 @@ MongoDB.prototype.idExists = function(o, callback) {
       console.log([err, count]);
     });
 
+  @method count
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MongoDB.prototype.count = function(o, callback) {
@@ -542,6 +560,8 @@ MongoDB.prototype.count = function(o, callback) {
   Used internally by the model.
   
   @private
+  @method idFilter
+  @param {object} o
  */
  
 MongoDB.prototype.idFilter = function(o) {
@@ -555,7 +575,7 @@ MongoDB.prototype.idFilter = function(o) {
 
 MongoDB.prototype.__modelMethods = {
 
-  /** Model API insert */
+  /* Model API insert */
 
   insert: function(o, cdata, callback) {
     var self = this;
@@ -588,7 +608,7 @@ MongoDB.prototype.__modelMethods = {
   },
 
 
-  /** Model API get */
+  /* Model API get */
 
   get: function(o, cdata, callback) {
     var self = this;
@@ -643,7 +663,7 @@ MongoDB.prototype.__modelMethods = {
     });
   },
 
-  /** Model API getAll */
+  /* Model API getAll */
 
   getAll: function(cdata, callback) {
     var self = this, models = [];
@@ -665,7 +685,7 @@ MongoDB.prototype.__modelMethods = {
 
   },
 
-  /** Model API save */
+  /* Model API save */
 
   save: function(o, cdata, callback) {
     var self = this;
@@ -697,7 +717,7 @@ MongoDB.prototype.__modelMethods = {
   },
 
 
-  /** Model API delete */
+  /* Model API delete */
 
   delete: function(id, cdata, callback) {
     var self = this;
@@ -720,7 +740,7 @@ MongoDB.prototype.__modelMethods = {
   }
 }
 
-/**
+/*
   Enables collection cache in collection objects
   
   The Client::collection method is overridden to support
@@ -766,13 +786,13 @@ function enableCollectionCache(client) {
   }
 }
 
-/**
+/*
   Construct Id condition 
 
   Provides: {object} condition
 
-  @param {number || string || array (string || number) } _id 
   @private
+  @param {number|string|array} _id 
 */
 
 function constructIdCondition(_id) {
@@ -796,10 +816,11 @@ function constructIdCondition(_id) {
   }
 }
 
-/**
+/*
   Converts an 'id' param to an _id param
   
   @private
+  @param {number|string|array} _id
  */
  
 function convertMongoID(o) {
@@ -809,12 +830,12 @@ function convertMongoID(o) {
   }
 }
 
-/**
+/*
   Count method that supports caching
   
+  @private
   @param {object} cdata: Cache data
   @param {function} callback
-  @public
  */
 
 function __count(cdata, callback) {
@@ -825,9 +846,8 @@ function __count(cdata, callback) {
   });
 }
 
-/**
+/*
   Quick find method without cursors
-  
  */
 
 Collection.prototype.__find = function() {

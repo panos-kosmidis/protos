@@ -24,3 +24,5 @@ form#yui-classopts-form span.classopts a { text-decoration: none; color: black; 
 #doc3 .section code strong { letter-spacing: -1px; }
 
 #doc3 h3#methods, #doc3 h3#properties, #doc3 h3#constructor { margin-bottom: 1.5em; }
+
+ul.content li.private { opacity: 0.6 !important; }

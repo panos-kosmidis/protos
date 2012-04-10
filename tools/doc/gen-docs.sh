@@ -16,13 +16,20 @@ fi
 rm -Rf build docs doctmp
 
 #first do the build (just copying files)
-mkdir -p build/lib;
+mkdir -p build/{lib,drivers};
 
 # Process source files
-for f in lib/application.js lib/command.js lib/controller.js lib/driver.js lib/engine.js lib/model.js lib/helper.js lib/protos.js
+for f in lib/*.js
+do
+  echo "INFO:  parsing markdown in `basename $f`"
+  $MARKDOWN $f > "build/lib/`basename $f`"
+done
+
+# Process source files
+for f in drivers/*.js
 do
 	echo "INFO:  parsing markdown in `basename $f`"
-	$MARKDOWN $f > "build/lib/`basename $f`"
+	$MARKDOWN $f > "build/drivers/`basename $f`"
 done
 
 # The location of your yuidoc install
@@ -62,7 +69,7 @@ python -W ignore::DeprecationWarning $yuidoc_home/bin/yuidoc.py $parser_in -C '<
 cp -r doctmp/docs/* docs/
 
 # patch the sources
-node $PATCH_SOURCES
+# node $PATCH_SOURCES
 
 # clean out temp files
 rm -r doctmp

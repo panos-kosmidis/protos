@@ -1,23 +1,23 @@
 
-/* MySQL */
+/**
+  @module drivers
+ */
 
 var _ = require('underscore'),
     mysql = require('mysql'),
     util = require('util'),
     regex = { endingComma: /, ?$/};
 
-function MySQL(app, config) {
+/**
+  MySQL Driver class
   
-  /** config: {
-    host: 'localhost',
-    port: 3306,
-    user: 'db_user',
-    password: 'db_password',
-    database: 'db_name',
-    debug: false,
-    cachePrefix: null,
-    storage: 'redis'
-  } */
+  @class MySQL
+  @constructor
+  @param {object} app Application instance
+  @param {object} config Driver configuration
+ */
+
+function MySQL(app, config) {
   
   var self = this;
   
@@ -27,6 +27,25 @@ function MySQL(app, config) {
   
   this.className = this.constructor.name;
   this.app = app;
+  
+/**
+    Driver configuration
+  
+      config: {
+        host: 'localhost',
+        port: 3306,
+        user: 'db_user',
+        password: 'db_password',
+        database: 'db_name',
+        debug: false,
+        cachePrefix: null,
+        storage: 'redis'
+      }
+      
+    @property config
+    @type object
+ */
+  
   this.config = config;
   
   protos.async(app); // Register async queue
@@ -72,7 +91,7 @@ util.inherits(MySQL, protos.lib.driver);
 /**
   Queries rows from a table
 
-  @example
+  Example:
   
     mysql.query({
       sql: 'SELECT * FROM table WHERE id=? AND user=?',
@@ -82,9 +101,9 @@ util.inherits(MySQL, protos.lib.driver);
       console.log([err, results, fields]);
     });
 
+  @method query
   @param {object} o
   @param {function} callback
-  @public
 */
 
 MySQL.prototype.query = function(o, callback) {
@@ -105,7 +124,7 @@ MySQL.prototype.query = function(o, callback) {
 /**
   Executes a query that is not expected to provide any results
 
-  @example
+  Example:
 
     mysql.exec({
       sql: 'SHOW TABLES',
@@ -113,9 +132,9 @@ MySQL.prototype.query = function(o, callback) {
       console.log([err, info]);
     });
 
+  @method exec
   @param {object} o
   @param {function} callback
-  @public
 */
 
 MySQL.prototype.exec = function(o, callback) {
@@ -139,7 +158,7 @@ MySQL.prototype.exec = function(o, callback) {
 /**
   Queries rows when condition is satisfied
 
-  @example
+  Example:
 
     mysql.queryWhere({
       condition: 'id=?',
@@ -149,9 +168,9 @@ MySQL.prototype.exec = function(o, callback) {
       console.log([err, results, fields]);
     });
 
+  @method queryWhere
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MySQL.prototype.queryWhere = function(o, callback) {
@@ -181,7 +200,7 @@ MySQL.prototype.queryWhere = function(o, callback) {
 /**
   Queries all rows in a table
   
-  @example
+  Example:
 
     mysql.queryAll({
       columns: 'user, pass',
@@ -190,9 +209,9 @@ MySQL.prototype.queryWhere = function(o, callback) {
       console.log([err, results, fields]);
     });
 
+  @method queryAll
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MySQL.prototype.queryAll = function(o, callback) {
@@ -216,7 +235,7 @@ MySQL.prototype.queryAll = function(o, callback) {
 /**
   Queries fields by ID
 
-  @example
+  Example:
 
     mysql.queryById({
       id: [1,3],
@@ -225,9 +244,9 @@ MySQL.prototype.queryAll = function(o, callback) {
       console.log([err, results, fields]);
     });
   
+  @method queryById
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MySQL.prototype.queryById = function(o, callback) {
@@ -255,7 +274,7 @@ MySQL.prototype.queryById = function(o, callback) {
 /**
   Inserts values into a table
 
-  @example
+  Example:
 
     mysql.insertInto({
       table: 'users',
@@ -264,9 +283,9 @@ MySQL.prototype.queryById = function(o, callback) {
       console.log([err, info]);
     });
 
+  @method insertInto
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MySQL.prototype.insertInto = function(o, callback) {
@@ -302,7 +321,7 @@ MySQL.prototype.insertInto = function(o, callback) {
 /**
   Deletes records by ID
 
-  @example
+  Example:
 
     mysql.deleteById({
       id: 4,
@@ -311,9 +330,9 @@ MySQL.prototype.insertInto = function(o, callback) {
       console.log([err, info]);
     });
 
+  @method deleteById
   @param {object} o
   @param {function} callback
-  @public
   */
 
 MySQL.prototype.deleteById = function(o, callback) {
@@ -339,7 +358,7 @@ MySQL.prototype.deleteById = function(o, callback) {
 /**
   Deletes rows where condition is satisfied
   
-  @example
+  Example:
 
     mysql.deleteWhere({
       condition: 'id=?',
@@ -349,9 +368,9 @@ MySQL.prototype.deleteById = function(o, callback) {
       console.log([err, info]);
     });
 
+  @method deleteWhere
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MySQL.prototype.deleteWhere = function(o, callback) {
@@ -378,7 +397,7 @@ MySQL.prototype.deleteWhere = function(o, callback) {
 /**
   Updates records by ID
   
-  @example
+  Example:
 
     mysql.updateById({
       id: 1,
@@ -388,9 +407,9 @@ MySQL.prototype.deleteWhere = function(o, callback) {
       console.log([err, info]);
     });
 
+  @method updateById
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MySQL.prototype.updateById = function(o, callback) {
@@ -418,7 +437,7 @@ MySQL.prototype.updateById = function(o, callback) {
 /**
   Updates rows where condition is satisfied
   
-  @example
+  Example:
 
     mysql.updateWhere({
       condition: 'id=?',
@@ -429,9 +448,9 @@ MySQL.prototype.updateById = function(o, callback) {
       console.log([err, info]);
     });
   
+  @method updateWhere
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MySQL.prototype.updateWhere = function(o, callback) {
@@ -468,7 +487,7 @@ MySQL.prototype.updateWhere = function(o, callback) {
 /**
   Counts rows in a table
 
-  @example
+  Example:
 
     mysql.countRows({
       table: table
@@ -476,9 +495,9 @@ MySQL.prototype.updateWhere = function(o, callback) {
       console.log([err, count]);
     });
 
+  @method countRows
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MySQL.prototype.countRows = function(o, callback) {
@@ -499,10 +518,10 @@ MySQL.prototype.countRows = function(o, callback) {
 }
 
 /**
-  Queries rows by ID, returning an object with the ID's as keys,
+  Queries rows by ID, returning an object with the ID`s as keys,
   which contain the row (if found), or null if the row is not found.
 
-  @example
+  Example:
 
     mysql.idExists({
       id: [1,2],
@@ -511,9 +530,9 @@ MySQL.prototype.countRows = function(o, callback) {
       console.log([err, results]);
     });
 
+  @method idExists
   @param {object} o
   @param {function} callback
-  @public
  */
 
 MySQL.prototype.idExists = function(o, callback) {
@@ -562,7 +581,7 @@ MySQL.prototype.idExists = function(o, callback) {
 
 MySQL.prototype.__modelMethods = {
   
-  /** Model API insert */
+  /* Model API insert */
   
   insert: function(o, cdata, callback) {
     var self = this;
@@ -591,7 +610,7 @@ MySQL.prototype.__modelMethods = {
     });
   },
   
-  /** Model API get */
+  /* Model API get */
   
   get: function(o, cdata, callback) {
     var self = this;
@@ -661,7 +680,7 @@ MySQL.prototype.__modelMethods = {
     });
   },
   
-  /** Model API getAll */
+  /* Model API getAll */
   
   getAll: function(cdata, callback) {
     var self = this, models = [];
@@ -683,7 +702,7 @@ MySQL.prototype.__modelMethods = {
 
   },
   
-  /** Model API save */
+  /* Model API save */
   
   save: function(o, cdata, callback) {
     var id, self = this;
@@ -710,7 +729,7 @@ MySQL.prototype.__modelMethods = {
     });
   },
   
-  /** Model API delete */
+  /* Model API delete */
   
   delete: function(id, cdata, callback) {
     var self = this;
