@@ -88,11 +88,9 @@ function compileSrc(file, compiler) {
     if (err) app.log(err);
     outFile = file.replace(extRegex, '.' + config.compileExts[ext]);
     relPath = app.relPath(outFile);
-    fs.writeFile(outFile, code, 'utf8', function(err) {
-      if (err) app.log(err);
-      if (app.environment != 'production') app.emit(util.format('compile: %s', relPath), err, code);
-      app.debug('Asset Manager: Compiled %s (%s)', relPath, ext);
-    });
+    fs.writeFileSync(outFile, code, 'utf8');
+    app.debug('Asset Manager: Compiled %s (%s)', relPath, ext);
+    if (app.environment != 'production') app.emit(util.format('compile: %s', relPath), err, code);
   });
 }
 
