@@ -96,8 +96,8 @@ node $PATCH_SOURCES
 rm -r doctmp
 
 # Link client stylesheet for development
-rm docs/assets/api.css docs/assets/client.{css,js} 
-ln -s "`pwd`/resources/yuidoc-template/assets/api.css" "`pwd`/resources/yuidoc-template/assets/client.css" "`pwd`/resources/yuidoc-template/assets/client.js" docs/assets/
+# rm docs/assets/api.css docs/assets/client.{css,js} 
+# ln -s "`pwd`/resources/yuidoc-template/assets/api.css" "`pwd`/resources/yuidoc-template/assets/client.css" "`pwd`/resources/yuidoc-template/assets/client.js" docs/assets/
 
 echo 'INFO: '
 echo 'INFO:  Done'
