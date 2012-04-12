@@ -30,7 +30,7 @@ module.exports = {
   json: {
     pretty: true,
     replacer: null,
-    contentType: 'application/json',
+    contentType: 'application/json;charset=utf-8',
     connection: 'close'
   },
   
