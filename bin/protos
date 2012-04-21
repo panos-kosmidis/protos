@@ -286,6 +286,7 @@ var commands = {
   lint: {
     args: Infinity,
     noargs: true,
+    single: ['config'],
     run: function(data) {
       
       var args = data.args.map(function(item) {
@@ -293,7 +294,8 @@ var commands = {
       });
       
       if (validateApp.call(this, data, true)) {
-        var conf = (pathModule.existsSync('jshint.json')) ? pathModule.resolve('jshint.json') : Protos.path + '/jshint.json';
+        var conf = (data.config && pathModule.resolve(data.config));
+        if (!conf) conf = (pathModule.existsSync('jshint.json')) ? pathModule.resolve('jshint.json') : Protos.path + '/jshint.json';
         var cmd = util.format('JSHINT_CONFIG="%s" node %s/tools/lint %s', conf, Protos.path, args.join(' '));
         // console.exit(cmd);
         cp.exec(cmd, function(err, stdout, stderr) {
