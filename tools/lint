@@ -15,7 +15,7 @@ var path = require('path'),
 var rootPath = path.dirname(__filename);
 
 // Config file
-var config = path.resolve(rootPath, '../jshint.json');
+var config = process.env.JSHINT_CONFIG || path.resolve(rootPath, '../jshint.json');
 
 // Command, using local jshint library
 var cmd = path.resolve(rootPath, '../node_modules/jshint/bin/hint'),

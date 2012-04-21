@@ -283,6 +283,27 @@ var commands = {
     }
   },
   
+  lint: {
+    args: Infinity,
+    noargs: true,
+    run: function(data) {
+      
+      var args = data.args.map(function(item) {
+        return pathModule.resolve(item);
+      });
+      
+      if (validateApp.call(this, data, true)) {
+        var conf = (pathModule.existsSync('jshint.json')) ? pathModule.resolve('jshint.json') : Protos.path + '/jshint.json';
+        var cmd = util.format('JSHINT_CONFIG="%s" node %s/tools/lint %s', conf, Protos.path, args.join(' '));
+        // console.exit(cmd);
+        cp.exec(cmd, function(err, stdout, stderr) {
+          if (err) console.exit(err);
+          else console.log(stdout);
+        });
+      }
+    }
+  },
+  
   controller: {
     switches: ['nohelper'],
     args: 99,
@@ -874,7 +895,7 @@ var cli = new CommandLine(commands);
 
 cli.help.before = "\
 Usage: protos [action] [arguments]\n\n\
-Actions: [create, server, deploy, fetch, inspector] [controller, helper, model, view, partial, static]\n";
+Actions: [create, server, deploy, fetch, inspector, lint] [controller, helper, model, view, partial, static]\n";
 
 cli.help.after = "\n\
 Example:\n\n\

@@ -1,6 +1,6 @@
 {
   
-  // jshint.com/options/
+  // http://www.jshint.com/options/
   
   "predef": ["protos", "app"],
   
