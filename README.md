@@ -152,7 +152,7 @@ THE SOFTWARE.
 
 ## Resources
 
-- Visit the [official website](http://protos.der-design.com).
+- Visit the [official website](http://derdesign.github.com/protos).
 - Follow [@derdesign](http://twitter.com/derdesign) on Twitter for updates.
 - Report issues on the [github issues](https://github.com/derdesign/protos/issues) page.
 - For support, refer to the [Mailing List](https://groups.google.com/group/protos-web-framework).
