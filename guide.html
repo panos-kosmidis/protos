@@ -1602,7 +1602,7 @@ receiving parameters passed as their <em>locals</em>. Protos uses this common ap
 </tr>
 <tr>
 <td></td>
-<td> <em>_layout/widget/</em>rss.html </td>
+<td> __layout/widget/_rss.html </td>
 <td> layout_widget_rss</td>
 </tr>
 <tr>
@@ -1618,7 +1618,7 @@ receiving parameters passed as their <em>locals</em>. Protos uses this common ap
 partial into the view:</p>
 
 <pre><code>&lt;div class="post-comment"&gt;
-  #{blog_post_comment(locals.comments)}
+  &lt;%- blog_post_comment(locals.comments) %&gt;;
 &lt;/div&gt;&lt;!-- .post-comment --&gt;
 </code></pre>
 
