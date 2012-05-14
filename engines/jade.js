@@ -39,8 +39,10 @@ Jade.prototype.render = function(data, vars, relPath) {
   data = this.app.applyFilters('jade_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
-    var filename = this.app.fullPath(this.app.mvcpath + 'views/' + relPath),
-        options = extend({filename: filename}, this.options);
+  
+    var filename = (relPath && relPath[0] == '/') ? relPath :  this.app.fullPath(this.app.mvcpath + 'views/' + relPath);
+    var options = extend({filename: filename}, this.options);
+        
     func = jade.compile(data, options);
     this.cacheFunction(func, arguments);
   }
