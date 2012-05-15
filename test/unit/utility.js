@@ -190,6 +190,14 @@ vows.describe('lib/utility.js').addBatch({
       // /^hi+there$/
       assert.isTrue(regexes[4].test('hiiiiiiiiiiiiiiiiithere'));
       assert.isFalse(regexes[4].test('hi+there'));
+    },
+    
+    'Accepts an array of patterns (recursive)': function() {
+      var patterns = protos.util.createRegexPattern(['hello*.css', 'assets/css/img.(jpg|png|gif)', 'you/(like|eat)/(apples|bananas).txt']);
+      assert.isArray(patterns);
+      assert.strictEqual(patterns[0].toString(), '/^hello(.+)\\.css$/');
+      assert.strictEqual(patterns[1].toString(), '/^assets/css/img\\.(jpg|png|gif)$/');
+      assert.strictEqual(patterns[2].toString(), '/^you/(like|eat)/(apples|bananas)\\.txt$/');
     }
     
   }
