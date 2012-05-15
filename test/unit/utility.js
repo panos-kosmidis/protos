@@ -130,4 +130,68 @@ vows.describe('lib/utility.js').addBatch({
     
   }
   
+}).addBatch({
+  
+  'Utility::createRegexPattern': {
+    
+    topic: function() {
+      
+      var regexes = []
+      regexes.push(protos.util.createRegexPattern('*.css'));
+      regexes.push(protos.util.createRegexPattern('*.(css|js)'));
+      regexes.push(protos.util.createRegexPattern('hello/[xyz][a-b]{1}[aeiou]{1,3}*.(css|js)'));
+      regexes.push(protos.util.createRegexPattern('hello-world/hi\\+there/whoah!.(html|php)'));
+      regexes.push(protos.util.createRegexPattern('hi+there'));
+      
+      return regexes;
+    }, 
+    
+    'Creates valid regexp objects': function(regexes) {
+      var typeCheck = regexes.map(function(ob) { return ob instanceof RegExp; });
+      assert.deepEqual(typeCheck, [true, true, true, true, true]);
+    },
+    
+    'Creates regexes properly': function(regexes) {
+      var regexes = regexes.map(function(ob) { return ob.toString(); });
+      assert.strictEqual(regexes[0], '/^(.+)\\.css$/');
+      assert.strictEqual(regexes[1], '/^(.+)\\.(css|js)$/');
+      assert.strictEqual(regexes[2], '/^hello/[xyz][a-b]{1}[aeiou]{1,3}(.+)\\.(css|js)$/');
+      assert.strictEqual(regexes[3], '/^hello-world/hi\\+there/whoah!\\.(html|php)$/');
+      assert.strictEqual(regexes[4], '/^hi+there$/');
+    },
+    
+    'Patterns are matched successfully': function(regexes) {
+      // *.css
+      assert.isTrue(regexes[0].test('hello.css'));
+      assert.isTrue(regexes[0].test('yeah!.css'));
+      assert.isTrue(regexes[0].test('c++.css'));
+      assert.isFalse(regexes[0].test('hello-world.less'));
+      assert.isFalse(regexes[0].test('c++.styl'));
+      
+      // *.(css|js)
+      assert.isTrue(regexes[1].test('hello.css'));
+      assert.isTrue(regexes[1].test('hello-world.css'));
+      assert.isTrue(regexes[1].test('hi!.css'));
+      assert.isTrue(regexes[1].test('whoah.js'));
+      assert.isFalse(regexes[1].test('cool.html'));
+      assert.isFalse(regexes[1].test('hi.php'));
+      
+      // hello/[xyz][a-b]{1}[aeiou]{1,3}*.(css|js)
+      assert.isTrue(regexes[2].test('hello/xaeCOOL.css'));
+      assert.isFalse(regexes[2].test('hello/xaeCOOL.html'));
+      assert.isTrue(regexes[2].test('hello/ybi!.js'));
+      assert.isFalse(regexes[2].test('hello/ybi!.php'));
+      assert.isFalse(regexes[2].test('hello/anxq.css'));
+      
+      // /^hello-world/hi\+there/whoah!\\.(html|php)$/
+      assert.isTrue(regexes[3].test('hello-world/hi+there/whoah!.html'));
+      assert.isFalse(regexes[3].test('hello-world/hi+there/whoah.css'));
+      
+      // /^hi+there$/
+      assert.isTrue(regexes[4].test('hiiiiiiiiiiiiiiiiithere'));
+      assert.isFalse(regexes[4].test('hi+there'));
+    }
+    
+  }
+  
 }).export(module);
