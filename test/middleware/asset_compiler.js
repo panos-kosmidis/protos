@@ -4,6 +4,7 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
     util = require('util'),
+    pathModule = require('path'),
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
     
@@ -30,7 +31,8 @@ vows.describe('Asset Compiler (middleware)').addBatch({
         minify: {
           'assets/min.css': ['target.css', 'assets/target.less'],
           'assets/min.js': ['target.js', 'assets/target.coffee']
-        }
+        },
+        ignore: ['ignore.styl']
       });
      
       // Get pre-compiled files for comparison
@@ -158,6 +160,10 @@ age:9}}}.call(this)';
         var r = results[10];
         assert.equal(r, compiledStylusModified);
       }
+    },
+    
+    "Does not compile ignored files": function() {
+      assert.isFalse(pathModule.existsSync(app.fullPath('public/ignore.css')));
     }
     
   }

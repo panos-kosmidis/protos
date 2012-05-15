@@ -53,6 +53,20 @@ fileModule.walkSync(app.fullPath(app.paths.public), function(dirPath, dirs, file
   }
 });
 
+// Exclude assets ignored in config
+// ignore: ['bootstrap/deny.(less|styl)', 'blueprint/(deny|forbid).less']
+
+var filtered = {};
+
+for (var key in assets) { 
+  var relPaths = assets[key].map(function(f) { return app.relPath(f, 'public'); });
+  filtered[key] = protos.util.excludeWithPattern(relPaths, config.ignore);
+  if (filtered[key].length === 0) delete filtered[key];
+  else filtered[key] = filtered[key].map(function(f) { return app.fullPath('public/' + f); });
+}
+
+assets = filtered;
+
 // Cleanup ignores, only leave compiled sources that are not 
 // allowed, since they're being minified. Asset sources are
 // normally blocked. This improves performance on array index lookup.

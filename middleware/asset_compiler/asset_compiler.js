@@ -71,6 +71,7 @@ function AssetCompiler(config, middleware) {
       styl: 'css',
       less: 'css',
     },
+    ignore: [],
     minify: {},
     uglifyOpts: {
       mangle: true,
