@@ -95,7 +95,7 @@ Created myapp1/app/views/test/test-index.mustache';
     },
     
     "Downloads assets & libraries": function() {
-      assert.isTrue(pathModule.existsSync('myapp/public/js/jquery-1.7.1.min.js'));
+      assert.isTrue(pathModule.existsSync('myapp/public/js/jquery-1.7.2.min.js'));
       assert.isTrue(pathModule.existsSync('myapp/public/js/prototype.js'));
       assert.isTrue(pathModule.existsSync('myapp/public/css/bootstrap/css/bootstrap-responsive.css'));
     },
@@ -360,7 +360,7 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
       var r1 = results[0];
       var expected = '» Downloading Skeleton Mobile-Friendly Responsive Framework\n» Downloading Ember.js JavaScript Framework';
       assert.equal(r1, expected);
-      assert.isTrue(pathModule.existsSync('public/js/ember-0.9.5.min.js'));
+      assert.isTrue(pathModule.existsSync('public/js/ember-0.9.7.1.min.js'));
       assert.isTrue(pathModule.existsSync('public/css/skeleton'));
     }
 
