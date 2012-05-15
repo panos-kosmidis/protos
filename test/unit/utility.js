@@ -7,6 +7,8 @@ var app = require('../fixtures/bootstrap'),
 
 app.logging = false;
 
+var strings, patterns;
+
 vows.describe('lib/utility.js').addBatch({
   
   'Utility::typecast': {
@@ -202,4 +204,52 @@ vows.describe('lib/utility.js').addBatch({
     
   }
   
+}).addBatch({
+
+  'Utility::filterWithPattern': {
+
+    topic: function() {
+      strings = [];
+      strings.push('hello/world/1.jpg');
+      strings.push('hello/world/howdy.txt');
+      strings.push('world/yes.doc');
+      strings.push('assets/favicon.png');
+      strings.push('magazine/page.tiff');
+      
+      patterns = [];
+      patterns.push('hello/world/*.(jpg|png|tiff)');
+      patterns.push('(assets|magazine)/*.(png|tiff)');
+
+      return {strings: strings, patterns: patterns};
+
+    },
+
+    'Filters strings successfully': function(data) {
+      var strings = data.strings, patterns = data.patterns;
+      var filtered = protos.util.filterWithPattern(strings, patterns);
+      assert.deepEqual(filtered, ['hello/world/1.jpg', 'assets/favicon.png', 'magazine/page.tiff']);
+    },
+
+    'Returns inverted results (exclusion)': function(data) {
+      var strings = data.strings, patterns = data.patterns;
+      var inverted = protos.util.filterWithPattern(strings, patterns, true);
+      assert.deepEqual(inverted, ['hello/world/howdy.txt', 'world/yes.doc']);
+    }
+
+  }
+
+}).addBatch({
+  
+  'Utility::excludeWithPattern': {
+    
+    topic: function() { 
+      return protos.util.excludeWithPattern(strings, patterns);
+    },
+
+    'Successfully excludes strings matching patterns': function(excluded) { 
+      assert.deepEqual(excluded, ['hello/world/howdy.txt', 'world/yes.doc']);
+    }
+    
+  }
+
 }).export(module);
