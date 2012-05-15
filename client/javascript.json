@@ -45,7 +45,7 @@
     "description": "Ember.js JavaScript Framework",
     "version": "0.9.7.1",
     "website": "http://emberjs.com/",
-    "download": "cloud.github.com/downloads/emberjs/ember.js/ember-0.9.7.1.min.js"
+    "download": "http://cloud.github.com/downloads/emberjs/ember.js/ember-0.9.7.1.min.js"
   },
   
   "knockout": {
