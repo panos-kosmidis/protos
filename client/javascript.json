@@ -20,6 +20,27 @@
     "download": "http://documentcloud.github.com/underscore/underscore-min.js" 
   },
   
+  "underscore-string": {
+    "description": "Underscore.string",
+    "version": "2.0.0",
+    "website": "http://epeli.github.com/underscore.string/",
+    "download": "http://epeli.github.com/underscore.string/dist/underscore.string.min.js"
+  },
+  
+  "moment": {
+    "description": "MomentJS",
+    "version": "1.6.2",
+    "website": "http://momentjs.com/",
+    "download": "https://raw.github.com/timrwood/moment/1.6.2/min/moment.min.js"
+  },
+  
+  "money": {
+    "description": "MoneyJS",
+    "version": "0.1.3",
+    "website": "http://josscrowcroft.github.com/money.js/",
+    "download": "http://josscrowcroft.github.com/money.js/money.min.js"
+  },
+  
   "ember": {
     "description": "Ember.js JavaScript Framework",
     "version": "0.9.7.1",
