@@ -98,7 +98,7 @@ for (var compiler, files, ext, i=0; i < assetExts.length; i++) {
 function compileSrc(file, compiler) {
   var src, outFile, relPath;
   src = fs.readFileSync(file, 'utf8');
-  compiler(src, function(err, code) {
+  compiler(src, file, function(err, code) {
     if (err) app.log(err);
     outFile = file.replace(extRegex, '.' + config.compileExts[ext]);
     relPath = app.relPath(outFile);

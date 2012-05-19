@@ -3,20 +3,24 @@
 
 var less = require('less'),
     stylus = require('stylus'),
-    coffee = require('coffee-script');
-    
+    coffee = require('coffee-script'),
+    pathModule = require('path');
+
 // Asset compilers
 module.exports = {
   
-  less: function(source, callback) {
-    less.render(source, callback);
+  less: function(source, file, callback) {
+    less.render(source, {
+      filename: pathModule.basename(file),
+      paths: [pathModule.dirname(file)]
+    }, callback);
   },
   
-  styl: function(source, callback) {
-    stylus.render(source, {}, callback);
+  styl: function(source, file, callback) {
+    stylus.render(source, {filename: file}, callback);
   },
   
-  coffee: function(source, callback) {
+  coffee: function(source, file, callback) {
     callback(null, coffee.compile(source));
   }
   
