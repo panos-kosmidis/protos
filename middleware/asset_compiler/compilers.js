@@ -3,6 +3,7 @@
 
 var less = require('less'),
     stylus = require('stylus'),
+    nib = require('nib'),
     coffee = require('coffee-script'),
     pathModule = require('path');
 
@@ -17,7 +18,12 @@ module.exports = {
   },
   
   styl: function(source, file, callback) {
-    stylus.render(source, {filename: file}, callback);
+    stylus(source)
+      .set('filename', file)
+      .use(nib())
+      .import('nib')
+      .render(callback)
+    ;
   },
   
   coffee: function(source, file, callback) {
