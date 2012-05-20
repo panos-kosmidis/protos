@@ -14,10 +14,11 @@ var minifyTargets = Object.keys(config.minify);
 
 var compiler = new Multi({
   getSource: function(file, callback) {
+    file = app.fullPath('public/' + file);
     var ext = getExt(file);
-    var source = fs.readFileSync(app.fullPath('public/' + file), 'utf-8').toString();
+    var source = fs.readFileSync(file, 'utf-8').toString();
     if (ext in config.compilers) {
-      config.compilers[ext](source, callback);
+      config.compilers[ext](source, file, callback);
     } else {
       callback(null, source);
     }
