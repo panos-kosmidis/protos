@@ -8,6 +8,9 @@
 /skeleton/log/*.log
 /skeleton/public/test
 /test/fixtures/tmp
+/test/fixtures/*skeleton/public/*-style.css
 /test/fixtures/*skeleton/public/assets/*.js
 /test/fixtures/*skeleton/public/assets/*.css
+/test/fixtures/*skeleton/public/css/*.css
+/test/fixtures/*skeleton/public/css/subdir/*.css
 /test/fixtures/*skeleton/log/*.log

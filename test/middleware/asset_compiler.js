@@ -64,16 +64,19 @@ vows.describe('Asset Compiler (middleware)').addBatch({
       multi.curl('-i /target.js');
       
       multi.exec(function(err, results) {
+        
         var p = app.fullPath('public/assets/stylus.styl');
+      
         fs.readFile(p, 'utf8', function(err, styl) {
           if (err) promise.emit('success', err);
           else {
             styl = styl.replace('border-radius(5px)', 'border-radius(100px)');
             
             if (app.environment != 'travis') {
-              
+
               // Prepare for the change event
               app.on('compile: public/assets/stylus.css', function(err, code) {
+                
                 if (err) promise.emit('success', err);
                 else {
                   delete app.supports.static_server;
@@ -94,7 +97,7 @@ vows.describe('Asset Compiler (middleware)').addBatch({
           }
         });
       });
-     
+      
       return promise;
     },
     
@@ -164,6 +167,20 @@ age:9}}}.call(this)';
     
     "Does not compile ignored files": function() {
       assert.isFalse(pathModule.existsSync(app.fullPath('public/ignore.css')));
+    },
+    
+    "LESS @import works as expected": function() {
+      var compiled1 = fs.readFileSync(app.fullPath('public/less-style.css')).toString('utf8');
+      var compiled2 = fs.readFileSync(app.fullPath('public/css/subdir/less-test.css')).toString('utf8');
+      assert.equal(compiled1, '/* Coming from less-layout.less */\n#layout {\n  width: 500px;\n}\n/* Coming from less-style.less */\nbody {\n  background: #f2f2f2;\n}\n');
+      assert.equal(compiled2, '/* Import using <updir> */\n/* Coming from less-layout.less */\n#layout {\n  width: 500px;\n}\n');
+    },
+    
+    "Stylus @import works as expected": function() {
+      var compiled1 = fs.readFileSync(app.fullPath('public/stylus-style.css')).toString('utf8');
+      var compiled2 = fs.readFileSync(app.fullPath('public/css/subdir/stylus-test.css')).toString('utf8');
+      assert.equal(compiled1, '#layout {\n  width: 500px;\n}\n/* Coming from stylus-style.styl */\nbody {\n  background: #f2f2f2;\n}\n');
+      assert.equal(compiled2, '/* Import using <updir> */\n#layout {\n  width: 500px;\n}\n');
     }
     
   }

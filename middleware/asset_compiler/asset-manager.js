@@ -90,12 +90,12 @@ for (var compiler, files, ext, i=0; i < assetExts.length; i++) {
   compiler = config.compilers[ext];
   files = assets[ext];
   for (var src, file, outSrc, outFile, j=0; j < files.length; j++) {
-    if (watch) new Watcher(files[j], compiler);
-    else compileSrc(files[j], compiler);
+    if (watch) new Watcher(files[j], compiler, ext);
+    else compileSrc(files[j], compiler, ext);
   }
 }
 
-function compileSrc(file, compiler) {
+function compileSrc(file, compiler, ext) {
   var src, outFile, relPath;
   src = fs.readFileSync(file, 'utf8');
   compiler(src, file, function(err, code) {
@@ -116,10 +116,10 @@ function compileSrc(file, compiler) {
   @return {string} compiled asset
  */
  
-function Watcher(path, compiler) {
-  compileSrc(path, compiler);
+function Watcher(path, compiler, ext) {
+  compileSrc(path, compiler, ext);
   var watcher = fs.watch(path, function(event, filename) {
-    if (event == 'change') compileSrc(path, compiler);
+    if (event == 'change') compileSrc(path, compiler, ext);
     else if (event == 'rename') {
       app.log(util.format("Asset Manager: Stopped watching '%s' (renamed)", app.relPath(path)));
       watcher.close();
