@@ -10,6 +10,9 @@ var swig = require('swig'),
 /**
   Swig engine class
   
+  To use template inheritance and the other features the engine provides,
+  use paths relative to the application's `app/views` directory.
+
   https://github.com/paularmstrong/swig
   
   @class Swig
@@ -27,8 +30,11 @@ function Swig(app) {
     allowErrors: true,
     autoescape: true,
     encoding: 'utf-8',
-    tags: {}
+    tags: {},
+    root: app.fullPath('app/views')
   }, opts);
+  
+  swig.init(this.options);
   
   this.module = swig;
   this.multiPart = true;
@@ -41,7 +47,7 @@ Swig.prototype.render = function(data) {
   data = this.app.applyFilters('swig_template', data);
   var tpl, func = this.getCachedFunction(arguments);
   if (func === null) {
-    tpl = swig.compile(data, this.options);
+    tpl = swig.compile(data);
     // Wrap compiler in a new function, to make it
     // compatible with other view engines
     func = function(locals) {
