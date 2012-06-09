@@ -12,6 +12,11 @@
   Routes defined in controllers take precedence over the static file routes. 
   This means you can control access to any of the static files available
   in the public/ directory.
+  
+  For more info about controllers:
+  
+  http://derdesign.github.com/protos/guide.html#applicaton-controllers
+  
  */
 
 function MainController(app) {

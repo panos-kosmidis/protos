@@ -16,6 +16,11 @@
   This association is a convention used to better organize and group 
   the functionality associated with each controller. Not a functionality
   requirement.
+  
+  For more info about helpers:
+  
+  http://derdesign.github.com/protos/guide.html#view-helpers
+  
  */
 
 function MainHelper(app) {
