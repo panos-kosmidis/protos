@@ -30,13 +30,18 @@ vows.describe('Model Relationships').addBatch({
     },
     
     "Initialized models": function(models) {
-      assert.equal(Object.keys(models).length, 6);
+      assert.equal(Object.keys(models).length, 7);
       assert.isTrue('accounts' in models);
       assert.isTrue('buddies' in models);
       assert.isTrue('companies' in models);
       assert.isTrue('groups' in models);
       assert.isTrue('users' in models);
       assert.isTrue('websites' in models);
+      assert.isTrue('others' in models);
+      
+      // Make sure custom model is assigned properly
+      assert.equal(app.othersModel.method(), 'Custom Model Data');
+      
     }, 
     
     "Properly sets model methods": function(models) {
