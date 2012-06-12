@@ -77,7 +77,7 @@ generator_out=doctmp/docs;
 template=resources/yuidoc-template
 
 projectname='Protos'
-version="0.0.4"
+version="0.0.7"
 
 yuiversion="3.0.0"
 

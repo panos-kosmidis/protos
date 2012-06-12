@@ -18,7 +18,7 @@ commandline = ./test/command.js
 
 default:
 		@echo "\n\033[1;30m♢ Project Tasks\033[0m\n"
-		@echo "\033[1;31mmake docs\033[0m             Generate the Documentation"
+		@echo "\033[1;31mmake docs\033[0m             Generate the API Documentation"
 		@echo "\033[1;31mmake deps\033[0m             Install Dependencies & Cleanup"
 		@echo "\033[1;31mmake lint\033[0m             Run Code Analysis tool (scans entire project)"
 		@echo "\033[1;31mmake testconfig\033[0m       Test Configuration Tool"
