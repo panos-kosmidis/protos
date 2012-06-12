@@ -6,6 +6,8 @@ deployment, maintainability and security.
 It aims to integrate several open source packages and combine their power &amp; functionality, to bring a common set of
 utilities and functionality to all applications, reducing their dependencies.
 
+**Note**: Protos runs on UNIX-like systems such as Linux & Mac OSX. Windows support might be available in the future.
+
 ## Features
 
 - Powerful Routing
