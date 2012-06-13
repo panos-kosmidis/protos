@@ -2,9 +2,9 @@
   "mysql": {
     "host": "localhost",
     "port": "3306",
-    "user": "db_user",
-    "password": "db_pass",
-    "database": "test_db",
+    "user": "admin_test",
+    "password": "123123",
+    "database": "admin_test",
     "table": "test_table"
   },
   "mongodb": {
