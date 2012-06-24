@@ -1,12 +1,8 @@
 # Protos [![Build Status](https://secure.travis-ci.org/derdesign/protos.png)](http://travis-ci.org/derdesign/protos)
 
 Protos is an open source Web Application Development framework, focused on high performance, integration, ease of 
-deployment, maintainability and security.
-
-It aims to integrate several open source packages and combine their power &amp; functionality, to bring a common set of
-utilities and functionality to all applications, reducing their dependencies.
-
-Protos runs on UNIX-like systems such as **Linux** & **Mac OSX**. Windows support might be added in the future.
+deployment, maintainability and security. Protos runs on UNIX-like systems such as **Linux** & **Mac OSX**. Windows 
+support might be added in the future.
 
 ## Features
 
@@ -164,7 +160,6 @@ THE SOFTWARE.
 
 ## Resources
 
-- Visit the [official website](http://derdesign.github.com/protos).
 - Follow [@derdesign](http://twitter.com/derdesign) on Twitter for updates.
 - Report issues on the [github issues](https://github.com/derdesign/protos/issues) page.
 - For support, refer to the [Mailing List](https://groups.google.com/group/protos-web-framework).
