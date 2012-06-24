@@ -34,7 +34,7 @@ vows.describe('Logger (middleware)').addBatch({
       fs.writeFileSync(app.fullPath('/log/test.log'), '', 'utf-8');
       
       app.use('logger', {
-        accessLog: true,
+        accessLogFile: 'access.log',
         accessLogConsole: false,
         infoLevel: null,
         errorLevel: null,
