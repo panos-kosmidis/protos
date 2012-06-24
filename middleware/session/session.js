@@ -24,7 +24,7 @@ var app = protos.app;
 
 var _ = require('underscore'),
     util = require('util'),
-    node_uuid = require('node-uuid'),
+    node_uuid = protos.requireDependency('node-uuid', 'Session Middleware', 'session'),
     slice = Array.prototype.slice;
 
 require('./request.js');

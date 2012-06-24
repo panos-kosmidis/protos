@@ -1,10 +1,10 @@
 
 /* Asset compilers */
 
-var less = require('less'),
-    stylus = require('stylus'),
-    nib = require('nib'),
-    coffee = require('coffee-script'),
+var less = protos.requireDependency('less', 'Asset Compiler Middleware', 'asset_compiler'),
+    stylus = protos.requireDependency('stylus', 'Asset Compiler Middleware', 'asset_compiler'),
+    nib = protos.requireDependency('nib', 'Asset Compiler Middleware', 'asset_compiler'),
+    coffee = protos.requireDependency('coffee-script', 'Asset Compiler Middleware', 'asset_compiler'),
     pathModule = require('path');
 
 // Asset compilers

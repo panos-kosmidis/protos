@@ -111,7 +111,7 @@ function SocketIO(config, middleware) {
  */
 
 function initSockets(config) {
-  var io = require('socket.io').listen(app.server, config.settings);
+  var io = protos.requireDependency('socket.io', 'SocketIO Middleware', 'socket_io').listen(app.server, config.settings);
   
   // Run environment code
   var func = config.environments[protos.environment];
