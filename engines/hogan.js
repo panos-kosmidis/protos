@@ -5,7 +5,7 @@
   @namespace engine
  */
 
-var hogan = require('hogan.js'),
+var hogan = protos.requireDependency('hogan.js', 'Hogan.js Engine', 'hogan.js'),
     util = require('util');
     
 /**
@@ -25,7 +25,7 @@ function Hogan(app) {
   this.app = app;
   this.module = hogan;
   this.multiPart = true;
-  this.extensions = ['hogan', 'hogan.html', 'hg.html'];
+  this.extensions = ['hogan', 'hogan.html', 'hg.html', 'mustache'];
 
   app.on('init', function() {
     // App partials

@@ -6,7 +6,7 @@
 
 var _ = require('underscore'),
     util = require('util'),
-    mongodb = require('mongodb'),
+    mongodb = protos.requireDependency('mongodb', 'MongoDB Storage'),
     Db = mongodb.Db,
     Server = mongodb.Server,
     ObjectID = mongodb.ObjectID;

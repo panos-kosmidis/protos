@@ -4,7 +4,7 @@
 /docs
 /work
 /npm-debug.log
-/node_modules
+/node_modules*
 /skeleton/log/*.log
 /skeleton/public/test
 /test/fixtures/tmp

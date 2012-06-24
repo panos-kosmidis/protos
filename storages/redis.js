@@ -5,7 +5,7 @@
  */
 
 var _ = require('underscore'),
-    redis = require('redis'),
+    redis = protos.requireDependency('redis', 'Redis Storage'),
     util = require('util');
 
 /**

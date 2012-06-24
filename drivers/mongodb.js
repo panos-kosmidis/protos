@@ -6,8 +6,8 @@
 
 var _ = require('underscore'),
     util = require('util'),
-    mongodb = require('mongodb'),
     slice = Array.prototype.slice,
+    mongodb = protos.requireDependency('mongodb', 'MongoDB Driver'),
     Db = mongodb.Db,
     Server = mongodb.Server,
     ObjectID = mongodb.ObjectID,

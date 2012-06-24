@@ -7,11 +7,14 @@
 // Local vars
 
 var path = require('path'),
-    rootPath = path.resolve(__dirname, '../'),
+    rootPath = process.env.PROTOS_APP_PATH || path.resolve(__dirname, '../'),
     nodeModules = rootPath + '/node_modules',
     child_process = require('child_process'),
     fs = require('fs'),
     found = 0;
+    
+// Do nothing if node_modules/ doesn't exist
+if (!path.existsSync(nodeModules)) return;
 
 // Grep search for "sys" module usage
 

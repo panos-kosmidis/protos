@@ -4,7 +4,7 @@
   @namespace engine
  */
 
-var ck = require('coffeekup'),
+var ck = protos.requireDependency('coffeekup', 'CoffeeKup Engine'),
     util = require('util');
     
 /**

@@ -128,18 +128,20 @@ vows.describe('Asset Compiler (middleware)').addBatch({
     "Successfully minifies supported assets": function(results) {
       var r1 = results[6],
           r2 = results[7];
+          
       var expected1 = '#features #toc-sidebar{display:none!important}#toc-sidebar{overflow-y:scroll;box-shadow:5px 0 40px \
 rgba(255,255,255,.8);position:fixed;top:0;left:0;height:100%;background:#f2f2f2 repeat}#toc-sidebar>:first-child{margin:50px \
 0 100px 20px;padding:0}#toc-sidebar ul{width:250px}#toc-sidebar ul li{list-style:none}#toc-sidebar ul li a{font-size:12px;\
 color:#222}#toc-sidebar ul li.section{margin-top:.5em}#toc-sidebar ul li.section a{font-weight:700}#toc-sidebar ul \
 li.sub{margin-left:0}#yelow #short{color:#fea}#yelow #long{color:#fea}#yelow #rgba{color:rgba(255,238,170,.1)}#yelow \
 #argb{color:#1affeeaa}';
+
       var expected2 = '(function(){var a,b,c,d,e,f,g,h,i=Array.prototype.slice;e=42,f=!0,f&&(e=-42),h=function(a){return a*a}\
-,b=[1,2,3,4,5],c={root:Math.sqrt,square:h,cube:function(a){return a*h(a)}},g=function(){var a,b;return b=arguments[0],a=2<=\
-arguments.length?i.call(arguments,1):[],print(b,a)},typeof elvis!="undefined"&&elvis!==null&&alert("I knew it!"),a=function()\
-{var a,e,f;f=[];for(a=0,e=b.length;a<e;a++)d=b[a],f.push(c.cube(d));return f}()}).call(this),function(){var a,b,c,d;d=["do",\
-"re","mi","fa","so"],c={Jagger:"Rock",Elvis:"Roll"},a=[1,0,1,0,0,1,1,1,0],b={brother:{name:"Max",age:11},sister:{name:"Ida",\
-age:9}}}.call(this)';
+,b=[1,2,3,4,5],c={root:Math.sqrt,square:h,cube:function(a){return a*h(a)}},g=function(){var a,b;b=arguments[0],a=2<=arguments.\
+length?i.call(arguments,1):[];return print(b,a)},typeof elvis!="undefined"&&elvis!==null&&alert("I knew it!"),a=function(){var \
+a,e,f;f=[];for(a=0,e=b.length;a<e;a++)d=b[a],f.push(c.cube(d));return f}()}).call(this),function(){var a,b,c,d;d=["do","re","mi",\
+"fa","so"],c={Jagger:"Rock",Elvis:"Roll"},a=[1,0,1,0,0,1,1,1,0],b={brother:{name:"Max",age:11},sister:{name:"Ida",age:9}}}.call(this)';
+      
       assert.equal(r1, expected1);
       assert.equal(r2, expected2);
     },

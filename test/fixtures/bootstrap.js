@@ -26,27 +26,6 @@ if (module.parent.id == '.') {
 
 Protos.configure('autoCurl', false);
 
-Protos.on('pre_init', function(app) {
-
-  // Convert port to int, otherwise mongodb client complains...
-  testConfig.mongodb.port = parseInt(testConfig.mongodb.port, 10);
-
-  app.config.database.default = 'mysql:nocache';
-
-  app.config.database.mysql = {
-    nocache: testConfig.mysql,
-    cache: _.extend({storage: 'redis'}, testConfig.mysql)
-  }
-
-  app.config.database.mongodb = {
-   nocache: testConfig.mongodb,
-   cache: _.extend({storage: 'redis'}, testConfig.mongodb)
-  }
-
-  app.config.storage.redis = testConfig.redis;
-  app.config.storage.mongodb = testConfig.mongodb;
-});
-
 Protos.on('bootstrap_config', function(bootstrap) {
   // For debugging purposes
   // console.log(bootstrap);
@@ -69,9 +48,39 @@ var protos = Protos.bootstrap(testSkeleton, {
         port: 8000
       },
       events: {
+        components: function(protos) {
+          // Load framework components
+          protos.loadDrivers('mongodb', 'mysql');
+          protos.loadStorages('mongodb', 'redis');
+          protos.loadEngines('coffeekup', 'dot', 'eco', 'ejs', 'haml', 'hamlcoffee', 'handlebars', 'hogan', 'jade',
+          'jazz', 'jqtpl', 'jshtml', 'kernel', 'liquor', 'swig', 'whiskers');
+        },
         pre_init: function(app) {
+          // Test skeleton properties
           app.skelDir = skelDir;
           app.__initBootstrapEvent = true;
+          
+          // #### Database Configuration ####
+          
+          app.config.database.default = 'mysql:nocache';
+          
+          // Convert port to int, otherwise mongodb client complains...
+          testConfig.mongodb.port = parseInt(testConfig.mongodb.port, 10);
+
+          app.config.database.mysql = {
+            nocache: testConfig.mysql,
+            cache: _.extend({storage: 'redis'}, testConfig.mysql)
+          }
+
+          app.config.database.mongodb = {
+           nocache: testConfig.mongodb,
+           cache: _.extend({storage: 'redis'}, testConfig.mongodb)
+          }
+
+          app.config.storage.redis = testConfig.redis;
+          app.config.storage.mongodb = testConfig.mongodb;
+          
+          // #### Database Configuration ####
         }
       }
     });

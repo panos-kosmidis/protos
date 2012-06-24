@@ -17,20 +17,24 @@ commandline = ./test/command.js
 # Make commands
 
 default:
-		@echo "\n\033[1;30m♢ Project Tasks\033[0m\n"
-		@echo "\033[1;31mmake docs\033[0m             Generate the API Documentation"
-		@echo "\033[1;31mmake deps\033[0m             Install Dependencies & Cleanup"
-		@echo "\033[1;31mmake lint\033[0m             Run Code Analysis tool (scans entire project)"
-		@echo "\033[1;31mmake testconfig\033[0m       Test Configuration Tool"
-		@echo "\n\033[1;30m♢ Test Suites\033[0m\n"
-		@echo "\033[1;31mmake tests\033[0m            Run All tests"
-		@echo "\033[1;31mmake test-unit\033[0m        Run Unit tests"
-		@echo "\033[1;31mmake test-sto\033[0m         Run Storage tests (testconfig required)"
-		@echo "\033[1;31mmake test-drv\033[0m         Run Driver tests (testconfig required)"
-		@echo "\033[1;31mmake test-eng\033[0m         Run View Engine tests"
-		@echo "\033[1;31mmake test-int\033[0m         Run Integration tests"
-		@echo "\033[1;31mmake test-mid\033[0m         Run Middleware tests"
-		@echo "\033[1;31mmake test-cmd\033[0m         Run command line tests"
+		@echo
+		@echo "* Project Tasks\n"
+		@echo "make docs             Generate the API Documentation"
+		@echo "make deps             Install Dependencies"
+		@echo "make deps-all         Install All Dependencies"
+		@echo "make deps-clean       Removes the node_modules directory"
+		@echo "make lint             Run Code Analysis tool (scans entire project)"
+		@echo "make testconfig       Test Configuration Tool"
+		@echo
+		@echo "* Test Suites\n"
+		@echo "make tests            Run All tests"
+		@echo "make test-unit        Run Unit tests"
+		@echo "make test-sto         Run Storage tests (testconfig required)"
+		@echo "make test-drv         Run Driver tests (testconfig required)"
+		@echo "make test-eng         Run View Engine tests"
+		@echo "make test-int         Run Integration tests"
+		@echo "make test-mid         Run Middleware tests"
+		@echo "make test-cmd         Run command line tests"
 		@echo
 
 docs:
@@ -40,6 +44,17 @@ deps:
 		@npm install -d
 		@./tools/remove-sys-notice
 
+deps-all:
+		@./tools/merge-deps > package.json.all
+		@mv package.json package.json.orig
+		@mv package.json.all package.json
+		@npm install -d
+		@mv package.json.orig package.json
+		@./tools/remove-sys-notice
+
+deps-clean:
+		@rm -Rf ./node_modules
+
 lint:
 		@ls -F | egrep / | egrep -v "(node_modules|test|docs|build|doctmp|resources)" | NODE_ENV=lintall xargs -n 1 ./tools/lint
 		@echo
@@ -48,7 +63,7 @@ testconfig:
 		@./tools/testconfig
 
 test:
-		@echo "\n\033[1;30mAvailable Test Commands\033[0m: tests  test-unit  test-sto test-drv test-eng test-int test-mid\n"
+		@echo "\nAvailable Test Commands: tests  test-unit  test-sto test-drv test-eng test-int test-mid\n"
 
 tests:
 		@${vows} ${vowsOpts} ${unit} ${storages} ${drivers} ${engines} ${integration} ${middleware} ${commandline}

@@ -5,7 +5,7 @@
  */
 
 var _ = require('underscore'),
-    mysql = require('mysql'),
+    mysql = protos.requireDependency('mysql', 'MySQL Driver'),
     util = require('util'),
     regex = { endingComma: /, ?$/};
 

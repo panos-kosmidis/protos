@@ -1,9 +1,16 @@
 
 /* Logger » MongoDB Transport */
 
-var app = protos.app,
-    mongodb = require('mongodb'),
-    Db = mongodb.Db,
+var app = protos.app;
+
+try {
+  var mongodb = require('mongodb');
+} catch(e) {
+  app.debug('Logger middleware: mongodb is required for mongo-transport');
+  return;
+}
+
+var Db = mongodb.Db,
     Server = mongodb.Server,
     ObjectID = mongodb.ObjectID,
     Collection = mongodb.Collection;
