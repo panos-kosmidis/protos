@@ -78,6 +78,9 @@ Here's the Development Stack the framework provides, in a nutshell:
 [Redis](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js) (additionally 
 [File](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js), [Console](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js) via Middleware)_
 
+To install the driver & storage component dependencies, use the `protos install <component>` command. For a full list of components and
+their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
+
 ## Middleware
 
 The Application's functionality can be extended with the following (ready to use) components:
@@ -99,6 +102,9 @@ The Application's functionality can be extended with the following (ready to use
 - [socket_io](http://protos.org/middleware#socket_io) &nbsp; *Socket.io Integration with applications*
 - [static_server](http://protos.org/middleware#static_server) &nbsp; *Complete Static Server solution, supporting Ranges, Conditional GETs, etc.*
 
+To install the middleware dependencies, use the `protos install <middleware>` command. For a full list of components and
+their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
+
 ## Template Engines
 
 There is a lot of flexibility when it comes to template engines. To use a view engine, just add the extension 
@@ -111,7 +117,7 @@ nature), such as Hogan and Handlebars.
 You are not limited by the default view extensions the framework provides. You can specify your own view extensions in the
 application's configuration.
 
-The following view engines are fully integrated with the Framework:
+The following view engine components are provided by protos:
 
 - [CoffeeKup](https://github.com/mauricemach/coffeekup)
 - [DoT](https://github.com/olado/doT)
@@ -129,6 +135,10 @@ The following view engines are fully integrated with the Framework:
 - [Liquor](https://github.com/chjj/liquor)
 - [Swig](https://github.com/paularmstrong/swig)
 - [Whiskers](https://github.com/gsf/whiskers.js/tree)
+
+To install the engine dependencies, use the `protos install <engine>` command. For a full list of components and
+their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
+
 
 ## License
 

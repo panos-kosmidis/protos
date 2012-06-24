@@ -4,7 +4,7 @@
   "version"             : "0.0.8",
   "homepage"            : "http://derdesign.github.com/protos/",
   "repository"          : "https://github.com/derdesign/protos",
-  "author"              : "Ernesto Méndez <der@der-design.com>",
+  "author"              : "Ernesto Méndez <der.kunstler@gmail.com>",
   "license"             : "MIT",
   "main"                : "lib/protos",
   "preferGlobal"        : "true",
