@@ -398,6 +398,21 @@ vows.describe('lib/application.js').addBatch({
   }
   
 }).addBatch({
+  
+  'Application::escapeJson': {
+    
+    topic: function() {
+      var json = app.escapeJson({name: "Ernie", age: 29, likes: ['hello', 'world']});
+      return json;
+    },
+    
+    "Returns html-escaped JSON string": function(json) {
+      assert.equal(json, '{&#34;name&#34;:&#34;Ernie&#34;,&#34;age&#34;:29,&#34;likes&#34;:[&#34;hello&#34;,&#34;world&#34;]}');
+    }
+
+  }
+  
+}).addBatch({
 
   'Application::curl': {
 
