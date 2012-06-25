@@ -20,6 +20,7 @@ may also contain topics that have been removed, and may not contain all the feat
 - Application Helpers
 - Application Models supporting ORM &amp; Relationships
 - Database Drivers & Storages
+- Built-in Query Caching for Drivers & Models using NoSQL Storages
 - Built-in Support for multiple Template Engines
 - View Partials Support
 - JSON Responses Support
