@@ -72,11 +72,10 @@ function ModelBatch() {
 
         'Returns valid results': function(results) {
           var expected = [
-            { user: 'user1', pass: 'pass1', id: 1 },
-            { user: 'user1', pass: 'pass1', id: 1 },
-            [ { user: 'user1', pass: 'pass1', id: 1 },
-              { user: 'user2', pass: 'pass2', id: 2 } ] ];
-              
+            [{ user: 'user1', pass: 'pass1', id: 1 }],
+            [{ user: 'user1', pass: 'pass1', id: 1 }],
+            [ [{ user: 'user1', pass: 'pass1', id: 1 }],
+              [{ user: 'user2', pass: 'pass2', id: 2 }] ] ];
           assert.deepEqual(results, expected);
         }
 

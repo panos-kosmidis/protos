@@ -633,10 +633,12 @@ MySQL.prototype.__modelMethods = {
     }, function(err, results) {
       if (err) callback.call(self, err, null);
       else {
-        if (results.length === 0) callback.call(self, null, null);
+        if (results.length === 0) callback.call(self, null, []);
         else {
-          var model = self.createModel(results[0]);
-          callback.call(self, null, model);
+          for (var models=[],i=0; i < results.length; i++) {
+            models.push(self.createModel(results[i]));
+          }
+          callback.call(self, null, models);
         }
       }
     });
@@ -645,14 +647,14 @@ MySQL.prototype.__modelMethods = {
   /* Model API getAll */
   
   getAll: function(callback) {
-    var self = this, models = [];
+    var self = this;
 
     this.driver.queryAll({
       table: this.context
     }, function(err, results) {
       if (err) callback.call(self, err, null);
       else {
-        for (var i=0; i < results.length; i++) {
+        for (var models=[],i=0; i < results.length; i++) {
           models.push(self.createModel(results[i]));
         }
         callback.call(self, null, models);

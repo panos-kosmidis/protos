@@ -219,8 +219,8 @@ vows.describe('Models').addBatch({
         object: {apple: 'green', banana: 'yellow', number: 33, array: [1,2,3]},
         array: [1,2,3]
       }, function(err, instance) {
-        user = instance;
-        promise.emit('success', err || instance);
+        user = instance[0];
+        promise.emit('success', err || instance[0]);
       });
 
       return promise;
@@ -272,7 +272,7 @@ vows.describe('Models').addBatch({
         if (err) promise.emit('success', err);
         else {
           model.get({user: 'NODE'}, function(err, m) {
-            user = m;
+            user = m[0];
             promise.emit('success');
           });
         }

@@ -620,10 +620,12 @@ MongoDB.prototype.__modelMethods = {
     }, function(err, docs) {
       if (err) callback.call(self, err, null);
       else {
-        if (docs.length === 0) callback.call(self, null, null);
+        if (docs.length === 0) callback.call(self, null, []);
         else {
-          var model = self.createModel(docs[0]);
-          callback.call(self, null, model);
+          for (var models=[],i=0; i < docs.length; i++) {
+            models.push(self.createModel(docs[i]));
+          }
+          callback.call(self, null, models);
         }
       }
     });
@@ -632,14 +634,14 @@ MongoDB.prototype.__modelMethods = {
   /* Model API getAll */
 
   getAll: function(callback) {
-    var self = this, models = [];
+    var self = this;
 
     this.driver.queryAll({
       collection : this.context
     }, function(err, docs) {
       if (err) callback.call(self, err, null);
       else {
-        for (var i=0; i < docs.length; i++) {
+        for (var models=[],i=0; i < docs.length; i++) {
           models.push(self.createModel(docs[i]));
         }
         callback.call(self, null, models);
