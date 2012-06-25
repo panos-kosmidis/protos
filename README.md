@@ -4,6 +4,9 @@ Protos is an open source Web Application Development framework, focused on high 
 deployment, maintainability and security. Protos runs on UNIX-like systems such as **Linux** &amp; **Mac OSX**. Windows 
 support might be added in the future.
 
+**Note**: _The framework is under moderate development and the API and internal methods/functionality may change. The documentation
+may also contain topics that have been removed, and may not contain all the features the framework provides._
+
 ## Features
 
 - Powerful Routing
