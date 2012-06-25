@@ -797,7 +797,122 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
   
 }).addBatch({
   
-  'Model API Compliance': {
+  'MongoDB::queryCached': {
+    
+    topic: function() {
+      
+      var promise = new EventEmitter();
+      
+      // ################### QUERY CACHING TESTS [DRIVER] #####################
+      
+      // Insert user1 + invalidate existing cache
+      multi.queryCached({
+        cacheInvalidate: 'test_user_query',
+      }, 'insertInto', {
+        collection: config.collection,
+        values: { user: 'test_user1', pass: 'pass_user1', group: 'user_group' }
+      });
+      
+      // Retrieve user 1 + store 'test_user_query' cache with only user1
+      multi.queryCached({
+        cacheID: 'test_user_query'
+      }, 'queryWhere', {
+        condition: {group: 'user_group'},
+        collection: config.collection
+      });
+      
+      // Insert user2
+      multi.insertInto({
+        collection: config.collection,
+        values: { user: 'test_user2', pass: 'pass_user2', group: 'user_group' }
+      });
+      
+      // Retrieve 'test_user_query' cache => Should return only user1, since it's returning from cache
+      multi.queryCached({
+        cacheID: 'test_user_query'
+      }, 'queryWhere', {
+        condition: {group: 'user_group'},
+        collection: config.collection
+      });
+      
+      // Insert user3 + invalidate 'test_user_query' cache
+      multi.queryCached({
+        cacheInvalidate: 'test_user_query',
+      }, 'insertInto', {
+        collection: config.collection,
+        values: { user: 'test_user3', pass: 'pass_user3', group: 'user_group' }
+      });
+      
+      // Retrieve 'test_user_query' cache => cache has been invalidated
+      // New query should return test_user1, test_user2 and test_user3
+      // Also, the query should set the timeout for 'test_user_query' to 3600 seconds
+      multi.queryCached({
+        cacheID: 'test_user_query',
+        cacheTimeout: 3600
+      }, 'queryWhere', {
+        condition: {group: 'user_group'},
+        collection: config.collection
+      });
+      
+      // ################### QUERY CACHING TESTS [DRIVER] #####################
+      
+      multi.exec(function(err, results) {
+        
+        promise.emit('success', err || results);
+        
+      });
+      
+      return promise;
+      
+    },
+    
+    'Properly stores/retrieves/invalidates caches': function(results) {
+      var r1 = results[0],
+          r2 = results[1],
+          r3 = results[2],
+          r4 = results[3],
+          r5 = results[4],
+          r6 = results[5];
+          
+      // Insert user1 + invalidate existing cache
+      assert.instanceOf(r1, Array);
+      assert.equal(r1.length, 1);
+      assert.isTrue(r1[0].user == 'test_user1' && r1[0].pass == 'pass_user1' && r1[0].group == 'user_group');
+      
+      // Retrieve user 1 + store 'test_user_query' cache with only user1
+      assert.instanceOf(r2, Array);
+      assert.equal(r2.length, 1);
+      assert.isTrue(r2[0].user == 'test_user1' && r2[0].pass == 'pass_user1' && r2[0].group == 'user_group');
+      
+      // Insert user2
+      assert.instanceOf(r3, Array);
+      assert.equal(r3.length, 1);
+      assert.isTrue(r3[0].user == 'test_user2' && r3[0].pass == 'pass_user2' && r3[0].group == 'user_group');
+      
+      // Retrieve 'test_user_query' cache => Should return only user1, since it's returning from cache
+      assert.instanceOf(r4, Array);
+      assert.equal(r4.length, 1);
+      assert.isTrue(r4[0].user == 'test_user1' && r4[0].pass == 'pass_user1' && r4[0].group == 'user_group');
+      
+      // Insert user3 + invalidate 'test_user_query' cache
+      assert.instanceOf(r5, Array);
+      assert.equal(r5.length, 1);
+      assert.isTrue(r5[0].user == 'test_user3' && r5[0].pass == 'pass_user3' && r5[0].group == 'user_group');
+      
+      // Retrieve 'test_user_query' cache => cache has been invalidated
+      // New query should return test_user1, test_user2 and test_user3
+      assert.instanceOf(r6, Array);
+      assert.equal(r6.length, 3);
+      assert.isTrue(r6[0].user == 'test_user1' && r6[0].pass == 'pass_user1' && r6[0].group == 'user_group');
+      assert.isTrue(r6[1].user == 'test_user2' && r6[1].pass == 'pass_user2' && r6[1].group == 'user_group');
+      assert.isTrue(r6[2].user == 'test_user3' && r6[2].pass == 'pass_user3' && r6[2].group == 'user_group');
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Model API Compliance + Caching': {
     
     topic: function() {
       

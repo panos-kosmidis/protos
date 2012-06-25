@@ -28,7 +28,16 @@ function ModelBatch() {
         topic: function() {
           var promise = new EventEmitter();
           
-          multi.insert(data.insert[0]);
+          // Invalidate testmodel:user_cache
+          
+          // ################### QUERY CACHING TESTS [MODELS] #####################
+          
+          multi.queryCached({
+           cacheInvalidate: 'user_cache'
+          }, 'insert', data.insert[0]);
+          
+          // ################### QUERY CACHING TESTS [DRIVER] #####################
+          
           multi.insert(data.insert[1]);
 
           multi.exec(function(err, results) {
@@ -54,12 +63,19 @@ function ModelBatch() {
         topic: function() {
           var promise = new EventEmitter();
 
-          // object
-          multi.get({user: 'user1'});
-
-          // integer
-          multi.get(1);
-
+          // object + model cache store
+          multi.queryCached({
+            cacheID: 'user_cache'
+          }, 'get', {
+            user: 'user1'
+          });
+          
+          // integer + model cache store w/ timeout
+          multi.queryCached({
+            cacheID: 'another_cache',
+            cacheTimeout: 3600
+          }, 'get', 1);
+          
           // array
           multi.get([1,2]);
 

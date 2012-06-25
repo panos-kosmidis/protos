@@ -67,6 +67,10 @@ var protos = Protos.bootstrap(testSkeleton, {
           // Convert port to int, otherwise mongodb client complains...
           testConfig.mongodb.port = parseInt(testConfig.mongodb.port, 10);
 
+          // Attach storages
+          testConfig.mysql.storage = 'redis';
+          testConfig.mongodb.storage = 'redis';
+          
           app.config.database.mysql = testConfig.mysql;
           app.config.database.mongodb = testConfig.mongodb;
 

@@ -627,7 +627,129 @@ var batch = vows.describe('drivers/mysql.js').addBatch({
   
 }).addBatch({
   
-  'Model API Compliance': {
+  'MongoDB::queryCached': {
+    
+    topic: function() {
+      
+      var promise = new EventEmitter();
+      
+      // ################### QUERY CACHING TESTS [DRIVER] #####################
+      
+      // Insert user1 + invalidate existing cache
+      multi.queryCached({
+        cacheInvalidate: 'test_user_query',
+      }, 'insertInto', {
+        table: table,
+        values: { user: 'test_user1', pass: 'pass_user1' }
+      });
+      
+      // Retrieve user 1 + store 'test_user_query' cache with only user1
+      multi.queryCached({
+        cacheID: 'test_user_query'
+      }, 'queryWhere', {
+        condition: '1=1',
+        table: table,
+        appendSql: 'ORDER BY user'
+      });
+      
+      // Insert user2
+      multi.insertInto({
+        table: table,
+        values: { user: 'test_user2', pass: 'pass_user2' }
+      });
+      
+      // Retrieve 'test_user_query' cache => Should return only user1, since it's returning from cache
+      multi.queryCached({
+        cacheID: 'test_user_query'
+      }, 'queryWhere', {
+        condition: '1=1',
+        table: table,
+        appendSql: 'ORDER BY user'
+      });
+      
+      // Insert user3 + invalidate 'test_user_query' cache
+      multi.queryCached({
+        cacheInvalidate: 'test_user_query',
+      }, 'insertInto', {
+        table: table,
+        values: { user: 'test_user3', pass: 'pass_user3' }
+      });
+      
+      // Retrieve 'test_user_query' cache => cache has been invalidated
+      // New query should return test_user1, test_user2 and test_user3
+      // Also, the query should set the timeout for 'test_user_query' to 3600 seconds
+      multi.queryCached({
+        cacheID: 'test_user_query',
+        cacheTimeout: 3600
+      }, 'queryWhere', {
+        condition: '1=1',
+        table: table,
+        appendSql: 'ORDER BY user'
+      });
+      
+      // ################### QUERY CACHING TESTS [DRIVER] #####################
+      
+      multi.exec(function(err, results) {
+        
+        promise.emit('success', err || results);
+        
+      });
+      
+      return promise;
+      
+    },
+    
+    'Properly stores/retrieves/invalidates caches': function(results) {
+      
+      var r1 = results[0],
+          r2 = results[1],
+          r3 = results[2],
+          r4 = results[3],
+          r5 = results[4],
+          r6 = results[5];
+          
+      // Insert user1 + invalidate existing cache
+      assert.equal(r1.affectedRows, 1);
+      assert.equal(r1.serverStatus, 2);
+      
+      // Retrieve user 1 + store 'test_user_query' cache with only user1
+      assert.instanceOf(r2, Array);
+      assert.equal(r2.length, 2);
+      assert.instanceOf(r2[0], Array);
+      assert.equal(r2[0].length, 1);
+      assert.isTrue(r2[0][0].user == 'test_user1' && r2[0][0].pass == 'pass_user1');
+      
+      // Insert user2
+      assert.equal(r3.affectedRows, 1);
+      assert.equal(r3.serverStatus, 2);
+      
+      // Retrieve 'test_user_query' cache => Should return only user1, since it's returning from cache
+      assert.instanceOf(r4, Array);
+      assert.equal(r4.length, 2);
+      assert.instanceOf(r4[0], Array);
+      assert.equal(r4[0].length, 1);
+      assert.isTrue(r4[0][0].user == 'test_user1' && r4[0][0].pass == 'pass_user1');
+
+      // Insert user3 + invalidate 'test_user_query' cache
+      assert.equal(r5.affectedRows, 1);
+      assert.equal(r5.serverStatus, 2);
+      
+      // Retrieve 'test_user_query' cache => cache has been invalidated
+      // New query should return test_user1, test_user2 and test_user3
+      assert.instanceOf(r6, Array);
+      assert.equal(r6.length, 2);
+      assert.instanceOf(r6[0], Array);
+      assert.equal(r6[0].length, 3);
+      assert.isTrue(r6[0][0].user == 'test_user1' && r6[0][0].pass == 'pass_user1');
+      assert.isTrue(r6[0][1].user == 'test_user2' && r6[0][1].pass == 'pass_user2');
+      assert.isTrue(r6[0][2].user == 'test_user3' && r6[0][2].pass == 'pass_user3');
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Model API Compliance + Caching': {
     
     topic: function() {
       var promise = new EventEmitter();

@@ -115,6 +115,8 @@ vows.describe('Models').addBatch({
       var promise = new EventEmitter(),
           multi = model.multi();
       
+      
+      
       multi.insert({
         user: 'ernie',
         pass: 'abc123'
@@ -268,7 +270,11 @@ vows.describe('Models').addBatch({
       user.array.pop();
       user.array.push(99);
       
-      user.save(function(err) {
+      // ################### QUERY CACHING TESTS [MODEL OBJECTS] #####################
+      
+      user.queryCached({
+        cacheInvalidate: 'users_cache'
+      }, 'save', function(err) {
         if (err) promise.emit('success', err);
         else {
           model.get({user: 'NODE'}, function(err, m) {
@@ -276,8 +282,10 @@ vows.describe('Models').addBatch({
             promise.emit('success');
           });
         }
-      })
-
+      });
+      
+      // ################### QUERY CACHING TESTS [MODEL OBJECTS] #####################
+      
       return promise;
     },
 
