@@ -40,7 +40,6 @@ function MySQL(app, config) {
         password: 'db_password',
         database: 'db_name',
         debug: false,
-        cachePrefix: null,
         storage: 'redis'
       }
       
@@ -72,12 +71,6 @@ function MySQL(app, config) {
       
       // Set db
       self.db = config.database;
-      
-      // Set caching function
-      if (self.storage != null) {
-        self.cacheClientMethods(self.client, 'query');
-        self.setCachePrefix(config.cachePrefix || null);
-      }
       
     }
     
@@ -118,8 +111,6 @@ MySQL.prototype.query = function(o, callback) {
   
   args = [(sql + " " + appendSql).trim(), params, callback];
   
-  this.addCacheData(o, args);
-  
   this.client.query.apply(this.client, args);
 }
 
@@ -151,8 +142,6 @@ MySQL.prototype.exec = function(o, callback) {
   args.push(function(err, info) {
     callback.call(self, err, info);
   });
-  
-  this.addCacheData(o, args);
   
   this.client.query.apply(this.client, args);
 }
@@ -192,8 +181,6 @@ MySQL.prototype.queryWhere = function(o, callback) {
     callback.call(self, err, results, fields);
   });
   
-  this.addCacheData(o, args);
-  
   // console.exit(args);
   
   this.client.query.apply(this.client, args);
@@ -217,7 +204,7 @@ MySQL.prototype.queryWhere = function(o, callback) {
  */
 
 MySQL.prototype.queryAll = function(o, callback) {
-  var args, cdata, 
+  var args, 
       self = this,
       columns = o.columns || '*',
       table = o.table || '',
@@ -229,8 +216,6 @@ MySQL.prototype.queryAll = function(o, callback) {
     callback.call(self, err, results, columns);
   });
   
-  this.addCacheData(o, args);
-
   this.client.query.apply(this.client, args);
 }
 
@@ -266,9 +251,6 @@ MySQL.prototype.queryById = function(o, callback) {
     columns: columns,
     appendSql: appendSql
   }, callback];
-  
-  // Transfer cache keys to object in first arg
-  this.addCacheData(o, args[0]);
   
   this.queryWhere.apply(this, args);
 }
@@ -313,8 +295,6 @@ MySQL.prototype.insertInto = function(o, callback) {
     callback.call(self, err, info);
   });
   
-  this.addCacheData(o, args);
-  
   // console.exit(args);
   
   this.client.query.apply(this.client, args);
@@ -350,9 +330,6 @@ MySQL.prototype.deleteById = function(o, callback) {
     table: table,
     appendSql: appendSql
   }, callback]
-  
-  // Transfer cache keys to object in first arg
-  this.addCacheData(o, args[0]);
   
   this.deleteWhere.apply(this, args);
 }
@@ -391,8 +368,6 @@ MySQL.prototype.deleteWhere = function(o, callback) {
     callback.call(self, err, info);
   });
   
-  this.addCacheData(o, args);
-  
   this.client.query.apply(this.client, args);
 }
 
@@ -429,9 +404,6 @@ MySQL.prototype.updateById = function(o, callback) {
     values: values,
     appendSql: appendSql
   }, callback]
-  
-  // Transfer cache keys to first arg
-  this.addCacheData(o, args[0]);
   
   this.updateWhere.apply(this, args);
 }
@@ -481,8 +453,6 @@ MySQL.prototype.updateWhere = function(o, callback) {
     callback.call(self, err, info);
   });
   
-  this.addCacheData(o, args);
-  
   this.client.query.apply(this.client, args);
 }
 
@@ -513,8 +483,6 @@ MySQL.prototype.countRows = function(o, callback) {
     args = err ? [err, null] : [err, results[0].total];
     callback.apply(self.app, args);
   });
-  
-  this.addCacheData(o, args);
   
   this.client.query.apply(this.client, args);
 }
@@ -574,8 +542,6 @@ MySQL.prototype.idExists = function(o, callback) {
     }
   });
   
-  // No need to transfer cache keys, since `o` is passed unmodified
-  
   this.queryById.apply(this, args);
 }
 
@@ -585,11 +551,8 @@ MySQL.prototype.__modelMethods = {
   
   /* Model API insert */
   
-  insert: function(o, cdata, callback) {
+  insert: function(o, callback) {
     var self = this;
-    
-    // Process callback & cache Data
-    if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
     
     // Validate, throw error on failure
     this.validateProperties(o);
@@ -601,10 +564,10 @@ MySQL.prototype.__modelMethods = {
     this.setDefaults(o);
 
     // Save data into the database
-    this.driver.insertInto(_.extend({
+    this.driver.insertInto({
       table: this.context,
       values: o
-    }, cdata), function(err, results) {
+    }, function(err, results) {
       if (err) callback.call(self, err, null);
       else {
         callback.call(self, null, results.insertId);
@@ -614,11 +577,8 @@ MySQL.prototype.__modelMethods = {
   
   /* Model API get */
   
-  get: function(o, cdata, callback) {
+  get: function(o, callback) {
     var self = this;
-    
-    // Process callback & cache data
-    if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
     
     if (typeof o == 'number') { 
       // If `o` is number: Convert to object
@@ -629,7 +589,7 @@ MySQL.prototype.__modelMethods = {
       var arr = o, 
           multi = this.multi();
       for (var i=0; i < arr.length; i++) {
-        multi.get(arr[i], cdata);
+        multi.get(arr[i]);
       }
       multi.exec(function(err, results) {
         callback.call(self, err, results);
@@ -666,11 +626,11 @@ MySQL.prototype.__modelMethods = {
     }
     
     // Get model data & return generated model (if found)
-    this.driver.queryWhere(_.extend({
+    this.driver.queryWhere({
       condition: condition,
       params: values,
       table: this.context,
-    }, cdata), function(err, results) {
+    }, function(err, results) {
       if (err) callback.call(self, err, null);
       else {
         if (results.length === 0) callback.call(self, null, null);
@@ -684,15 +644,12 @@ MySQL.prototype.__modelMethods = {
   
   /* Model API getAll */
   
-  getAll: function(cdata, callback) {
+  getAll: function(callback) {
     var self = this, models = [];
 
-    // Process callback & cache data
-    if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
-
-    this.driver.queryAll(_.extend({
+    this.driver.queryAll({
       table: this.context
-    }, cdata), function(err, results) {
+    }, function(err, results) {
       if (err) callback.call(self, err, null);
       else {
         for (var i=0; i < results.length; i++) {
@@ -706,11 +663,8 @@ MySQL.prototype.__modelMethods = {
   
   /* Model API save */
   
-  save: function(o, cdata, callback) {
+  save: function(o, callback) {
     var id, self = this;
-    
-    // Process callback & cache data
-    if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
     
     // // Get id, and prepare update data
     id = o.id; 
@@ -722,31 +676,28 @@ MySQL.prototype.__modelMethods = {
     }
     
     // Update data. Validation has already been performed by ModelObject
-    this.driver.updateById(_.extend({
+    this.driver.updateById({
       id: id,
       table: this.context,
       values: o
-    }, cdata), function(err, results) {
+    }, function(err, results) {
       callback.call(self, err);
     });
   },
   
   /* Model API delete */
   
-  delete: function(id, cdata, callback) {
+  delete: function(id, callback) {
     var self = this;
     
-    // Process callback & cache data
-    if (typeof callback == 'undefined') { callback = cdata; cdata = {}; }
-
     if (typeof id == 'number' || id instanceof Array) {
       
       // Remove entry from database
-      this.driver.deleteById(_.extend({
+      this.driver.deleteById({
         id: id,
         table: this.context,
         appendSql: 'LIMIT 1'
-      }, cdata), function(err, results) {
+      }, function(err, results) {
         callback.call(self, err);
       });
       

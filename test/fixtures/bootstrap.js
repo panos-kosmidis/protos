@@ -62,20 +62,13 @@ var protos = Protos.bootstrap(testSkeleton, {
           
           // #### Database Configuration ####
           
-          app.config.database.default = 'mysql:nocache';
+          app.config.database.default = 'mysql';
           
           // Convert port to int, otherwise mongodb client complains...
           testConfig.mongodb.port = parseInt(testConfig.mongodb.port, 10);
 
-          app.config.database.mysql = {
-            nocache: testConfig.mysql,
-            cache: _.extend({storage: 'redis'}, testConfig.mysql)
-          }
-
-          app.config.database.mongodb = {
-           nocache: testConfig.mongodb,
-           cache: _.extend({storage: 'redis'}, testConfig.mongodb)
-          }
+          app.config.database.mysql = testConfig.mysql;
+          app.config.database.mongodb = testConfig.mongodb;
 
           app.config.storage.redis = testConfig.redis;
           app.config.storage.mongodb = testConfig.mongodb;
@@ -86,14 +79,13 @@ var protos = Protos.bootstrap(testSkeleton, {
             
             // http://about.travis-ci.org/docs/user/database-setup/
 
-            var mysql = app.config.database.mysql.nocache,
-                mysqlc = app.config.database.mysql.cache;
+            var mysql = app.config.database.mysql;
                 
             // Override mysql configuration on travis
 
-            mysql.host = mysqlc.host = '0.0.0.0';
-            mysql.user = mysqlc.user = 'root';
-            mysql.password = mysqlc.password = '';
+            mysql.host = '0.0.0.0';
+            mysql.user = 'root';
+            mysql.password = '';
 
             // Note: Redis uses default settings, no need to configure
 

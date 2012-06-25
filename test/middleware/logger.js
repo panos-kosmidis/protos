@@ -42,8 +42,8 @@ vows.describe('Logger (middleware)').addBatch({
           file: 'test.log',
           console: true,
           mongodb: {
-            host: db.mongodb.nocache.host,
-            port: db.mongodb.nocache.port,
+            host: db.mongodb.host,
+            port: db.mongodb.port,
             logLimit: 1
           },
           redis: {

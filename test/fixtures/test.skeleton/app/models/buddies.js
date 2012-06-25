@@ -1,7 +1,7 @@
 
 function BuddiesModel(app) {
   
-  this.driver = 'mongodb:nocache';
+  this.driver = 'mongodb';
   
   this.properties = {
     username: {type: 'string', required: true, validates: 'alpha_underscores'},

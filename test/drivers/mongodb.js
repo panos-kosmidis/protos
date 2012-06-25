@@ -15,37 +15,17 @@ var app = require('../fixtures/bootstrap'),
 
 var mongodb, multi, model, storageMulti;
 
-var config = app.config.database.mongodb.nocache;
+var config = app.config.database.mongodb;
 
 //Local variables for testing
 var userId1, userId2;
 
 var oid = new ObjectID('4de6abd5da558a49fc5eef29');
 
-// Expected cache compliance results
-var cacheCompliance = [];
-
-// Cache Events
-var c = '0;36';
-app.on('mongodb_cache_store', function(cacheID, cache) {
-  cacheCompliance.push({sto: cacheID});
-  // console.log('    ✓ %s', colorize('Stored cache: ' + cacheID, c));
-});
-
-app.on('mongodb_cache_use', function(cacheID, cache) {
-  cacheCompliance.push({use: cacheID});
-  // console.log('    ✓ %s', colorize('Using cache: ' + cacheID, c));
-});
-
-app.on('mongodb_cache_invalidate', function(invalidated) {
-  cacheCompliance.push({inv: invalidated});
-  // console.log('    ✓ %s', colorize('Invalidated cache: ' + invalidated.join(', '), c));
-});
-
 // Test Model
 function TestModel() {
 
-  this.driver = 'mongodb:cache';
+  this.driver = 'mongodb';
 
   this.properties = app.globals.commonModelProps;
 
@@ -62,14 +42,12 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      app._getResource('drivers/mongodb:nocache', function(driver) {
+      app._getResource('drivers/mongodb', function(driver) {
         mongodb = driver;
         multi = mongodb.multi();
-        
         driver.client.dropDatabase(function(err) {
            promise.emit('success', err);
         });
-        
       });
       
       return promise;
@@ -80,7 +58,7 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
     },
 
     'Sets config': function() {
-      assert.strictEqual(mongodb.config.host, app.config.database.mongodb.nocache.host);
+      assert.strictEqual(mongodb.config.host, app.config.database.mongodb.host);
     },
     
     'Sets client': function() {
@@ -148,7 +126,7 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
     topic: function() {
       var promise = new EventEmitter();
 
-      // Insert user 1 + cache usage
+      // Insert user 1
       multi.insertInto({
         collection: config.collection,
         values: {
@@ -815,159 +793,6 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
       assert.equal(err.toString(), "Error: MongoDB::deleteById: '_id' is missing");
     }
     
-  }
-  
-}).addBatch({
-  
-  'Cache API Compliance': {
-
-    topic: function() {
-      var promise = new EventEmitter();
-      
-      var multi = app._getResource('drivers/mongodb:cache').multi();
-      
-      // Invalidate cache
-      multi.insertInto({
-        collection: config.collection,
-        values: {
-          _id: 1,
-          user: 'user1',
-          pass: 'pass1'
-        },
-        cacheInvalidate: ['cache1', 'cache2', 'cache3', 'cache4', 'cache5']
-      });
-      
-      // Store cache
-      multi.queryWhere({
-        collection: config.collection,
-        condition: {_id: 1},
-        cacheID: 'cache1'
-      });
-      
-      // Use cache
-      multi.queryWhere({
-        collection: config.collection,
-        condition: {_id: 1},
-        cacheID: 'cache1'
-      });
-      
-      // Store cache
-      multi.queryAll({
-        collection: config.collection,
-        cacheID: 'cache2'
-      });
-       
-      // Use cache
-      multi.queryAll({
-        collection: config.collection,
-        cacheID: 'cache2'
-      });
-      
-      // Store cache
-      multi.queryById({
-        collection: config.collection,
-        _id: 1,
-        cacheID: 'cache3'
-      });      
-      
-      // Use cache
-      multi.queryById({
-        collection: config.collection,
-        _id: 1,
-        cacheID: 'cache3'
-      });
-      
-      // Store cache
-      multi.count({
-        collection: config.collection,
-        cacheID: 'cache4'
-      });
-      
-      // Use cache
-      multi.count({
-        collection: config.collection,
-        cacheID: 'cache4'
-      });
-      
-      // Store cache
-      multi.idExists({
-        collection: config.collection,
-        _id: 1,
-        cacheID: 'cache5'
-      });
-      
-      // Use Cache
-      multi.idExists({
-        collection: config.collection,
-        _id: 1,
-        cacheID: 'cache5'
-      });
-      
-      // Invalidate cache
-      multi.updateWhere({
-        collection: config.collection,
-        condition: {_id: 1},
-        values: {
-          user: 'USER1',
-          pass: 'PASS1'
-        },
-        cacheInvalidate: 'cache1'
-      });
-      
-      // Invalidate cache
-      multi.updateById({
-        collection: config.collection,
-        _id: 1,
-        cacheInvalidate: 'cache2'
-      });
-      
-      // Invalidate cache
-      multi.deleteWhere({
-        collection: config.collection,
-        condition: {_id: 1},
-        cacheInvalidate: 'cache3'
-      });
-      
-      // Invalidate cache
-      multi.deleteById({
-        collection: config.collection,
-        _id: 1,
-        cacheInvalidate: 'cache4'
-      });
-      
-      multi.exec(function(err, results) {
-        promise.emit('success');
-      });
-      
-      return promise;
-    },
-
-    "All driver methods support cache operations": function() {
-      var expected = [
-      { inv: [ 'cache1', 'cache2', 'cache3', 'cache4', 'cache5' ] },
-      { sto: 'cache1' },
-      { use: 'cache1' },
-      { sto: 'cache2' },
-      { use: 'cache2' },
-      { sto: 'cache3' },
-      { use: 'cache3' },
-      { sto: 'cache4' },
-      { use: 'cache4' },
-      { sto: 'cache5' },
-      { use: 'cache5' },
-      { inv: [ 'cache1' ] },
-      { inv: [ 'cache2' ] },
-      { inv: [ 'cache3' ] },
-      { inv: [ 'cache4' ] } ];
-      
-      assert.deepEqual(cacheCompliance, expected);
-      
-      // Empty cacheCompliance array
-      while (cacheCompliance.pop() !== undefined);
-      
-      app.globals.cacheCompliance = cacheCompliance;
-    }
-
   }
   
 }).addBatch({
