@@ -60,9 +60,13 @@ var protos = Protos.bootstrap(testSkeleton, {
           app.skelDir = skelDir;
           app.__initBootstrapEvent = true;
           
+          app.onInitialize(function() {
+            this.afterInitCheck = true;
+          });
+          
           // #### Database Configuration ####
           
-          app.config.database.default = 'mysql';
+          app.config.drivers.default = 'mysql';
           
           // Convert port to int, otherwise mongodb client complains...
           testConfig.mongodb.port = parseInt(testConfig.mongodb.port, 10);
@@ -71,11 +75,11 @@ var protos = Protos.bootstrap(testSkeleton, {
           testConfig.mysql.storage = 'redis';
           testConfig.mongodb.storage = 'redis';
           
-          app.config.database.mysql = testConfig.mysql;
-          app.config.database.mongodb = testConfig.mongodb;
+          app.config.drivers.mysql = testConfig.mysql;
+          app.config.drivers.mongodb = testConfig.mongodb;
 
-          app.config.storage.redis = testConfig.redis;
-          app.config.storage.mongodb = testConfig.mongodb;
+          app.config.storages.redis = testConfig.redis;
+          app.config.storages.mongodb = testConfig.mongodb;
           
           // #### Travis Database Configuration #### 
           
@@ -83,7 +87,7 @@ var protos = Protos.bootstrap(testSkeleton, {
             
             // http://about.travis-ci.org/docs/user/database-setup/
 
-            var mysql = app.config.database.mysql;
+            var mysql = app.config.drivers.mysql;
                 
             // Override mysql configuration on travis
 

@@ -8,10 +8,10 @@ Protos.bootstrap(__dirname, {
   
   // Server configuration
   server: {
-    host: '0.0.0.0',
+    host: 'localhost',
     port: 8080,
     multiProcess: false,
-    stayUp: false
+    stayUp: 'production'
   },
   
   // Application environments

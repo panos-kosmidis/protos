@@ -11,7 +11,8 @@ var _ = require('underscore'),
     Db = mongodb.Db,
     Server = mongodb.Server,
     ObjectID = mongodb.ObjectID,
-    Collection = mongodb.Collection;
+    Collection = mongodb.Collection,
+    EventEmitter = require('events').EventEmitter;
 
 /**
   MongoDB Driver class
@@ -26,18 +27,24 @@ var _ = require('underscore'),
 function MongoDB(app, config) {
   
     var self = this;
+    
+    this.events = new EventEmitter();
 
     config = protos.extend({
       host: 'localhost',
       port: 27017,
       database: 'default',
-      storage: null
+      storage: null,
+      username: '',
+      password: ''
     }, config || {});
     
     if (typeof config.port != 'number') config.port = parseInt(config.port, 10);
     
     this.className = this.constructor.name;
     this.app = app;
+    
+    app.debug(util.format('Initializing MongoDB for %s:%s', config.host, config.port));
     
     /**
       Driver configuration
@@ -54,12 +61,9 @@ function MongoDB(app, config) {
      */
     this.config = config;
 
-    protos.async(app); // Register async queue
-    
     var reportError = function(err) {
-      app.log(util.format("MongoDB [%s:%s] %s", config.host, config.port, err.code));
-      self.client = err;
-      protos.done(app); // Flush async queue
+      app.log(util.format("MongoDB [%s:%s] %s", config.host, config.port, err));
+      self.client = null;
     }
     
     // Set db
@@ -86,13 +90,26 @@ function MongoDB(app, config) {
         if (config.username && config.password) {
           
           self.db.authenticate(config.username, config.password, function(err, success) {
-            if (err) app.log('MongoDB: ' + err.toSring());
-            else if (!success) throw new Error(util.format('MongoDB: Unable to authenticate to %s:%s', config.host, config.port));
+            
+            if (err) {
+              
+              var msg = util.format('MongoDB: unable to authenticate %s@%s', config.username, config.host);
+              app.log(new Error(msg));
+              throw err;
+              
+            } else {
+              
+              // Emit initialization event
+              self.events.emit('init', self.db, self.client);
+              
+            }
+            
           });
           
+        } else {
+          // Emit initialization event
+          self.events.emit('init', self.db, self.client);
         }
-        
-        protos.done(app); // Flush async queue
         
       }
     });

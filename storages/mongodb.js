@@ -9,7 +9,8 @@ var _ = require('underscore'),
     mongodb = protos.requireDependency('mongodb', 'MongoDB Storage'),
     Db = mongodb.Db,
     Server = mongodb.Server,
-    ObjectID = mongodb.ObjectID;
+    ObjectID = mongodb.ObjectID,
+    EventEmitter = require('events').EventEmitter;
 
 /**
   MongoDB Storage class
@@ -25,11 +26,15 @@ function MongoStorage(app, config) {
   
    var self = this;
    
+   this.events = new EventEmitter();
+   
    config = protos.extend({
      host: 'localhost',
      port: 27017,
      database: 'store',
-     collection: 'keyvalue'
+     collection: 'keyvalue',
+     username: '',
+     password: ''
    }, config);
    
    if (typeof config.port != 'number') config.port = parseInt(config.port, 10);
@@ -69,12 +74,11 @@ function MongoStorage(app, config) {
    */
    this.className = this.constructor.name;
    
-   protos.async(app); // Register async queue
+   app.debug(util.format('Initializing MongoStorage for %s@%s:%s', config.username, config.host, config.port));
    
    var reportError = function(err) {
      app.log(util.format("MongoStore [%s:%s] %s", config.host, config.port, err.code));
      self.client = err;
-     protos.done(app); // Flush async queue
    }
    
    // Set db
@@ -99,14 +103,27 @@ function MongoStorage(app, config) {
          if (config.username && config.password) {
 
            self.db.authenticate(config.username, config.password, function(err, success) {
-             if (err) app.log('MongoDB: ' + err.toSring());
-             else if (!success) throw new Error(util.format('MongoDB: Unable to authenticate to %s:%s', config.host, config.port));
+             
+             if (err) {
+               
+               var msg = util.format('MongoStorage: unable to authenticate %s@%s', config.username, config.host);
+               app.log(new Error(msg));
+               throw err;
+               
+             } else {
+               
+                // Emit initialization event
+                self.events.emit('init', self.db, self.client);
+
+             }
            });
 
+         } else {
+           
+           // Emit initialization event
+           self.events.emit('init', self.db, self.client);
+           
          }
-
-         // Flush async queue
-         protos.done(app);
 
        });
 

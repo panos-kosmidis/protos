@@ -11,7 +11,7 @@ var app = require('../fixtures/bootstrap'),
 
 var mysql, multi, model, storageMulti, modelBatch;
 
-var config = app.config.database.mysql,
+var config = app.config.drivers.mysql,
     client = createClient(config),
     mclient = new Multi(client);
 
@@ -62,7 +62,7 @@ var batch = vows.describe('drivers/mysql.js').addBatch({
     },
 
     'Sets config': function() {
-      assert.strictEqual(mysql.config.host, app.config.database.mysql.host);
+      assert.strictEqual(mysql.config.host, app.config.drivers.mysql.host);
     },
     
     'Sets client': function() {

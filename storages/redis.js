@@ -36,6 +36,8 @@ function RedisStorage(app, config) {
    
    this.app = app;
    
+   app.debug(util.format('Initializing Redis Storage for %s:%s', config.host, config.port));
+   
    /**
     Redis database
     
@@ -84,7 +86,7 @@ function RedisStorage(app, config) {
 
    // Handle error event
    self.client.on('error', function(err) {
-     app.log("Redis Storage: " + err.toString());
+     app.log("RedisStorage: " + err.toString());
    });
 
    // Select db if specified

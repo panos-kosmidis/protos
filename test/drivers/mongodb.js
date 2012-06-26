@@ -15,7 +15,7 @@ var app = require('../fixtures/bootstrap'),
 
 var mongodb, multi, model, storageMulti;
 
-var config = app.config.database.mongodb;
+var config = app.config.drivers.mongodb;
 
 //Local variables for testing
 var userId1, userId2;
@@ -58,7 +58,7 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
     },
 
     'Sets config': function() {
-      assert.strictEqual(mongodb.config.host, app.config.database.mongodb.host);
+      assert.strictEqual(mongodb.config.host, app.config.drivers.mongodb.host);
     },
     
     'Sets client': function() {

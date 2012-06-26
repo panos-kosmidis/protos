@@ -28,8 +28,8 @@ vows.describe('Logger (middleware)').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      var db = app.config.database,
-          sto = app.config.storage;
+      var db = app.config.drivers,
+          sto = app.config.storages;
       
       fs.writeFileSync(app.fullPath('/log/test.log'), '', 'utf-8');
       
