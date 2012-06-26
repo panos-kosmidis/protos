@@ -38,6 +38,9 @@ vows.describe('Cookie Parser (middleware)').addBatch({
       // OutgoingMessage::getCookie
       multi.curl('--cookie "id=24" /getcookie/id');
       
+      // Get cookie with cookieDomain
+      multi.curl('-i /getcookie-with-cookiedomain');
+      
       multi.exec(function(err, results) {
         app.restoreFilters();
         promise.emit('success', err || results.map(function(r) {
@@ -114,6 +117,11 @@ vows.describe('Cookie Parser (middleware)').addBatch({
       var r = results[8];
       assert.deepEqual(r, ['24']);
     },
+    
+    'Overrides domain with app.cookieDomain when not null': function(results) {
+      var r = results[9];
+      assert.equal(r[1], "Set-Cookie: custom=hello; domain=example.com; path=/");
+    }
     
   }
   
