@@ -554,25 +554,32 @@ MySQL.prototype.__modelMethods = {
   insert: function(o, callback) {
     var self = this;
     
-    // Validate, throw error on failure
-    this.validateProperties(o);
+    // Data is validated prior to being inserted
+    var err = this.validateProperties(o);
 
-    // Convert object types to strings
-    this.convertTypes(o);
+    if (err) callback.call(self, err);
+    
+    else {
+      
+      // Convert object types to strings
+      this.convertTypes(o);
 
-    // Set model defaults
-    this.setDefaults(o);
+      // Set model defaults
+      this.setDefaults(o);
 
-    // Save data into the database
-    this.driver.insertInto({
-      table: this.context,
-      values: o
-    }, function(err, results) {
-      if (err) callback.call(self, err, null);
-      else {
-        callback.call(self, null, results.insertId);
-      }
-    });
+      // Save data into the database
+      this.driver.insertInto({
+        table: this.context,
+        values: o
+      }, function(err, results) {
+        if (err) callback.call(self, err, null);
+        else {
+          callback.call(self, null, results.insertId);
+        }
+      });
+      
+    }
+
   },
   
   /* Model API get */
@@ -677,14 +684,24 @@ MySQL.prototype.__modelMethods = {
       return;
     }
     
-    // Update data. Validation has already been performed by ModelObject
-    this.driver.updateById({
-      id: id,
-      table: this.context,
-      values: o
-    }, function(err, results) {
-      callback.call(self, err);
-    });
+    // Data is validated prior to being updated
+    var err = this.validateProperties(o, {noRequired: true});
+    
+    if (err) callback.call(self, err);
+    
+    else {
+      
+      // Update data
+      this.driver.updateById({
+        id: id,
+        table: this.context,
+        values: o
+      }, function(err, results) {
+        callback.call(self, err);
+      });
+      
+    }
+    
   },
   
   /* Model API delete */

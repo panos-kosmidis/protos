@@ -6,12 +6,14 @@ var testData = {
   MySQL: { // pkey constraint, need auto_increment
     insert: [
       {user: 'user1', pass: 'pass1'},
-      {user: 'user2', pass: 'pass2'}]
+      {user: 'user2', pass: 'pass2'},
+      {user: '!@#$%', pass: 'pass3'}] // invalid
   },
   MongoDB: {
     insert: [ // mongodb is more flexible when it comes to id's
       {id: 1, user: 'user1', pass: 'pass1'},
-      {id: 2, user: 'user2', pass: 'pass2'}]
+      {id: 2, user: 'user2', pass: 'pass2'},
+      {id: 3, user: '!@#$%', pass: 'pass3'}] // invalid
   }
 }
 
@@ -32,13 +34,18 @@ function ModelBatch() {
           
           // ################### QUERY CACHING TESTS [MODELS] #####################
           
+          // Insert first item
           multi.queryCached({
            cacheInvalidate: 'user_cache'
           }, 'insert', data.insert[0]);
           
           // ################### QUERY CACHING TESTS [DRIVER] #####################
           
+          // Insert second item
           multi.insert(data.insert[1]);
+          
+          // Attempt to insert data that does not validate => err is returned
+          multi.insert(data.insert[2])
 
           multi.exec(function(err, results) {
             promise.emit('success', err || results);
@@ -49,7 +56,11 @@ function ModelBatch() {
         },
 
         'Inserts new models': function(results) {
-          assert.deepEqual(results, [1, 2]);
+          assert.isArray(results);
+          assert.equal(results.length, 3);
+          assert.isNull(results[0]);
+          assert.isNull(results[1]);
+          assert.equal(results[2].toString(), "Error: TestModel: Unable to validate 'user': !@#$%");
         }
 
       }
@@ -135,11 +146,17 @@ function ModelBatch() {
         topic: function() {
           var promise = new EventEmitter();
 
-          // save
+          // save => success
           multi.save({id: 1, user: '__user1', pass: '__pass1'});
 
-          // save + update
+          // save + update => success
           multi.save({id: 1, user: '__user1__', pass: '__pass1__'});
+
+          // partial save => success
+          multi.save({id: 1, user: '__user1__updated'});
+
+          // save with data that does not validate => err is returned
+          multi.save({id: 1, user: '!#$%^&*'});
 
           multi.exec(function(err, results) {
             promise.emit('success', err || results);
@@ -148,8 +165,13 @@ function ModelBatch() {
           return promise;
         },
 
-        'Updates model data': function(results) {
-          assert.deepEqual(results, ['OK', 'OK']);
+        'Updates model data': function(err, results) {
+          assert.instanceOf(results, Array);
+          assert.equal(results.length, 4);
+          assert.isNull(results[0]);
+          assert.isNull(results[1]);
+          assert.isNull(results[2]);
+          assert.equal(results[3].toString(), "Error: TestModel: Unable to validate 'user': !#$%^&*");
         }
 
       }

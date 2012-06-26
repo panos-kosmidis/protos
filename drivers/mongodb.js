@@ -552,28 +552,35 @@ MongoDB.prototype.__modelMethods = {
   insert: function(o, callback) {
     var self = this;
 
-    // Validate, throw error on failure
-    this.validateProperties(o);
+    // Validate, 
+    var err = this.validateProperties(o);
     
-    // Convert object types to strings
-    this.convertTypes(o);
+    if (err) callback.call(self, err);
     
-    // Set model defaults
-    this.setDefaults(o);
+    else {
+
+      // Convert object types to strings
+      this.convertTypes(o);
+
+      // Set model defaults
+      this.setDefaults(o);
+
+      // Convert `id` to `_id`
+      convertMongoID(o);
+
+      // Save data into the database
+      this.driver.insertInto({
+        collection: this.context,
+        values: o
+      }, function(err, docs) {
+        if (err) callback.call(self, err, null);
+        else {
+          callback.call(self, null, docs[0]._id);
+        }
+      });
+      
+    }
     
-    // Convert `id` to `_id`
-    convertMongoID(o);
-    
-    // Save data into the database
-    this.driver.insertInto({
-      collection: this.context,
-      values: o
-    }, function(err, docs) {
-      if (err) callback.call(self, err, null);
-      else {
-        callback.call(self, null, docs[0]._id);
-      }
-    });
   },
 
 
@@ -669,14 +676,24 @@ MongoDB.prototype.__modelMethods = {
       callback.call(this, new Error("Unable to update model object without ID"));
       return;
     }
-     
-    this.driver.updateById({
-      _id: _id,
-      collection: this.context,
-      values: o
-    }, function(err, docs) {
-      callback.call(self, err);
-    });
+    
+    // Validate, throw error on failure
+    var err = this.validateProperties(o, {noRequired: true});
+    
+    if (err) callback.call(self, err);
+    
+    else {
+      
+      this.driver.updateById({
+        _id: _id,
+        collection: this.context,
+        values: o
+      }, function(err, docs) {
+        callback.call(self, err);
+      });
+      
+    }
+    
   },
 
 
