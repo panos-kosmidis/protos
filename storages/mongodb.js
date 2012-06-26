@@ -32,6 +32,8 @@ function MongoStorage(app, config) {
      collection: 'keyvalue'
    }, config);
    
+   if (typeof config.port != 'number') config.port = parseInt(config.port, 10);
+   
    /**
     Application instance
     

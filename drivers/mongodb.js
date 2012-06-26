@@ -24,7 +24,7 @@ var _ = require('underscore'),
  */
 
 function MongoDB(app, config) {
-
+  
     var self = this;
 
     config = protos.extend({
@@ -33,6 +33,8 @@ function MongoDB(app, config) {
       database: 'default',
       storage: null
     }, config || {});
+    
+    if (typeof config.port != 'number') config.port = parseInt(config.port, 10);
     
     this.className = this.constructor.name;
     this.app = app;
