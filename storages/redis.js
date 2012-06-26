@@ -77,15 +77,14 @@ function RedisStorage(app, config) {
    self.client = redis.createClient(config.port, config.host, self.options);
 
    // Authenticate if password provided
+   
    if (typeof config.pass == 'string') {
-     self.client.auth(config.pass, function(err, res) {
-       if (err) throw err;
-     });
+     self.client.auth(config.pass);
    }
 
    // Handle error event
    self.client.on('error', function(err) {
-     app.log(err);
+     app.log("Redis Storage: " + err.toString());
    });
 
    // Select db if specified
