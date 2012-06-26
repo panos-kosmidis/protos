@@ -49,33 +49,19 @@ function MySQL(app, config) {
   
   this.config = config;
   
-  protos.async(app); // Register async queue
-  
-  protos.util.checkPort(config.port, function(err) {
+  // Set client
+  self.client = mysql.createClient(config);
 
-    protos.done(app); // Flush async queue
-    
-    if (err) {
-      app.log(util.format("MySQL [%s:%s] %s", config.host, config.port, err.code));
-      self.client = err;
-    } else {
-      // Set client
-      self.client = mysql.createClient(config);
-
-      // Assign storage
-      if (typeof config.storage == 'string') {
-        self.storage = app._getResource('storages/' + config.storage);
-      } else if (config.storage instanceof protos.lib.storage) {
-        self.storage = config.storage;
-      }
-      
-      // Set db
-      self.db = config.database;
-      
-    }
-    
-  });
+  // Assign storage
+  if (typeof config.storage == 'string') {
+    self.storage = app._getResource('storages/' + config.storage);
+  } else if (config.storage instanceof protos.lib.storage) {
+    self.storage = config.storage;
+  }
   
+  // Set db
+  self.db = config.database;
+      
   // Only set important properties enumerable
   protos.util.onlySetEnumerable(this, ['className', 'db']);
   

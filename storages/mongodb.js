@@ -75,37 +75,39 @@ function MongoStorage(app, config) {
      protos.done(app); // Flush async queue
    }
    
-   protos.util.checkPort(config.port, function(err) {
+   // Set db
+   self.db = new Db(config.database, new Server(config.host, config.port, {}));
+
+   // Get client
+   self.db.open(function(err, client) {
      
      if (err) {
        reportError(err);
      } else {
-       
-       // Set db
-       self.db = new Db(config.database, new Server(config.host, config.port, {}));
-       
-       // Get client
-       self.db.open(function(err, client) {
-         if (err) {
-           reportError(err);
-         } else {
-           // Set client
-           self.client = client;
-            
-           // Get collection
-           client.collection(config.collection, function(err, collection) {
-             
-             // Set collection
-             self.collection = collection;
-             
-             // Flush async queue
-             protos.done(app);
-             
+       // Set client
+       self.client = client;
+
+       // Get collection
+       client.collection(config.collection, function(err, collection) {
+
+         // Set collection
+         self.collection = collection;
+         
+         // Authenticate
+         if (config.username && config.password) {
+
+           self.db.authenticate(config.username, config.password, function(err, success) {
+             if (err) app.log('MongoDB: ' + err.toSring());
+             else if (!success) throw new Error(util.format('MongoDB: Unable to authenticate to %s:%s', config.host, config.port));
            });
-           
+
          }
+
+         // Flush async queue
+         protos.done(app);
+
        });
-       
+
      }
    });
    

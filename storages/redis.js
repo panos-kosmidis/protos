@@ -73,41 +73,29 @@ function RedisStorage(app, config) {
    
    this.className = this.constructor.name;
    
-   protos.async(app); // Register async queue
-   
-   protos.util.checkPort(config.port, function(err) {
-     
-     protos.done(app); // Flush async queue
-     
-     if (err) {
-       app.log(util.format("Redis [%s:%s] %s", config.host, config.port, err.code));
-       self.client = err;
-     } else {
-       // Set redis client
-       self.client = redis.createClient(config.port, config.host, self.options);
+   // Set redis client
+   self.client = redis.createClient(config.port, config.host, self.options);
 
-       // Authenticate if password provided
-       if (typeof config.pass == 'string') {
-         self.client.auth(config.pass, function(err, res) {
-           if (err) throw err;
-         });
-       }
+   // Authenticate if password provided
+   if (typeof config.pass == 'string') {
+     self.client.auth(config.pass, function(err, res) {
+       if (err) throw err;
+     });
+   }
 
-       // Handle error event
-       self.client.on('error', function(err) {
-         app.log(err);
-       });
-
-       // Select db if specified
-       if (typeof config.db == 'number' && config.db !== 0) {
-         self.db = config.db;
-         self.client.select(config.db, function(err, res) {
-           if (err) throw err;
-         });
-       }
-     }
+   // Handle error event
+   self.client.on('error', function(err) {
+     app.log(err);
    });
-   
+
+   // Select db if specified
+   if (typeof config.db == 'number' && config.db !== 0) {
+     self.db = config.db;
+     self.client.select(config.db, function(err, res) {
+       if (err) throw err;
+     });
+   }
+
    // Set enumerable properties
    protos.util.onlySetEnumerable(this, ['className', 'db']);
 }

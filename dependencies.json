@@ -1,9 +1,9 @@
 {
   "mongodb": {
-    "mongodb"		          : "= 0.9.9-7"
+    "mongodb"		          : "= 1.0.2"
   },
   "mysql": {
-    "mysql"      	        : "= 0.9.5"
+    "mysql"      	        : "= 0.9.6"
   },
   "redis": {
     "redis"               : "= 0.6.7",
