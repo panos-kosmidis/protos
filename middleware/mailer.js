@@ -46,7 +46,7 @@
 
 var app = protos.app,
     util = require('util'),
-    nodemailer = require('nodemailer'),
+    nodemailer = protos.requireDependency('nodemailer', 'Mailer Middleware', 'mailer'),
     Application = app.constructor,
     allowedTransports = ['SMTP', 'SES', 'sendmail'];
     

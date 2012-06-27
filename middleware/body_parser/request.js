@@ -3,7 +3,7 @@
 
 var app = protos.app,
     http = require('http'),
-    formidable = require('formidable'),
+    formidable = protos.requireDependency('formidable', 'Body Parser Middleware', 'body_parser'),
     IncomingForm = formidable.IncomingForm,
     IncomingMessage = http.IncomingMessage;
 

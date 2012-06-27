@@ -46,7 +46,7 @@ vows.describe('Models').addBatch({
 
     'Initialized test model': function(topic) {
       model = topic;
-      table = app.config.database.mysql.nocache.table;
+      table = app.config.drivers.mysql.table;
       model.context = table;
       mysql = model.driver;
       
@@ -114,6 +114,8 @@ vows.describe('Models').addBatch({
     topic: function() {
       var promise = new EventEmitter(),
           multi = model.multi();
+      
+      
       
       multi.insert({
         user: 'ernie',
@@ -219,8 +221,8 @@ vows.describe('Models').addBatch({
         object: {apple: 'green', banana: 'yellow', number: 33, array: [1,2,3]},
         array: [1,2,3]
       }, function(err, instance) {
-        user = instance;
-        promise.emit('success', err || instance);
+        user = instance[0];
+        promise.emit('success', err || instance[0]);
       });
 
       return promise;
@@ -268,16 +270,22 @@ vows.describe('Models').addBatch({
       user.array.pop();
       user.array.push(99);
       
-      user.save(function(err) {
+      // ################### QUERY CACHING TESTS [MODEL OBJECTS] #####################
+      
+      user.queryCached({
+        cacheInvalidate: 'users_cache'
+      }, 'save', function(err) {
         if (err) promise.emit('success', err);
         else {
           model.get({user: 'NODE'}, function(err, m) {
-            user = m;
+            user = m[0];
             promise.emit('success');
           });
         }
-      })
-
+      });
+      
+      // ################### QUERY CACHING TESTS [MODEL OBJECTS] #####################
+      
       return promise;
     },
 

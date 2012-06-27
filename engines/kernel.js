@@ -4,7 +4,7 @@
   @namespace engine
  */
 
-var kernel = require('kernel'),
+var kernel = protos.requireDependency('kernel', 'Kernel Engine'),
     util = require('util'),
     generator = kernel.generator,
     parser = kernel.parser,

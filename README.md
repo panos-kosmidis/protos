@@ -1,12 +1,11 @@
 # Protos [![Build Status](https://secure.travis-ci.org/derdesign/protos.png)](http://travis-ci.org/derdesign/protos)
 
 Protos is an open source Web Application Development framework, focused on high performance, integration, ease of 
-deployment, maintainability and security.
+deployment, maintainability and security. Protos runs on UNIX-like systems such as **Linux** &amp; **Mac OSX**. Windows 
+support might be added in the future.
 
-It aims to integrate several open source packages and combine their power &amp; functionality, to bring a common set of
-utilities and functionality to all applications, reducing their dependencies.
-
-Protos runs on UNIX-like systems such as **Linux** & **Mac OSX**. Windows support might be added in the future.
+**Note**: _The framework is under moderate development and the API and internal methods/functionality may change. The documentation
+may also contain topics that have been removed, and may not contain all the features the framework provides._
 
 ## Features
 
@@ -21,7 +20,7 @@ Protos runs on UNIX-like systems such as **Linux** & **Mac OSX**. Windows suppor
 - Application Helpers
 - Application Models supporting ORM &amp; Relationships
 - Database Drivers & Storages
-- Query Caching in Drivers by using Storages
+- Built-in Query Caching for Drivers & Models using NoSQL Storages
 - Built-in Support for multiple Template Engines
 - View Partials Support
 - JSON Responses Support
@@ -78,6 +77,9 @@ Here's the Development Stack the framework provides, in a nutshell:
 [Redis](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js) (additionally 
 [File](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js), [Console](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js) via Middleware)_
 
+To install the driver & storage component dependencies, use the `protos install <component>` command. For a full list of components and
+their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
+
 ## Middleware
 
 The Application's functionality can be extended with the following (ready to use) components:
@@ -99,6 +101,9 @@ The Application's functionality can be extended with the following (ready to use
 - [socket_io](http://protos.org/middleware#socket_io) &nbsp; *Socket.io Integration with applications*
 - [static_server](http://protos.org/middleware#static_server) &nbsp; *Complete Static Server solution, supporting Ranges, Conditional GETs, etc.*
 
+To install the middleware dependencies, use the `protos install <middleware>` command. For a full list of components and
+their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
+
 ## Template Engines
 
 There is a lot of flexibility when it comes to template engines. To use a view engine, just add the extension 
@@ -111,7 +116,7 @@ nature), such as Hogan and Handlebars.
 You are not limited by the default view extensions the framework provides. You can specify your own view extensions in the
 application's configuration.
 
-The following view engines are fully integrated with the Framework:
+The following view engine components are provided by protos:
 
 - [CoffeeKup](https://github.com/mauricemach/coffeekup)
 - [DoT](https://github.com/olado/doT)
@@ -129,6 +134,10 @@ The following view engines are fully integrated with the Framework:
 - [Liquor](https://github.com/chjj/liquor)
 - [Swig](https://github.com/paularmstrong/swig)
 - [Whiskers](https://github.com/gsf/whiskers.js/tree)
+
+To install the engine dependencies, use the `protos install <engine>` command. For a full list of components and
+their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
+
 
 ## License
 
@@ -154,7 +163,6 @@ THE SOFTWARE.
 
 ## Resources
 
-- Visit the [official website](http://derdesign.github.com/protos).
 - Follow [@derdesign](http://twitter.com/derdesign) on Twitter for updates.
 - Report issues on the [github issues](https://github.com/derdesign/protos/issues) page.
 - For support, refer to the [Mailing List](https://groups.google.com/group/protos-web-framework).

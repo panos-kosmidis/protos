@@ -49,7 +49,7 @@
 
 var app = protos.app,
     util = require('util'),
-    discount = require('discount'),
+    discount = protos.requireDependency('discount', 'Markdown Middleware', 'markdown'),
     inflect = require('../lib/support/inflect.js'),
     sanitizer = require('sanitizer'),
     isArray = util.isArray;

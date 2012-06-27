@@ -10,7 +10,7 @@ mysql:
   encoding: utf8
 
 before_script:
-  - "make deps"
+  - "make deps-all"
   - "mysql -e 'create database test_db;'"
 
 script:

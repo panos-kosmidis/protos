@@ -1,1 +1,0 @@
-../../../../skeleton/config/database.js

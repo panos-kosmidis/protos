@@ -101,15 +101,15 @@ function Logger(config, middleware) {
   
   // Middleware config (levels are overridden)
   this.config = config = protos.extend({
-    accessLog: true,
-    accessLogConsole: true,
-    accessLogFormat: 'default',
-    infoLevel: {file: 'info.log', console: true},
-    errorLevel: {file: 'error.log', console: true}
+    accessLogFile: null,          // File to save access logs. E.g.: 'access.log'
+    accessLogConsole: true,       // Log requests to stdout
+    accessLogFormat: 'default',   // Access log format
+    infoLevel: {console: true},   // Set to {console: true, file: 'info.log'} to log to stdout + file
+    errorLevel: {console: true}   // Set to {console: true, file: 'error.log'} to stdout + file
   }, config);
   
   // Enable access log
-  if (config.accessLog || config.accessLogConsole) this.enableAccessLog();
+  if (config.accessLogFile || config.accessLogConsole) this.enableAccessLog();
   
   // Create logging levels
   createLoggingLevels.call(this, config);
@@ -121,7 +121,7 @@ Logger.prototype.enableAccessLog = function() {
   // Cache access log format function
   var self = this,
       config = this.config,
-      accessLogFormat = this.config.accessLogFormat;
+      accessLogFormat = config.accessLogFormat;
       
   if (typeof accessLogFormat == 'string') {
     if (accessLogFormat in this.logFormats) {
@@ -138,10 +138,10 @@ Logger.prototype.enableAccessLog = function() {
     var log = accessLogFormat.call(self, this.request, this, app);
     app.emit('access_log', log);
     if (config.accessLogConsole) console.log(log);
-    if (config.accessLog) accessLog.write(log+'\n');
+    if (config.accessLogFile) accessLog.write(log+'\n');
   }
   
-  accessLog = fs.createWriteStream(app.fullPath('log/access.log'), {flags: 'a'});
+  if (config.accessLogFile) accessLog = fs.createWriteStream(app.fullPath('log/' + config.accessLogFile), {flags: 'a'});
   app.on('request', function(req, res) {
     res.on('finish', accessLogFilter);
   });

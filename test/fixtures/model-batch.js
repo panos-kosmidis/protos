@@ -6,12 +6,14 @@ var testData = {
   MySQL: { // pkey constraint, need auto_increment
     insert: [
       {user: 'user1', pass: 'pass1'},
-      {user: 'user2', pass: 'pass2'}]
+      {user: 'user2', pass: 'pass2'},
+      {user: '!@#$%', pass: 'pass3'}] // invalid
   },
   MongoDB: {
     insert: [ // mongodb is more flexible when it comes to id's
       {id: 1, user: 'user1', pass: 'pass1'},
-      {id: 2, user: 'user2', pass: 'pass2'}]
+      {id: 2, user: 'user2', pass: 'pass2'},
+      {id: 3, user: '!@#$%', pass: 'pass3'}] // invalid
   }
 }
 
@@ -28,8 +30,22 @@ function ModelBatch() {
         topic: function() {
           var promise = new EventEmitter();
           
-          multi.insert(data.insert[0], {cacheInvalidate: ['get', 'getall']});
+          // Invalidate testmodel:user_cache
+          
+          // ################### QUERY CACHING TESTS [MODELS] #####################
+          
+          // Insert first item
+          multi.queryCached({
+           cacheInvalidate: 'user_cache'
+          }, 'insert', data.insert[0]);
+          
+          // ################### QUERY CACHING TESTS [DRIVER] #####################
+          
+          // Insert second item
           multi.insert(data.insert[1]);
+          
+          // Attempt to insert data that does not validate => err is returned
+          multi.insert(data.insert[2])
 
           multi.exec(function(err, results) {
             promise.emit('success', err || results);
@@ -39,8 +55,12 @@ function ModelBatch() {
 
         },
 
-        'Inserts new models + invalidates caches': function(results) {
-          assert.deepEqual(results, [1, 2]);
+        'Inserts new models': function(results) {
+          assert.isArray(results);
+          assert.equal(results.length, 3);
+          assert.isNull(results[0]);
+          assert.isNull(results[1]);
+          assert.equal(results[2].toString(), "Error: TestModel: Unable to validate 'user': !@#$%");
         }
 
       }
@@ -54,15 +74,19 @@ function ModelBatch() {
         topic: function() {
           var promise = new EventEmitter();
 
-          // object + cache » store
-          multi.get({user: 'user1'}, {cacheID: 'get', cacheTimeout: 3600});
-
-          // object + cache » use
-          multi.get({user: 'user1'}, {cacheID: 'get', cacheTimeout: 3600});
-
-          // integer
-          multi.get(1);
-
+          // object + model cache store
+          multi.queryCached({
+            cacheID: 'user_cache'
+          }, 'get', {
+            user: 'user1'
+          });
+          
+          // integer + model cache store w/ timeout
+          multi.queryCached({
+            cacheID: 'another_cache',
+            cacheTimeout: 3600
+          }, 'get', 1);
+          
           // array
           multi.get([1,2]);
 
@@ -73,14 +97,12 @@ function ModelBatch() {
           return promise;
         },
 
-        'Returns valid results + stores/uses cache': function(results) {
+        'Returns valid results': function(results) {
           var expected = [
-            { user: 'user1', pass: 'pass1', id: 1 },
-            { user: 'user1', pass: 'pass1', id: 1 },
-            { user: 'user1', pass: 'pass1', id: 1 },
-            [ { user: 'user1', pass: 'pass1', id: 1 },
-              { user: 'user2', pass: 'pass2', id: 2 } ] ];
-              
+            [{ user: 'user1', pass: 'pass1', id: 1 }],
+            [{ user: 'user1', pass: 'pass1', id: 1 }],
+            [ [{ user: 'user1', pass: 'pass1', id: 1 }],
+              [{ user: 'user2', pass: 'pass2', id: 2 }] ] ];
           assert.deepEqual(results, expected);
         }
 
@@ -95,14 +117,8 @@ function ModelBatch() {
         topic: function() {
           var promise = new EventEmitter();
 
-          // getall (no cache)
+          // getall
           multi.getAll();
-
-          // getall + cache » store
-          multi.getAll({cacheID: 'getall', cacheTimeout: 3600});
-          
-          // getall + cache » use
-          multi.getAll({cacheID: 'getall', cacheTimeout: 3600});
 
           multi.exec(function(err, results) {
             promise.emit('success', err || results);
@@ -111,12 +127,8 @@ function ModelBatch() {
           return promise;
         },
 
-        'Returns valid results + stores/uses cache': function(results) {
+        'Returns valid results': function(results) {
           var expected = [ 
-            [ { user: 'user1', pass: 'pass1', id: 1 },
-              { user: 'user2', pass: 'pass2', id: 2 } ],
-            [ { user: 'user1', pass: 'pass1', id: 1 },
-              { user: 'user2', pass: 'pass2', id: 2 } ],
             [ { user: 'user1', pass: 'pass1', id: 1 },
               { user: 'user2', pass: 'pass2', id: 2 } ] ];
           
@@ -134,11 +146,17 @@ function ModelBatch() {
         topic: function() {
           var promise = new EventEmitter();
 
-          // save + caching
-          multi.save({id: 1, user: '__user1', pass: '__pass1'}, {cacheInvalidate: ['get', 'getall']});
+          // save => success
+          multi.save({id: 1, user: '__user1', pass: '__pass1'});
 
-          // save
+          // save + update => success
           multi.save({id: 1, user: '__user1__', pass: '__pass1__'});
+
+          // partial save => success
+          multi.save({id: 1, user: '__user1__updated'});
+
+          // save with data that does not validate => err is returned
+          multi.save({id: 1, user: '!#$%^&*'});
 
           multi.exec(function(err, results) {
             promise.emit('success', err || results);
@@ -147,8 +165,13 @@ function ModelBatch() {
           return promise;
         },
 
-        'Updates model data + invalidates caches': function(results) {
-          assert.deepEqual(results, ['OK', 'OK']);
+        'Updates model data': function(err, results) {
+          assert.instanceOf(results, Array);
+          assert.equal(results.length, 4);
+          assert.isNull(results[0]);
+          assert.isNull(results[1]);
+          assert.isNull(results[2]);
+          assert.equal(results[3].toString(), "Error: TestModel: Unable to validate 'user': !#$%^&*");
         }
 
       }
@@ -162,8 +185,8 @@ function ModelBatch() {
         topic: function() {
           var promise = new EventEmitter();
 
-          // integer + invalidate
-          multi.delete(2, {cacheInvalidate: ['get', 'getall']});
+          // integer
+          multi.delete(2);
 
           // array
           multi.delete([1, 2]);
@@ -175,7 +198,7 @@ function ModelBatch() {
           return promise;
         },
 
-        'Properly deletes from database + invalidates caches': function(results) {
+        'Properly deletes from database': function(results) {
           assert.deepEqual(results, ['OK', 'OK']);
         }
 
@@ -183,28 +206,6 @@ function ModelBatch() {
 
     },
     
-    cache: {
-      
-      'Model API: cache (support)': {
-        
-        "All model object methods support cache operations": function() {
-          var cacheCompliance = model.app.globals.cacheCompliance;
-          var expected = [ 
-            { inv: [ 'get', 'getall' ] },
-            { sto: 'get' },
-            { use: 'get' },
-            { sto: 'getall' },
-            { use: 'getall' },
-            { inv: [ 'get', 'getall' ] },
-            { inv: [ 'get', 'getall' ] } ];
-          
-          assert.deepEqual(cacheCompliance, expected);
-        }
-        
-      }
-      
-    }
-
   }
   
   // Defining a `model` setter, to prevent conflicts with vows

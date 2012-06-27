@@ -43,13 +43,76 @@ var commands = {
     run: function(args) {
       
       var errored = false;
-      
       var libs = getLibs(args);
 
       if (errored) process.exit();
       
       createApplication.call(this, args, libs);
 
+    }
+  },
+  
+  install: {
+    args: 99,
+    validate: validateApp,
+    run: function(data) {
+      
+      // Build list of dependencies from dependencies.json
+      
+      var depsJson = Protos.prototype.require('dependencies.json'),
+          middleware = depsJson.middleware,
+          engines = depsJson.engines;
+
+      delete depsJson.middleware;
+      delete depsJson.engines;
+
+      var dependencies = {};
+      
+      for (var dep in depsJson) {
+        dependencies[dep] = depsJson[dep];
+      }
+      
+      for (dep in middleware) {
+       dependencies[dep] = middleware[dep];
+      }
+      
+      for (dep in engines) {
+       (dependencies[dep] = {})[dep] = engines[dep];
+      }
+      
+      // Process required dependencies
+      
+      var packages = [];
+      
+      data.args.forEach(function(arg) {
+        if (arg in dependencies) {
+          var deps = dependencies[arg];
+          for (var module in deps) {
+            packages.push(util.format('%s@%s', module, deps[module]));
+          }
+        } else {
+          console.exit(util.format("No modules to install for '%s'", arg));
+        }
+      });
+      
+      // Install command
+      var args = ['install', '--save'].concat(packages);
+      
+      var npm = cp.spawn('npm', args);
+      
+      var logger = function(data) {
+        console.log(data.toString('utf-8').trim());
+      }
+      
+      npm.stdout.on('data', logger);
+      npm.stderr.on('data', logger);
+      
+      npm.on('exit', function(code) {
+        // Remove 'sys' notices
+        var cleanupCmd = util.format('PROTOS_APP_PATH=%s %s/tools/remove-sys-notice', process.cwd(), Protos.path);
+        cp.exec(cleanupCmd);
+      });
+      
     }
   },
   
@@ -897,7 +960,7 @@ var cli = new CommandLine(commands);
 
 cli.help.before = "\
 Usage: protos [action] [arguments]\n\n\
-Actions: [create, server, deploy, fetch, inspector, lint] [controller, helper, model, view, partial, static]\n";
+Actions: [create, install, server, deploy, fetch, inspector, lint] [controller, helper, model, view, partial, static]\n";
 
 cli.help.after = "\n\
 Example:\n\n\

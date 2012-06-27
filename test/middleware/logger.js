@@ -28,13 +28,13 @@ vows.describe('Logger (middleware)').addBatch({
     topic: function() {
       var promise = new EventEmitter();
       
-      var db = app.config.database,
-          sto = app.config.storage;
+      var db = app.config.drivers,
+          sto = app.config.storages;
       
       fs.writeFileSync(app.fullPath('/log/test.log'), '', 'utf-8');
       
       app.use('logger', {
-        accessLog: true,
+        accessLogFile: 'access.log',
         accessLogConsole: false,
         infoLevel: null,
         errorLevel: null,
@@ -42,8 +42,8 @@ vows.describe('Logger (middleware)').addBatch({
           file: 'test.log',
           console: true,
           mongodb: {
-            host: db.mongodb.nocache.host,
-            port: db.mongodb.nocache.port,
+            host: db.mongodb.host,
+            port: db.mongodb.port,
             logLimit: 1
           },
           redis: {

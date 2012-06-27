@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+
+/* Merges dependencies.json into package.json */
+
+require('../lib/extensions.js');
+
+var json, dep, section;
+var fs = require('fs');
+var depsJson = require('../dependencies.json');
+var packageJson = require('../package.json');
+var dependencies = packageJson.dependencies;
+
+// Move middleware dependencies to root level
+for (dep in depsJson.middleware) {
+  depsJson[dep] = depsJson.middleware[dep];
+}
+
+// Remove middleware key
+delete depsJson.middleware;
+
+// Merge dependencies
+for (section in depsJson) {
+  section = depsJson[section];
+  for (dep in section) {
+    dependencies[dep] = section[dep];
+  }
+}
+
+// Add dependencies into package.json
+packageJson.dependencies = dependencies;
+
+json = JSON.stringify(packageJson, null, ' ');
+
+console.log(json);

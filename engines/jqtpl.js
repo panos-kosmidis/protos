@@ -4,7 +4,7 @@
   @namespace engine
  */
 
-var jq = require('jqtpl'),
+var jq = protos.requireDependency('jqtpl', 'jQuery Template Engine'),
     util = require('util');
 
 /**

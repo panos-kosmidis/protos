@@ -1,7 +1,7 @@
 
 function UsersModel(app) {
   
-  this.driver = 'mysql:nocache'
+  this.driver = 'mysql'
   
   this.validation = {
     'friends': function(data) {

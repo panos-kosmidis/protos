@@ -6,10 +6,11 @@
 
 var _ = require('underscore'),
     util = require('util'),
-    mongodb = require('mongodb'),
+    mongodb = protos.requireDependency('mongodb', 'MongoDB Storage'),
     Db = mongodb.Db,
     Server = mongodb.Server,
-    ObjectID = mongodb.ObjectID;
+    ObjectID = mongodb.ObjectID,
+    EventEmitter = require('events').EventEmitter;
 
 /**
   MongoDB Storage class
@@ -25,12 +26,18 @@ function MongoStorage(app, config) {
   
    var self = this;
    
+   this.events = new EventEmitter();
+   
    config = protos.extend({
      host: 'localhost',
      port: 27017,
      database: 'store',
-     collection: 'keyvalue'
+     collection: 'keyvalue',
+     username: '',
+     password: ''
    }, config);
+   
+   if (typeof config.port != 'number') config.port = parseInt(config.port, 10);
    
    /**
     Application instance
@@ -67,45 +74,59 @@ function MongoStorage(app, config) {
    */
    this.className = this.constructor.name;
    
-   protos.async(app); // Register async queue
+   app.debug(util.format('Initializing MongoStorage for %s@%s:%s', config.username, config.host, config.port));
    
    var reportError = function(err) {
      app.log(util.format("MongoStore [%s:%s] %s", config.host, config.port, err.code));
      self.client = err;
-     protos.done(app); // Flush async queue
    }
    
-   protos.util.checkPort(config.port, function(err) {
+   // Set db
+   self.db = new Db(config.database, new Server(config.host, config.port, {}));
+
+   // Get client
+   self.db.open(function(err, client) {
      
      if (err) {
        reportError(err);
      } else {
-       
-       // Set db
-       self.db = new Db(config.database, new Server(config.host, config.port, {}));
-       
-       // Get client
-       self.db.open(function(err, client) {
-         if (err) {
-           reportError(err);
-         } else {
-           // Set client
-           self.client = client;
-            
-           // Get collection
-           client.collection(config.collection, function(err, collection) {
+       // Set client
+       self.client = client;
+
+       // Get collection
+       client.collection(config.collection, function(err, collection) {
+
+         // Set collection
+         self.collection = collection;
+         
+         // Authenticate
+         if (config.username && config.password) {
+
+           self.db.authenticate(config.username, config.password, function(err, success) {
              
-             // Set collection
-             self.collection = collection;
-             
-             // Flush async queue
-             protos.done(app);
-             
+             if (err) {
+               
+               var msg = util.format('MongoStorage: unable to authenticate %s@%s', config.username, config.host);
+               app.log(new Error(msg));
+               throw err;
+               
+             } else {
+               
+                // Emit initialization event
+                self.events.emit('init', self.db, self.client);
+
+             }
            });
+
+         } else {
+           
+           // Emit initialization event
+           self.events.emit('init', self.db, self.client);
            
          }
+
        });
-       
+
      }
    });
    

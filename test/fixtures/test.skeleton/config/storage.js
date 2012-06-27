@@ -1,1 +1,0 @@
-../../../../skeleton/config/storage.js

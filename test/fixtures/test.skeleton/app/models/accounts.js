@@ -1,7 +1,7 @@
 
 function AccountsModel(app) {
   
-  this.driver = 'mongodb:nocache';
+  this.driver = 'mongodb';
   
   this.properties = {
     settings: {type: 'object'}

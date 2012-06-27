@@ -2,8 +2,14 @@
 /* Logger » Redis Transport */
 
 var app = protos.app,
-    fs = require('fs'),
-    redis = require('redis');
+    fs = require('fs');
+    
+try {
+  var redis = require('redis');
+} catch(e) {
+  app.debug('Logger middleware: redis is required for redis-transport');
+  return;
+}    
 
 function RedisTransport(evt, config) {
   

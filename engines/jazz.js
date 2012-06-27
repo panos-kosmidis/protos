@@ -4,7 +4,7 @@
   @namespace engine
  */
 
-var jazz = require('jazz'),
+var jazz = protos.requireDependency('jazz', 'Jazz Engine'),
     util = require('util');
 
 /**

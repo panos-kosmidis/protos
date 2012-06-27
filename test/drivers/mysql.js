@@ -11,7 +11,7 @@ var app = require('../fixtures/bootstrap'),
 
 var mysql, multi, model, storageMulti, modelBatch;
 
-var config = app.config.database.mysql.nocache,
+var config = app.config.drivers.mysql,
     client = createClient(config),
     mclient = new Multi(client);
 
@@ -26,31 +26,10 @@ CREATE TABLE IF NOT EXISTS %s (\n\
   PRIMARY KEY (id)\n\
 )', table);
 
-// Cache Compliance
-
-var cacheCompliance = [];
-
-// Cache Events
-var c = '0;36';
-app.on('mysql_cache_store', function(cacheID, cache) {
-  cacheCompliance.push({sto: cacheID});
-  // console.log('    ✓ %s', colorize('Stored cache: ' + cacheID, c));
-});
-
-app.on('mysql_cache_use', function(cacheID, cache) {
-  cacheCompliance.push({use: cacheID});
-  // console.log('    ✓ %s', colorize('Using cache: ' + cacheID, c));
-});
-
-app.on('mysql_cache_invalidate', function(invalidated) {
-  cacheCompliance.push({inv: invalidated});
-  // console.log('    ✓ %s', colorize('Invalidated cache: ' + invalidated.join(', '), c));
-});
-
 // Test Model
 function TestModel() {
 
-  this.driver = 'mysql:cache';
+  this.driver = 'mysql';
 
   this.properties = app.globals.commonModelProps;
 
@@ -66,7 +45,7 @@ var batch = vows.describe('drivers/mysql.js').addBatch({
     
     topic: function() {
       var promise = new EventEmitter();
-      app._getResource('drivers/mysql:nocache', function(driver) {
+      app._getResource('drivers/mysql', function(driver) {
         mysql = driver;
         multi = mysql.multi();
         
@@ -83,7 +62,7 @@ var batch = vows.describe('drivers/mysql.js').addBatch({
     },
 
     'Sets config': function() {
-      assert.strictEqual(mysql.config.host, app.config.database.mysql.nocache.host);
+      assert.strictEqual(mysql.config.host, app.config.drivers.mysql.host);
     },
     
     'Sets client': function() {
@@ -648,187 +627,129 @@ var batch = vows.describe('drivers/mysql.js').addBatch({
   
 }).addBatch({
   
-  'Cache API Compliance': {
+  'MongoDB::queryCached': {
     
     topic: function() {
-      var promise = new EventEmitter(),
-          multi = app._getResource('drivers/mysql:cache').multi();
       
-      // Cache invalidate
-      multi.__exec({
-        sql: 'SHOW TABLES',
-        cacheInvalidate: ['cache1', 'cache2', 'cache3']
+      var promise = new EventEmitter();
+      
+      // ################### QUERY CACHING TESTS [DRIVER] #####################
+      
+      // Insert user1 + invalidate existing cache
+      multi.queryCached({
+        cacheInvalidate: 'test_user_query',
+      }, 'insertInto', {
+        table: table,
+        values: { user: 'test_user1', pass: 'pass_user1' }
       });
       
-      // Cache invalidate
+      // Retrieve user 1 + store 'test_user_query' cache with only user1
+      multi.queryCached({
+        cacheID: 'test_user_query'
+      }, 'queryWhere', {
+        condition: '1=1',
+        table: table,
+        appendSql: 'ORDER BY user'
+      });
+      
+      // Insert user2
       multi.insertInto({
         table: table,
-        values: {
-          user: 'user1',
-          pass: 'pass1'
-        },
-        cacheInvalidate: ['cache4', 'cache5', 'cache6']
+        values: { user: 'test_user2', pass: 'pass_user2' }
       });
       
-      // Cache store
-      multi.query({
-        sql: 'SHOW TABLES',
-        cacheID: 'cache1'
-      });
-      
-      // Cache use
-      multi.query({
-        sql: 'SHOW TABLES',
-        cacheID: 'cache1'
-      });
-      
-      // Cache store
-      multi.queryWhere({
+      // Retrieve 'test_user_query' cache => Should return only user1, since it's returning from cache
+      multi.queryCached({
+        cacheID: 'test_user_query'
+      }, 'queryWhere', {
+        condition: '1=1',
         table: table,
-        condition: 'user=?',
-        params: 1,
-        cacheID: 'cache2'
+        appendSql: 'ORDER BY user'
       });
       
-      // Cache use
-      multi.queryWhere({
+      // Insert user3 + invalidate 'test_user_query' cache
+      multi.queryCached({
+        cacheInvalidate: 'test_user_query',
+      }, 'insertInto', {
         table: table,
-        condition: 'user=?',
-        params: 1,
-        cacheID: 'cache2'
+        values: { user: 'test_user3', pass: 'pass_user3' }
       });
       
-      // Cache store
-      multi.queryAll({
+      // Retrieve 'test_user_query' cache => cache has been invalidated
+      // New query should return test_user1, test_user2 and test_user3
+      // Also, the query should set the timeout for 'test_user_query' to 3600 seconds
+      multi.queryCached({
+        cacheID: 'test_user_query',
+        cacheTimeout: 3600
+      }, 'queryWhere', {
+        condition: '1=1',
         table: table,
-        cacheID: 'cache3'
+        appendSql: 'ORDER BY user'
       });
       
-      // Cache use
-      multi.queryAll({
-        table: table,
-        cacheID: 'cache3'
-      });
-      
-      // Cache store
-      multi.queryById({
-        table: table,
-        id: 1,
-        cacheID: 'cache4'
-      });
-      
-      // Cache use
-      multi.queryById({
-        table: table,
-        id: 1,
-        cacheID: 'cache4'
-      });
-      
-      // Cache store
-      multi.countRows({
-        table: table,
-        cacheID: 'cache5'
-      });
-      
-      // Cache use
-      multi.countRows({
-        table: table,
-        cacheID: 'cache5'
-      });
-      
-      // Cache store
-      multi.idExists({
-        table: table,
-        id: 1,
-        cacheID: 'cache6'
-      });
-      
-      // Cache use
-      multi.idExists({
-        table: table,
-        id: 1,
-        cacheID: 'cache6'
-      });
-      
-      // Cache invalidate
-      multi.updateWhere({
-        condition: 'id=?',
-        params: 1,
-        table: table,
-        values: {
-          user: 'user1',
-          pass: 'pass1'
-        },
-        cacheInvalidate: ['cache1', 'cache2']
-      });
-      
-      // Cache invalidate
-      multi.updateById({
-        table: table,
-        id: 1,
-        values: {
-          user: 'USER1',
-          pass: 'PASS1'
-        },
-        cacheInvalidate: ['cache3', 'cache4']
-      });
-      
-      // Cache invalidate
-      multi.deleteWhere({
-        table: table,
-        condition: 'id=?',
-        params: 1,
-        cacheInvalidate: 'cache5'
-      });
-      
-      // Cache invalidate
-      multi.deleteById({
-        table: table,
-        id: 1,
-        cacheInvalidate: 'cache6'
-      });
+      // ################### QUERY CACHING TESTS [DRIVER] #####################
       
       multi.exec(function(err, results) {
-        promise.emit('success');
+        
+        promise.emit('success', err || results);
+        
       });
       
       return promise;
+      
     },
     
-    "All driver methods support cache operations": function() {
-      var expected = [ 
-        { inv: [ 'cache1', 'cache2', 'cache3' ] },
-        { inv: [ 'cache4', 'cache5', 'cache6' ] },
-        { sto: 'cache1' },
-        { use: 'cache1' },
-        { sto: 'cache2' },
-        { use: 'cache2' },
-        { sto: 'cache3' },
-        { use: 'cache3' },
-        { sto: 'cache4' },
-        { use: 'cache4' },
-        { sto: 'cache5' },
-        { use: 'cache5' },
-        { sto: 'cache6' },
-        { use: 'cache6' },
-        { inv: [ 'cache1', 'cache2' ] },
-        { inv: [ 'cache3', 'cache4' ] },
-        { inv: [ 'cache5' ] },
-        { inv: [ 'cache6' ] } ];
-        
-      assert.deepEqual(cacheCompliance, expected);
+    'Properly stores/retrieves/invalidates caches': function(results) {
       
-      // Reset cache compliance
-      while (cacheCompliance.pop() !== undefined);
+      var r1 = results[0],
+          r2 = results[1],
+          r3 = results[2],
+          r4 = results[3],
+          r5 = results[4],
+          r6 = results[5];
+          
+      // Insert user1 + invalidate existing cache
+      assert.equal(r1.affectedRows, 1);
+      assert.equal(r1.serverStatus, 2);
       
-      app.globals.cacheCompliance = cacheCompliance;
+      // Retrieve user 1 + store 'test_user_query' cache with only user1
+      assert.instanceOf(r2, Array);
+      assert.equal(r2.length, 2);
+      assert.instanceOf(r2[0], Array);
+      assert.equal(r2[0].length, 1);
+      assert.isTrue(r2[0][0].user == 'test_user1' && r2[0][0].pass == 'pass_user1');
+      
+      // Insert user2
+      assert.equal(r3.affectedRows, 1);
+      assert.equal(r3.serverStatus, 2);
+      
+      // Retrieve 'test_user_query' cache => Should return only user1, since it's returning from cache
+      assert.instanceOf(r4, Array);
+      assert.equal(r4.length, 2);
+      assert.instanceOf(r4[0], Array);
+      assert.equal(r4[0].length, 1);
+      assert.isTrue(r4[0][0].user == 'test_user1' && r4[0][0].pass == 'pass_user1');
+
+      // Insert user3 + invalidate 'test_user_query' cache
+      assert.equal(r5.affectedRows, 1);
+      assert.equal(r5.serverStatus, 2);
+      
+      // Retrieve 'test_user_query' cache => cache has been invalidated
+      // New query should return test_user1, test_user2 and test_user3
+      assert.instanceOf(r6, Array);
+      assert.equal(r6.length, 2);
+      assert.instanceOf(r6[0], Array);
+      assert.equal(r6[0].length, 3);
+      assert.isTrue(r6[0][0].user == 'test_user1' && r6[0][0].pass == 'pass_user1');
+      assert.isTrue(r6[0][1].user == 'test_user2' && r6[0][1].pass == 'pass_user2');
+      assert.isTrue(r6[0][2].user == 'test_user3' && r6[0][2].pass == 'pass_user3');
     }
     
   }
   
 }).addBatch({
   
-  'Model API Compliance': {
+  'Model API Compliance + Caching': {
     
     topic: function() {
       var promise = new EventEmitter();

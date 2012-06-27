@@ -104,12 +104,12 @@ vows.describe('Model Relationships').addBatch({
       
       if (results instanceof Array) {
         models = {
-          company: results[0],
-          account: results[1],
-          group1: results[2],
-          group2: results[3],
-          website: results[4],
-          buddy: results[5]
+          company: results[0][0],
+          account: results[1][0],
+          group1: results[2][0],
+          group2: results[3][0],
+          website: results[4][0],
+          buddy: results[5][0]
         }
       }
 
@@ -297,8 +297,8 @@ vows.describe('Model Relationships').addBatch({
         if (err) promise.emit('success', err);
         else {
           app.buddiesModel.get(models.buddy.id, function(err, buddy) {
-            models.buddy = buddy;
-            promise.emit('success', err || buddy);
+            models.buddy = buddy[0];
+            promise.emit('success', err || buddy[0]);
           });
         }
       });
@@ -323,7 +323,7 @@ vows.describe('Model Relationships').addBatch({
       var promise = new EventEmitter();
 
       models.buddy.getAccount(function(err, account) {
-        promise.emit('success', err || account);
+        promise.emit('success', err || account[0]);
       });
 
       return promise;
@@ -348,8 +348,8 @@ vows.describe('Model Relationships').addBatch({
         if (err) promise.emit('success', err);
         else {
           app.model.getBuddy(models.buddy.id, function(err, buddy) {
-            models.buddy = buddy;
-            promise.emit('success', err || buddy)
+            models.buddy = buddy[0];
+            promise.emit('success', err || buddy[0])
           });
         }
       });
@@ -387,14 +387,14 @@ vows.describe('Model Relationships').addBatch({
     },
     
     "Properly unlinks & removes item": function(results) {
-      var buddy = results[0],
+      var buddy = results[0][0],
           profile = results[1];
       
-      models.buddy = buddy;    
+      models.buddy = buddy;
       
       assert.instanceOf(buddy, app.buddiesModel.modelObjectProto.constructor);
       assert.isNull(buddy.profile);
-      assert.isNull(profile);
+      assert.deepEqual(profile, []);
     }
 
   }
@@ -412,8 +412,8 @@ vows.describe('Model Relationships').addBatch({
         if (err) promise.emit('success', err);
         else {
           app.buddiesModel.get(models.buddy.id, function(err, buddy) {
-            models.buddy = buddy;
-            promise.emit('success', err || buddy);
+            models.buddy = buddy[0];
+            promise.emit('success', err || buddy[0]);
           });
         }
       });
@@ -441,8 +441,8 @@ vows.describe('Model Relationships').addBatch({
         if (err) promise.emit('success', err);
         else {
           app.buddiesModel.get(models.buddy.id, function(err, buddy) {
-            models.buddy = buddy;
-            promise.emit('success', err || buddy);
+            models.buddy = buddy[0];
+            promise.emit('success', err || buddy[0]);
           });
         }
       });
@@ -467,7 +467,7 @@ vows.describe('Model Relationships').addBatch({
       var promise = new EventEmitter();
       var multi = models.buddy.createMulti();
       
-      multi.getGroup(models.group1)   // should return model object
+      multi.getGroup(models.group1)       // should return model object
       multi.getGroup(99);                 // should return emtpy array
       multi.getGroups();                  // should skip nulls
       
@@ -479,10 +479,11 @@ vows.describe('Model Relationships').addBatch({
     },
     
     "Properly gets linked item(s)": function(results) {
-      var r1 = results[0],
+      
+      var r1 = results[0][0],
           r2 = results[1],
           r3 = results[2];
-      
+
       // Single item found
       assert.instanceOf(r1, Array);
       assert.equal(r1.length, 1);
@@ -490,18 +491,22 @@ vows.describe('Model Relationships').addBatch({
       assert.equal(r1[0].name, 'My Group');
       
       // Empty array
+      
       assert.instanceOf(r2, Array);
       assert.deepEqual(r2, []);
       
       // Returns all groups, and skips nulls
       assert.instanceOf(r3, Array);
       assert.equal(r3.length, 2);
-      assert.instanceOf(r3[0], app.groupsModel.modelObjectProto.constructor);
-      assert.instanceOf(r3[1], app.groupsModel.modelObjectProto.constructor);
-      assert.instanceOf(r3[0].id, ObjectID);
-      assert.instanceOf(r3[1].id, ObjectID);
-      assert.equal(r3[0].id.toString(), models.group1.id.toString());
-      assert.equal(r3[1].id.toString(), models.group2.id.toString());
+      
+      // console.exit(r3);
+      
+      assert.instanceOf(r3[0][0], app.groupsModel.modelObjectProto.constructor);
+      assert.instanceOf(r3[1][0], app.groupsModel.modelObjectProto.constructor);
+      assert.instanceOf(r3[0][0].id, ObjectID);
+      assert.instanceOf(r3[1][0].id, ObjectID);
+      assert.equal(r3[0][0].id.toString(), models.group1.id.toString());
+      assert.equal(r3[1][0].id.toString(), models.group2.id.toString());
     }
     
   }
@@ -519,8 +524,8 @@ vows.describe('Model Relationships').addBatch({
         if (err) promise.emit('success', err);
         else {
           app.model.getBuddy(models.buddy.id, function(err, buddy) {
-            models.buddy = buddy;
-            promise.emit('success', err || buddy);
+            models.buddy = buddy[0];
+            promise.emit('success', err || buddy[0]);
           });
         }
       });
@@ -548,8 +553,8 @@ vows.describe('Model Relationships').addBatch({
         if (err) promise.emit('success', err);
         else {
           app.model.getBuddy(models.buddy.id, function(err, buddy) {
-            models.buddy = buddy;
-            promise.emit('success', err || buddy)
+            models.buddy = buddy[0];
+            promise.emit('success', err || buddy[0])
           });
         }
       });
@@ -586,7 +591,7 @@ vows.describe('Model Relationships').addBatch({
           app.model.getBuddy(models.buddy.id, function(err, buddy) {
             if (err) promise.emit('success', err);
             else {
-              models.buddy = buddy;
+              models.buddy = buddy[0];
               
               app.model.getGroup([models.group1.id, models.group2.id], function(err, groups) {
                 if (err) promise.emit('success', err);
@@ -608,7 +613,7 @@ vows.describe('Model Relationships').addBatch({
 
     "Properly gets linked items": function(groups) {
       assert.deepEqual(models.buddy.groups, []);
-      assert.deepEqual(groups, [null, null]); // means items were deleted from db
+      assert.deepEqual(groups, [[], []]); // means items were deleted from db
     }
     
   }

@@ -17,7 +17,7 @@
   */
 
 var app = protos.app,
-    bcrypt = require('bcrypt');
+    bcrypt = protos.requireDependency('bcrypt', 'BCrypt Middleware');
     
 var config;
     

@@ -98,6 +98,14 @@ function MainController(app) {
     res.end(ans);
   });
   
+  get('/getcookie-with-cookiedomain', function(req, res, params) {
+    app.cookieDomain = 'example.com';
+    res.setCookie('custom', 'hello');
+    res.sendHeaders();
+    res.end('');
+    app.cookieDomain = null;
+  });
+  
   /* Redirection Tests */
   
   get('/redirect/:context', {context: /^(test|home|login)$/}, function(req, res, params) {

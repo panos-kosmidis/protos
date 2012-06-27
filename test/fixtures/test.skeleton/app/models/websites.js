@@ -1,7 +1,7 @@
 
 function WebsitesModel() {
   
-  this.driver = 'mongodb:nocache';
+  this.driver = 'mongodb';
   
   this.properties = {
     name: {type: 'string', required: true},

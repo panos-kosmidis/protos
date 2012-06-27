@@ -14,33 +14,17 @@ var multi = new Multi(app);
 multi.on('pre_exec', app.backupFilters);
 multi.on('post_exec', app.restoreFilters);
 
-var beforeInitCheck, afterInitCheck;
+var beforeInitCheck;
 
 app.onInitialize(function() {
   beforeInitCheck = true;
 });
 
+app.libExtensions();
+
 vows.describe('lib/application.js').addBatch({
 
   'Integrity Checks': {
-
-    topic: function() {
-      
-      var promise = new EventEmitter();
-
-      app.libExtensions(); // Load lib extensions
-      
-      app.once('init', function() {
-        
-        app.onInitialize(function() {
-          afterInitCheck = true;
-        });
-        
-        promise.emit('success');
-      })
-      
-      return promise;
-    },
 
     'Sets domain': function() {
       assert.equal(app.domain, 'localhost');
@@ -122,7 +106,7 @@ vows.describe('lib/application.js').addBatch({
     },
     
     "Successfully runs callbacks after the 'init' event": function() {
-      assert.isTrue(afterInitCheck);
+      assert.isTrue(app.afterInitCheck);
     }
     
   },
@@ -393,6 +377,21 @@ vows.describe('lib/application.js').addBatch({
     
     "Returns valid md5 hashes (hex)": function(md5) {
       assert.equal(md5, 'b10a8db164e0754105b7a99be72e3fe5');
+    }
+
+  }
+  
+}).addBatch({
+  
+  'Application::escapeJson': {
+    
+    topic: function() {
+      var json = app.escapeJson({name: "Ernie", age: 29, likes: ['hello', 'world']});
+      return json;
+    },
+    
+    "Returns html-escaped JSON string": function(json) {
+      assert.equal(json, '{&#34;name&#34;:&#34;Ernie&#34;,&#34;age&#34;:29,&#34;likes&#34;:[&#34;hello&#34;,&#34;world&#34;]}');
     }
 
   }

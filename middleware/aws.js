@@ -53,7 +53,7 @@
 
 var app = protos.app,
     util = require('util'),
-    aws2js = require('aws2js'),
+    aws2js = protos.requireDependency('aws2js', 'AWS Middleware', 'aws'),
     isArray = util.isArray;
 
 var accessKey, secretKey;
