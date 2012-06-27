@@ -17,22 +17,6 @@ commandline = ./test/command.js
 # Make commands
 
 default:
-<<<<<<< HEAD
-		@echo -e "\n\033[1;32m♢ Project Tasks\033[0m\n"
-		@echo -e "\033[1;31mmake docs\033[0m             Generate the API Documentation"
-		@echo -e "\033[1;31mmake deps\033[0m             Install Dependencies & Cleanup"
-		@echo -e "\033[1;31mmake lint\033[0m             Run Code Analysis tool (scans entire project)"
-		@echo -e "\033[1;31mmake testconfig\033[0m       Test Configuration Tool"
-		@echo -e "\n\033[1;32m♢ Test Suites\033[0m\n"
-		@echo -e "\033[1;31mmake tests\033[0m            Run All tests"
-		@echo -e "\033[1;31mmake test-unit\033[0m        Run Unit tests"
-		@echo -e "\033[1;31mmake test-sto\033[0m         Run Storage tests (testconfig required)"
-		@echo -e "\033[1;31mmake test-drv\033[0m         Run Driver tests (testconfig required)"
-		@echo -e "\033[1;31mmake test-eng\033[0m         Run View Engine tests"
-		@echo -e "\033[1;31mmake test-int\033[0m         Run Integration tests"
-		@echo -e "\033[1;31mmake test-mid\033[0m         Run Middleware tests"
-		@echo -e "\033[1;31mmake test-cmd\033[0m         Run command line tests"
-=======
 		@echo
 		@echo "* Project Tasks\n"
 		@echo "make docs             Generate the API Documentation"
@@ -51,7 +35,6 @@ default:
 		@echo "make test-int         Run Integration tests"
 		@echo "make test-mid         Run Middleware tests"
 		@echo "make test-cmd         Run command line tests"
->>>>>>> faecf28a370994f29ee265019ad8c485746372f5
 		@echo
 
 docs:
