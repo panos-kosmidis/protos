@@ -82,6 +82,7 @@ vows.describe('Response Misc').addBatch({
     },
     
     'Ignores malformed HTTP requests': function(results) {
+      delete results[2].date; // Remove date from output
       assert.deepEqual(results, [ null, '', { connection: 'close', status: '400 Bad Request', 'transfer-encoding': 'chunked'}, 400 ]);
     }
     
