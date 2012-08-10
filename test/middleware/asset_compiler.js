@@ -4,7 +4,6 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
     util = require('util'),
-    pathModule = require('path'),
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
     
@@ -168,7 +167,7 @@ a,e,f;f=[];for(a=0,e=b.length;a<e;a++)d=b[a],f.push(c.cube(d));return f}()}).cal
     },
     
     "Does not compile ignored files": function() {
-      assert.isFalse(pathModule.existsSync(app.fullPath('public/ignore.css')));
+      assert.isFalse(fs.existsSync(app.fullPath('public/ignore.css')));
     },
     
     "LESS @import works as expected": function() {

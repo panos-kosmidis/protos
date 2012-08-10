@@ -4,12 +4,13 @@
  * Stops the node inspector
  */
  
-var path = require('path'),
+var fs = require('fs'),
+    path = require('path'),
     child_process = require('child_process'),
     inspector = path.resolve(__dirname, '../node_modules/node-inspector/bin/inspector.js'),
     cmd;
 
-if (path.existsSync(inspector)) {
+if (fs.existsSync(inspector)) {
 
   child_process.exec('ps aux | grep node', function(err, stdout, stderr) {
     if (err) {

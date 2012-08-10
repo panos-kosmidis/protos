@@ -89,35 +89,35 @@ Created myapp1/app/views/test/test-index.mustache';
     },
     
     "Creates .mustache templates when specified": function() {
-      assert.isFalse(pathModule.existsSync('myapp1/app/views/main/main-index.html'));
-      assert.isTrue(pathModule.existsSync('myapp1/app/views/main/main-index.mustache'));
-      assert.isTrue(pathModule.existsSync('myapp1/app/views/test/test-index.mustache'));
+      assert.isFalse(fs.existsSync('myapp1/app/views/main/main-index.html'));
+      assert.isTrue(fs.existsSync('myapp1/app/views/main/main-index.mustache'));
+      assert.isTrue(fs.existsSync('myapp1/app/views/test/test-index.mustache'));
     },
     
     "Downloads assets & libraries": function() {
-      assert.isTrue(pathModule.existsSync('myapp/public/js/jquery-1.7.2.min.js'));
-      assert.isTrue(pathModule.existsSync('myapp/public/js/prototype.js'));
-      assert.isTrue(pathModule.existsSync('myapp/public/css/bootstrap/css/bootstrap-responsive.css'));
+      assert.isTrue(fs.existsSync('myapp/public/js/jquery-1.7.2.min.js'));
+      assert.isTrue(fs.existsSync('myapp/public/js/prototype.js'));
+      assert.isTrue(fs.existsSync('myapp/public/css/bootstrap/css/bootstrap-responsive.css'));
     },
     
     "Creates models": function() {
-      assert.isTrue(pathModule.existsSync('myapp/app/models/posts.js'));
-      assert.isTrue(pathModule.existsSync('myapp/app/models/comments.js'));
+      assert.isTrue(fs.existsSync('myapp/app/models/posts.js'));
+      assert.isTrue(fs.existsSync('myapp/app/models/comments.js'));
     },
     
     "Creates controllers": function() {
-      assert.isTrue(pathModule.existsSync('myapp/app/controllers/admin.js'));
-      assert.isTrue(pathModule.existsSync('myapp/app/controllers/dashboard.js'));
+      assert.isTrue(fs.existsSync('myapp/app/controllers/admin.js'));
+      assert.isTrue(fs.existsSync('myapp/app/controllers/dashboard.js'));
     },
     
     "Creates helpers": function() {
-      assert.isTrue(pathModule.existsSync('myapp/app/helpers/admin.js'));
-      assert.isTrue(pathModule.existsSync('myapp/app/helpers/dashboard.js'));
+      assert.isTrue(fs.existsSync('myapp/app/helpers/admin.js'));
+      assert.isTrue(fs.existsSync('myapp/app/helpers/dashboard.js'));
     },
     
     "Creates views": function() {
-      assert.isTrue(pathModule.existsSync('myapp/app/views/admin/admin-index.html'));
-      assert.isTrue(pathModule.existsSync('myapp/app/views/dashboard/dashboard-index.html'));
+      assert.isTrue(fs.existsSync('myapp/app/views/admin/admin-index.html'));
+      assert.isTrue(fs.existsSync('myapp/app/views/dashboard/dashboard-index.html'));
     }
     
   }
@@ -148,12 +148,12 @@ Created myapp1/app/helpers/blog.js\n» Created myapp1/app/helpers/admin.js\n» \
 Created myapp1/app/views/blog/blog-index.html\n» Created myapp1/app/views/admin/admin-index.html';
 
       assert.equal(r1, expected);
-      assert.isTrue(pathModule.existsSync('app/controllers/blog.js'));
-      assert.isTrue(pathModule.existsSync('app/controllers/admin.js'));
-      assert.isTrue(pathModule.existsSync('app/helpers/blog.js'));
-      assert.isTrue(pathModule.existsSync('app/helpers/admin.js'));
-      assert.isTrue(pathModule.existsSync('app/views/blog/blog-index.html'));
-      assert.isTrue(pathModule.existsSync('app/views/admin/admin-index.html'));
+      assert.isTrue(fs.existsSync('app/controllers/blog.js'));
+      assert.isTrue(fs.existsSync('app/controllers/admin.js'));
+      assert.isTrue(fs.existsSync('app/helpers/blog.js'));
+      assert.isTrue(fs.existsSync('app/helpers/admin.js'));
+      assert.isTrue(fs.existsSync('app/views/blog/blog-index.html'));
+      assert.isTrue(fs.existsSync('app/views/admin/admin-index.html'));
       
     },
     
@@ -162,9 +162,9 @@ Created myapp1/app/views/blog/blog-index.html\n» Created myapp1/app/views/admin
       var expected = '» Created myapp1/app/controllers/cool.js\n» Created myapp1/app/views/cool/cool-index.html';
       
       assert.equal(r1, expected);
-      assert.isTrue(pathModule.existsSync('app/controllers/cool.js'));
-      assert.isFalse(pathModule.existsSync('app/helpers/cool.js'));
-      assert.isTrue(pathModule.existsSync('app/views/cool/cool-index.html'));
+      assert.isTrue(fs.existsSync('app/controllers/cool.js'));
+      assert.isFalse(fs.existsSync('app/helpers/cool.js'));
+      assert.isTrue(fs.existsSync('app/views/cool/cool-index.html'));
       
     }
     
@@ -191,8 +191,8 @@ Created myapp1/app/views/blog/blog-index.html\n» Created myapp1/app/views/admin
         var expected =  '» Created myapp1/app/models/posts.js\n» Created myapp1/app/models/comments.js';
 
         assert.equal(r1, expected);
-        assert.isTrue(pathModule.existsSync('app/models/posts.js'));
-        assert.isTrue(pathModule.existsSync('app/models/comments.js'));
+        assert.isTrue(fs.existsSync('app/models/posts.js'));
+        assert.isTrue(fs.existsSync('app/models/comments.js'));
 
       }
 
@@ -219,8 +219,8 @@ Created myapp1/app/views/blog/blog-index.html\n» Created myapp1/app/views/admin
       var expected =  '» Created myapp1/app/helpers/helper1.js\n» Created myapp1/app/helpers/helper2.js';
 
       assert.equal(r1, expected);
-      assert.isTrue(pathModule.existsSync('app/helpers/helper1.js'));
-      assert.isTrue(pathModule.existsSync('app/helpers/helper2.js'));
+      assert.isTrue(fs.existsSync('app/helpers/helper1.js'));
+      assert.isTrue(fs.existsSync('app/helpers/helper2.js'));
 
     }
 
@@ -249,9 +249,9 @@ Created myapp1/app/views/blog/blog-index.html\n» Created myapp1/app/views/admin
 Created myapp1/app/views/admin/admin-settings.html';
 
       assert.equal(r1, expected);
-      assert.isTrue(pathModule.existsSync('app/views/main/main-info.html'));
-      assert.isTrue(pathModule.existsSync('app/views/blog/blog-post.html'));
-      assert.isTrue(pathModule.existsSync('app/views/admin/admin-settings.html'));
+      assert.isTrue(fs.existsSync('app/views/main/main-info.html'));
+      assert.isTrue(fs.existsSync('app/views/blog/blog-post.html'));
+      assert.isTrue(fs.existsSync('app/views/admin/admin-settings.html'));
     },
     
     "Uses custom extensions when using --ext": function(results) {
@@ -260,9 +260,9 @@ Created myapp1/app/views/admin/admin-settings.html';
 Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admin/admin-m3.eco.html';
 
       assert.equal(r2, expected);
-      assert.isTrue(pathModule.existsSync('app/views/main/main-m1.eco.html'));
-      assert.isTrue(pathModule.existsSync('app/views/blog/blog-m2.eco.html'));
-      assert.isTrue(pathModule.existsSync('app/views/admin/admin-m3.eco.html'));
+      assert.isTrue(fs.existsSync('app/views/main/main-m1.eco.html'));
+      assert.isTrue(fs.existsSync('app/views/blog/blog-m2.eco.html'));
+      assert.isTrue(fs.existsSync('app/views/admin/admin-m3.eco.html'));
     }
 
   }
@@ -289,8 +289,8 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
         var expected =  '» Created myapp1/app/views/blog/_post.html\n» Created myapp1/app/views/admin/_widget.html';
 
         assert.equal(r1, expected);
-        assert.isTrue(pathModule.existsSync('app/views/blog/_post.html'));
-        assert.isTrue(pathModule.existsSync('app/views/admin/_widget.html'));
+        assert.isTrue(fs.existsSync('app/views/blog/_post.html'));
+        assert.isTrue(fs.existsSync('app/views/admin/_widget.html'));
       },
 
       "Uses custom extensions when using --ext": function(results) {
@@ -298,8 +298,8 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
         var expected =  '» Created myapp1/app/views/blog/_post.coffee\n» Created myapp1/app/views/admin/_widget.coffee';
 
         assert.equal(r2, expected);
-        assert.isTrue(pathModule.existsSync('app/views/blog/_post.coffee'));
-        assert.isTrue(pathModule.existsSync('app/views/admin/_widget.coffee'));
+        assert.isTrue(fs.existsSync('app/views/blog/_post.coffee'));
+        assert.isTrue(fs.existsSync('app/views/admin/_widget.coffee'));
       }
 
     }
@@ -325,8 +325,8 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
       var r1 = results[0];
       var expected = '» Created myapp1/app/views/__static/hello.html\n» Created myapp1/app/views/__static/world.html';
       assert.equal(r1, expected);
-      assert.isTrue(pathModule.existsSync('app/views/__static/hello.html'));
-      assert.isTrue(pathModule.existsSync('app/views/__static/world.html'));
+      assert.isTrue(fs.existsSync('app/views/__static/hello.html'));
+      assert.isTrue(fs.existsSync('app/views/__static/world.html'));
     },
 
     "Uses custom extensions when using --ext": function(results) {
@@ -334,8 +334,8 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
       var expected = '» Created myapp1/app/views/__static/about.jade\n» Created myapp1/app/views/__static/contact.jade';
       
       assert.equal(r2, expected);
-      assert.isTrue(pathModule.existsSync('app/views/__static/about.jade'));
-      assert.isTrue(pathModule.existsSync('app/views/__static/contact.jade'));
+      assert.isTrue(fs.existsSync('app/views/__static/about.jade'));
+      assert.isTrue(fs.existsSync('app/views/__static/contact.jade'));
     }
 
   }
@@ -360,8 +360,8 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
       var r1 = results[0];
       var expected = '» Downloading Skeleton Mobile-Friendly Responsive Framework\n» Downloading Ember.js JavaScript Framework';
       assert.equal(r1, expected);
-      assert.isTrue(pathModule.existsSync('public/js/ember-0.9.7.1.min.js'));
-      assert.isTrue(pathModule.existsSync('public/css/skeleton'));
+      assert.isTrue(fs.existsSync('public/js/ember-0.9.7.1.min.js'));
+      assert.isTrue(fs.existsSync('public/css/skeleton'));
     }
 
   }

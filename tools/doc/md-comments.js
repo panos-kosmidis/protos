@@ -45,7 +45,7 @@ if (process.argv.length != 3) console.exit("Usage: %s file.js", pathModule.basen
 var file = process.argv[2];
 
 // Check if file exists
-if (!pathModule.existsSync(file)) console.exit("File does not exist: %s", file);
+if (!fs.existsSync(file)) console.exit("File does not exist: %s", file);
 
 var source = fs.readFileSync(file).toString('utf8');
 var startIndexes = calcIndexes(source);
