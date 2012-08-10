@@ -1,11 +1,7 @@
 {
-  
-  // http://www.jshint.com/options/
-  
+
   "predef": ["protos", "app"],
-  
-  // Enforcing
-  
+
   "bitwise": true,
   "curly": false,
   "eqeqeq": false,
@@ -20,9 +16,7 @@
   "regexp": false,
   "undef": true,
   "trailing": false,
-  
-  // Relaxing
-  
+
   "asi": true,
   "eqnull": true,
   "es5": true,
@@ -35,14 +29,10 @@
   "expr": true,
   "loopfunc": true,
   "proto": true,
-  
-  // Environments
-  
+
   "devel": true,
   "node": true,
-  
-  // Legacy
-  
+
   "passfail": false
-  
+
 }
