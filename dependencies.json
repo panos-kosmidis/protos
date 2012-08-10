@@ -37,27 +37,27 @@
   		"marked"            : ">= 0.2.5"
   	},
   	"session": {
-  		"node-uuid"         : "= 1.3.3"
+  		"node-uuid"         : ">= 1.3.3"
   	},
   	"socket_io": {
-  		"socket.io"         : "= 0.8.7"
+  		"socket.io"         : ">= 0.9.9"
   	}
   },
   "engines": {
-      "coffeekup"         : "= 0.3.1",
-      "dot"               : "= 0.1.7",
-      "eco"               : "= 1.1.0-rc-3",
-      "hamljs"            : "= 0.6.0",
-      "haml-coffee"       : "= 0.6.2",
-      "handlebars"        : "= 1.0.5beta",
-      "hogan.js"          : "= 2.0.0",
-      "jade"              : "= 0.26.0",
-      "jazz"              : "= 0.0.18",
-      "jqtpl"             : "= 1.1.0",
-      "jshtml"            : "= 0.2.2",
+      "coffeekup"         : ">= 0.3.1",
+      "dot"               : ">= 0.2.6",
+      "eco"               : ">= 1.1.0-rc-3",
+      "hamljs"            : ">= 0.6.0",
+      "haml-coffee"       : ">= 1.4.1",
+      "handlebars"        : ">= 1.0.6-2",
+      "hogan.js"          : ">= 2.0.0",
+      "jade"              : ">= 0.27.2",
+      "jazz"              : ">= 0.0.18",
+      "jqtpl"             : ">= 1.1.0",
+      "jshtml"            : ">= 0.2.3",
       "kernel"            : "= 0.0.2",
-      "liquor"            : "= 0.0.4",
-      "swig"              : "= 0.11.2",
-      "whiskers"          : "= 0.1.6"
+      "liquor"            : ">= 0.0.4",
+      "swig"              : ">= 0.12.0",
+      "whiskers"          : ">= 0.2.3"
   }
 }
