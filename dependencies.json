@@ -10,7 +10,7 @@
     "hiredis"             : "= 0.1.14"
   },
   "inspector": {
-    "node-inspector"      : "= 0.1.10"
+    "node-inspector"      : "= 0.2.0beta3"
   },
   "middleware": {
   	"asset_compiler": {
