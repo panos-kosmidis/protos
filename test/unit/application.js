@@ -27,7 +27,7 @@ vows.describe('lib/application.js').addBatch({
   'Integrity Checks': {
 
     'Sets domain': function() {
-      assert.equal(app.domain, 'localhost');
+      assert.equal(app.hostname, 'localhost');
     },
 
     'Sets application path': function() {
@@ -114,12 +114,12 @@ vows.describe('lib/application.js').addBatch({
   'Application::url': {
 
     'Returns proper url when no args provided': function() {
-      assert.equal(app.url(), util.format('http://%s:%s/', app.domain, protos.config.server.listenPort));
+      assert.equal(app.url(), util.format('http://%s:%s/', app.hostname, protos.config.server.listenPort));
     },
 
     'Returns proper url when run with path argument': function() {
       var q = '/item?id=25';
-      assert.equal(app.url(q), util.format('http://%s:%s%s', app.domain, protos.config.server.listenPort, q));
+      assert.equal(app.url(q), util.format('http://%s:%s%s', app.hostname, protos.config.server.listenPort, q));
     }
 
   },

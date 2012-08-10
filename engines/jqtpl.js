@@ -31,7 +31,7 @@ JqueryTemplate.prototype.render = function(data, vars, relPath) {
   data = this.app.applyFilters('jqtpl_template', data);
   var tpl, tplID, func = this.getCachedFunction(arguments);
   if (func === null) {
-    tplID = util.format('%s:%s', this.app.domain, relPath);
+    tplID = util.format('%s:%s', this.app.hostname, relPath);
     jq.template(tplID, data);
     func = function(locals) {
       return jq.tmpl(tplID, locals);

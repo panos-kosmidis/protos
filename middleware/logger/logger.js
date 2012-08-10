@@ -96,7 +96,7 @@ function Logger(config, middleware) {
   
   // Define access log data in same closure (faster access)
   var accessLogConsole,
-      domain = app.domain,
+      domain = app.hostname,
       appDate = app.date;
   
   // Middleware config (levels are overridden)
@@ -150,12 +150,12 @@ Logger.prototype.enableAccessLog = function() {
 Logger.prototype.logFormats = {
   default: function(req, res, app) {
     var ms = Date.now() - req.startTime;
-    return util.format('%s (%s) [%s] %s %s %s (%s)', app.domain, app.date(), req.socket.remoteAddress, req.method, 
+    return util.format('%s (%s) [%s] %s %s %s (%s)', app.hostname, app.date(), req.socket.remoteAddress, req.method, 
     req.url, res.statusCode, this.timeDelta(ms));
   },
   detailed: function(req, res, app) {
     var ms = Date.now() - req.startTime;
-    return util.format('%s (%s) [%s] %s %s %s (%s) - %s', app.domain, app.date(), req.socket.remoteAddress, req.method, 
+    return util.format('%s (%s) [%s] %s %s %s (%s) - %s', app.hostname, app.date(), req.socket.remoteAddress, req.method, 
     req.url, res.statusCode, this.timeDelta(ms), req.headers['user-agent']);
   }
 }
