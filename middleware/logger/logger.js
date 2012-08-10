@@ -54,12 +54,6 @@
       
     You can hook your own functions to manage the logs sent to each level.
     
-  » Log Locations:
-  
-      Info log:   skeleton/log/info.log
-     Error log:   skeleton/log/error.log
-    Access log:   skeleton/log/access.log
-    
     By default, the path is relative to the application's log/ directory. You can also specify absolute paths for
     logs using the file transport.
     
