@@ -203,6 +203,7 @@ Session.prototype.loadSession = function(req, res, callback) {
   if (sessId) { // A cookie with sessId exists
 
     // Get the session data from storage
+    
     this.storage.getHash(sessId, function(err, data) {
       var expires, guest, hashes, multi, newHash, newSess, ua_md5, userAgent;
 
@@ -210,7 +211,8 @@ Session.prototype.loadSession = function(req, res, callback) {
       if (err) { app.serverError(res, err); return;}
 
       // If it's not a user session, it's a guest session
-      guest = (data.user == null);
+      
+      guest = (data && data.user == null);
 
       if (_.isEmpty(data)) { // If data is empty
 
