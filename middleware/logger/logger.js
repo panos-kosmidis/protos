@@ -188,8 +188,11 @@ function createLoggingLevels(config) {
       
       level = level.replace(lvlRegex, '');
       this.transports[level] = {};
+
       for (var transport in transports) {
         
+        if (!transports[transport]) continue; // Ignore if transport's config is false
+
         if (transport in logTransports) {
           var Ctor = logTransports[transport];
           
