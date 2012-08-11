@@ -84,7 +84,7 @@ their dependencies, see the [dependencies.json](https://github.com/derdesign/pro
 
 The Application's functionality can be extended with the following (ready to use) components:
 
-- [asset_compiler](/middleware#asset_compiler) &nbsp; *Compiles LESS, Stylus and CoffeeScript, Supports Watch/Compress/Minify.*
+- [asset_compiler](http://derdesign.github.com/protos/middleware#asset_compiler) &nbsp; *Compiles LESS, Stylus and CoffeeScript, Supports Watch/Compress/Minify.*
 - [aws](http://derdesign.github.com/protos/middleware#aws) &nbsp; *Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)*
 - [bcrypt](http://derdesign.github.com/protos/middleware#bcrypt) &nbsp; *Blowfish encryption support*
 - [body_parser](http://derdesign.github.com/protos/middleware#body_parser) &nbsp; *Parse request bodies and file uploads in POST/PUT requests*
