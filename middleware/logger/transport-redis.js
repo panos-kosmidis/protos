@@ -11,11 +11,18 @@ try {
   return;
 }    
 
-function RedisTransport(evt, config) {
+function RedisTransport(evt, config, level, noAttach) {
   
   var self = this;
   
-  if (config === true) config = {};
+  this.className = this.constructor.name;
+  
+  if (typeof config == 'boolean') {
+    if (config) config = {};
+    else return;
+  } else if (!(config instanceof Object)) {
+    return;
+  }
   
   config = protos.extend({
     host: 'localhost',
@@ -26,49 +33,63 @@ function RedisTransport(evt, config) {
     logLimit: 3
   }, config);
   
-  Object.defineProperty(this, 'config', {
-    value: config,
-    writable: true,
-    enumerable: false,
-    configurable: false
-  });
+  // Set config
+  this.config = config;
   
   // Log messages queue
   var queue = [];
   
+  // Set ready state
+  var ready = false;
+  
   // Log messages queue: handle logs while acquiring redis client
-  var preCallback = function(log) {
-    if (self.client) postCallback(log);
-    else queue.push(log);
+  var preCallback = function(log) { // log, data, native
+    if (self.client) postCallback.apply(null, arguments);
+    else queue.push(arguments);
   }
   
   // Callback to run when client is ready
-  var postCallback = function(log) {
-    self.pushLog(log);
+  var postCallback = function() {  // log, data, native
+    self.pushLog.apply(self, arguments);
   }
   
-  // Temporary logging event, until client is ready
-  app.on(evt, preCallback);
+  // Set write method
+  this.write = function() { // log, data, native
+    ready ? postCallback.apply(null, arguments) : preCallback.apply(null, arguments);
+  }
   
   initRedis.call(this, config, function(err) {
-    if (err) app.log(err);
-    else {
+    if (err) {
       
-      // Remove log queue listener
-      app.removeListener(evt, preCallback);
-
-      // Hook new listen event
-      app.on(evt, postCallback);
-
+      app.log(err);
+      
+    } else {
+      
+      // Set ready
+      ready = true;
+      
       // Flush log queue
-      queue.forEach(postCallback);
-      queue = [];
+      queue.forEach(function(args) {
+        postCallback.apply(null, args);
+      });
       
+      queue = [];
     }
   });
+  
+  if (!noAttach) app.on(evt, this.write);
 
-  this.className = this.constructor.name;
+}
 
+/**
+  Write interface
+  
+  @param {string} log
+  @public
+ */
+ 
+RedisTransport.prototype.write = function(log) {
+  // Interface
 }
 
 /**

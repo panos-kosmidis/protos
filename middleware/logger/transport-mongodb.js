@@ -15,73 +15,94 @@ var Db = mongodb.Db,
     ObjectID = mongodb.ObjectID,
     Collection = mongodb.Collection;
 
-function MongoTransport(evt, config) {
+function MongoTransport(evt, config, level, noAttach) {
   
   var self = this;
   
-  // Accept mongodb: true for default settings
-  if (config === true) config = {};
+  this.className = this.constructor.name;
+  
+  if (typeof config == 'boolean') {
+    if (config) config = {};
+    else return;
+  } else if (!(config instanceof Object)) {
+    return;
+  }
   
   // Transport configuration
   config = protos.extend({
     host: 'localhost',
     port: 27017,
-    database: 'myapp',
+    database: 'test',
     collection: evt,
     logSize: 10*1024*1024,
     logLimit: null
   }, config);
   
-  Object.defineProperty(this, 'config', {
-    value: config,
-    writable: true,
-    enumerable: true,
-    configurable: false
-  });
+  // Set config
+  this.config = config;
   
   // Log messages queue: handle logs while acquiring collection instance
   var queue = [];
 
-  // Callback to run when collection is ready
-  var preCallback = function(log) {
-    if (self.collection) postCallback(log);
-    else queue.push(log);
+  // Set ready state
+  var ready = false;
+  
+  // Queues logs before client is ready
+  var preCallback = function() { // log, data, native
+    if (self.collection) postCallback.apply(null, arguments);
+    else queue.push(arguments);
   }
   
-  // Callback to hook when collection is ready
-  var postCallback = function(log) {
-    self.pushLog(log);
+  // Runs after client is ready
+  var postCallback = function() { // log, data, native
+    self.pushLog.apply(self, arguments);
   }
   
-  // Temporary logging event, until collection is ready
-  app.on(evt, preCallback);
+  // Set write method
+  this.write = function() { // log, data, native
+    ready ? postCallback.apply(null, arguments) : preCallback.apply(null, arguments);
+  }
   
   initMongo.call(this, config, function() {
     
-    // Remove log queue listener
-    app.removeListener(evt, preCallback);
-    
-    // Hook new listen event
-    app.on(evt, postCallback);
-    
+    // Set ready
+    ready = true;
+
     // Flush log queue
-    queue.forEach(postCallback);
+    queue.forEach(function(args) {
+      postCallback.apply(null, args);
+    });
+    
     queue = [];
     
   });
   
-  this.className = this.constructor.name;
+  if (!noAttach) app.on(evt, this.write);
   
+}
+
+/**
+  Write interface
+  
+  @param {string} log
+  @public
+ */
+ 
+MongoTransport.prototype.write = function(log) {
+  // Interface
 }
 
 /**
   Pushes a log into MongoDB
   
   @param {string} log
+  @param {array} log data
+  @param {object} native data
   @private
  */
 
-MongoTransport.prototype.pushLog = function(log) {
+MongoTransport.prototype.pushLog = function(log, data, native) {
+  if (native && native instanceof Object) log = native;
   this.collection.insert({log: log}, logHandler);
 }
 

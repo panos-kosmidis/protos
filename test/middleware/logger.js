@@ -32,6 +32,14 @@ vows.describe('Logger (middleware)').addBatch({
           sto = app.config.storages;
       
       fs.writeFileSync(app.fullPath('/log/test.log'), '', 'utf-8');
+      fs.writeFileSync(app.fullPath('/log/json.log'), '', 'utf-8');
+      
+      // Remove date from json log data, test filter
+      app.addFilter('test_log_json', function(log) {
+        log.pid = process.pid;
+        delete log.date;
+        return log;
+      });
       
       app.use('logger', {
         accessLogFile: 'access.log',
@@ -41,6 +49,17 @@ vows.describe('Logger (middleware)').addBatch({
         testLevel: {
           file: 'test.log',
           console: true,
+          json: {
+            stdout: true,
+            filename: 'json.log',
+            transports: {
+              mongodb: {
+                host: db.mongodb.host,
+                port: db.mongodb.port,
+                database: db.mongodb.database
+              }
+            }
+          },
           mongodb: {
             host: db.mongodb.host,
             port: db.mongodb.port,
@@ -54,19 +73,23 @@ vows.describe('Logger (middleware)').addBatch({
         }
       });
       
+      app.globals.nativeLog = {msg: "This log should be stored as native JSON", date: new Date().toGMTString()};
+      
       app.testLog('This event should be logged!');
       
-      console.log('');
-      
       setTimeout(function() {
+        
+        console.log('');
         
         var results = {};
         
         var collection = app.logger.transports.test.mongodb.collection;
+        
         collection.find({}, function(err, cursor) {
-          var docs = [];
           cursor.toArray(function(err, docs) {
+            
             var doc = docs.pop();
+
             results.mongodb = (docs.length === 0 && doc.log === logMessage);
             
             var redis = app.logger.transports.test.redis.client;
@@ -79,7 +102,36 @@ vows.describe('Logger (middleware)').addBatch({
               
               results.file = fs.readFileSync(app.fullPath('/log/test.log', 'utf-8')).toString().trim() === logMessage;
               
-              promise.emit('success', results);
+              var expectedJson = '{"level":"test","host":"localhost","msg":"This event should be logged!","pid":' + process.pid + '}';
+              var obtainedJson = fs.readFileSync(app.fullPath('/log/json.log', 'utf-8')).toString().trim();
+              
+              results.json = expectedJson == obtainedJson;
+              
+              // Test native logs
+              app.logger.transports.test.mongodb.write(app.globals.nativeLog);
+              
+              collection = app.logger.transports.test.mongodb.collection;
+              
+              collection.find({}, function(err, cursor) {
+                cursor.toArray(function(err, docs) {
+                  var doc = docs.pop();
+                  results.native = (doc.log.msg == app.globals.nativeLog.msg && doc.log.date == app.globals.nativeLog.date);
+                  
+                  // Test log forwarding
+                  
+                  app.logger.transports.test.json.otherTransports.mongodb.collection.find({}, function(err, cursor) {
+                    cursor.toArray(function(err, docs) {
+                      var doc = docs.pop();
+                      
+                      results.forwarding = (doc.log === logMessage);
+                      
+                      promise.emit('success', results);
+                      
+                    });
+                  });
+                  
+                });
+              });
               
             });
             
@@ -91,16 +143,28 @@ vows.describe('Logger (middleware)').addBatch({
       return promise;
     },
     
+    "Stores logs using the JSON Transport": function(results) {
+      assert.isTrue(results.json);
+    },
+    
     "Stores logs using the File Transport": function(results) {
       assert.isTrue(results.file);
+    },
+    
+    "Stores logs using the Redis Transport": function(results) {
+      assert.isTrue(results.redis);
     },
     
     "Stores logs using the MongoDB Transport": function(results) {
       assert.isTrue(results.mongodb);
     },
     
-    "Stores logs using the Redis Transport": function(results) {
-      assert.isTrue(results.redis);
+    "MongoDB Transport stores native JSON logs": function(results) {
+      assert.isTrue(results.native);
+    },
+    
+    "Successfully forwards logs to other Transports": function(results) {
+      assert.isTrue(results.forwarding);
     }
     
   }

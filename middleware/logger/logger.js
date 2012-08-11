@@ -84,12 +84,6 @@ function Logger(config, middleware) {
   // Attach to app singleton
   app[middleware] = this;
   
-  // Expose transport constructors
-  for (var t in logTransports) {
-    t = logTransports[t];
-    this[t.name] = t;
-  }
-  
   // Define access log data in same closure (faster access)
   var accessLogConsole,
       domain = app.hostname,
@@ -186,6 +180,15 @@ Logger.prototype.getFileStream = function(file) {
   return stream;
 }
 
+function setAdditionalTransports(evt, level) {
+  var Ctor, t, transports = {};
+  for (t in this.config.transports) {
+    Ctor = logTransports[t];
+    transports[t] = new Ctor(evt, this.config.transports[t], level);
+  }
+  this.otherTransports = transports;
+}
+
 function createLoggingLevels(config) {
   /*jshint immed: false */
   var level, options, transports, lvlRegex = /Level$/;
@@ -204,15 +207,26 @@ function createLoggingLevels(config) {
         if (!transports[transport]) continue; // Ignore if transport's config is false
 
         if (transport in logTransports) {
-          var Ctor = logTransports[transport];
+          var instance, evt = level + '_log',
+              Ctor = logTransports[transport];
           
-          this.transports[level][transport] = new Ctor(level+'_log', transports[transport], level);
+          instance = this.transports[level][transport] = new Ctor(evt, transports[transport], level);
+          instance.otherTransports = {};
+          
+          // Set additional transports
+          if (instance.config.transports) {
+            if (transport == 'json') {
+              setAdditionalTransports.call(instance, evt, level, true); // noAttach = true
+            } else {
+              setAdditionalTransports.call(instance, evt, level);
+            }
+          }
           
           // Extend application with {level}Log method
           
           (function(app, format) {
             
-            var context = {level: level, event: level+'_log', app: app}; // Reuse object
+            var context = {level: level, event: evt, app: app}; // Reuse object
             
             Application.prototype[inflect.camelize(level, true)+'Log'] = function() {
               app.log.apply(context, arguments);
