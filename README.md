@@ -85,21 +85,21 @@ their dependencies, see the [dependencies.json](https://github.com/derdesign/pro
 The Application's functionality can be extended with the following (ready to use) components:
 
 - [asset_compiler](/middleware#asset_compiler) &nbsp; *Compiles LESS, Stylus and CoffeeScript, Supports Watch/Compress/Minify.*
-- [aws](http://protos.org/middleware#aws) &nbsp; *Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)*
-- [bcrypt](http://protos.org/middleware#bcrypt) &nbsp; *Blowfish encryption support*
-- [body_parser](http://protos.org/middleware#body_parser) &nbsp; *Parse request bodies and file uploads in POST/PUT requests*
-- [cookie_parser](http://protos.org/middleware#cookie_parser) &nbsp; *Parse cookie headers, Integrates with Sessions & Auth*
-- [csrf](http://protos.org/middleware#csrf) &nbsp; *Cross-Site Request Forgery protection, integrates with Controller Validation*
-- [logger](http://protos.org/middleware#logger) &nbsp; *Application/Request logger, supporting several transports such as MongoDB, Redis, File &amp; console*
-- [mailer](http://protos.org/middleware#mailer) &nbsp; *Send email using SMTP, Amazon SES or Sendmail*
-- [ markdown ](http://protos.org/middleware#markdown) &nbsp; *Parse markdown syntax*
-- [production_url](http://protos.org/middleware#production_url) &nbsp; *Remove port number from application-generated URLs*
-- [redirect](http://protos.org/middleware#redirect) &nbsp; *Quick redirection support (useful for "maintenance mode")*
-- [response_cache](http://protos.org/middleware#response_cache) &nbsp; *Response caching into supported Storages (Redis, MongoDB, etc)*
-- [session](http://protos.org/middleware#session) &nbsp; *Full session support with Storages, guest sessions and regeneration*
-- [shortcode](http://protos.org/middleware#shortcode) &nbsp; *Allows custom content to be inserted into views using shortcodes*
-- [socket_io](http://protos.org/middleware#socket_io) &nbsp; *Socket.io Integration with applications*
-- [static_server](http://protos.org/middleware#static_server) &nbsp; *Complete Static Server solution, supporting Ranges, Conditional GETs, etc.*
+- [aws](http://derdesign.github.com/protos/middleware#aws) &nbsp; *Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)*
+- [bcrypt](http://derdesign.github.com/protos/middleware#bcrypt) &nbsp; *Blowfish encryption support*
+- [body_parser](http://derdesign.github.com/protos/middleware#body_parser) &nbsp; *Parse request bodies and file uploads in POST/PUT requests*
+- [cookie_parser](http://derdesign.github.com/protos/middleware#cookie_parser) &nbsp; *Parse cookie headers, Integrates with Sessions & Auth*
+- [csrf](http://derdesign.github.com/protos/middleware#csrf) &nbsp; *Cross-Site Request Forgery protection, integrates with Controller Validation*
+- [logger](http://derdesign.github.com/protos/middleware#logger) &nbsp; *Application/Request logger, supporting several transports such as MongoDB, Redis, File &amp; console*
+- [mailer](http://derdesign.github.com/protos/middleware#mailer) &nbsp; *Send email using SMTP, Amazon SES or Sendmail*
+- [ markdown ](http://derdesign.github.com/protos/middleware#markdown) &nbsp; *Parse markdown syntax*
+- [production_url](http://derdesign.github.com/protos/middleware#production_url) &nbsp; *Remove port number from application-generated URLs*
+- [redirect](http://derdesign.github.com/protos/middleware#redirect) &nbsp; *Quick redirection support (useful for "maintenance mode")*
+- [response_cache](http://derdesign.github.com/protos/middleware#response_cache) &nbsp; *Response caching into supported Storages (Redis, MongoDB, etc)*
+- [session](http://derdesign.github.com/protos/middleware#session) &nbsp; *Full session support with Storages, guest sessions and regeneration*
+- [shortcode](http://derdesign.github.com/protos/middleware#shortcode) &nbsp; *Allows custom content to be inserted into views using shortcodes*
+- [socket_io](http://derdesign.github.com/protos/middleware#socket_io) &nbsp; *Socket.io Integration with applications*
+- [static_server](http://derdesign.github.com/protos/middleware#static_server) &nbsp; *Complete Static Server solution, supporting Ranges, Conditional GETs, etc.*
 
 To install the middleware dependencies, use the `protos install <middleware>` command. For a full list of components and
 their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
