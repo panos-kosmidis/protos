@@ -63,6 +63,7 @@ var app = protos.app,
     fs = require('fs'),
     http = require('http'),
     util = require('util'),
+    pathModule = require('path'),
     inflect = protos.require('./lib/support/inflect.js');
 
 var Application = app.constructor;
@@ -74,7 +75,8 @@ var logTransports = {
   console: require('./transport-console.js'),
   file: require('./transport-file.js'),
   mongodb: require('./transport-mongodb.js'),
-  redis: require('./transport-redis.js')
+  redis: require('./transport-redis.js'),
+  json: require('./transport-json.js')
 }
 
 function Logger(config, middleware) {
@@ -176,6 +178,14 @@ Logger.prototype.timeDelta = function(ms) {
   }
 }
 
+Logger.prototype.getFileStream = function(file) {
+  var path, stream;
+  file = file.trim();
+  path = (file.charAt(0) == '/') ? pathModule.resolve(file) : app.fullPath('log/' + file);
+  stream = fs.createWriteStream(path, {flags: 'a'});
+  return stream;
+}
+
 function createLoggingLevels(config) {
   /*jshint immed: false */
   var level, options, transports, lvlRegex = /Level$/;
@@ -196,7 +206,7 @@ function createLoggingLevels(config) {
         if (transport in logTransports) {
           var Ctor = logTransports[transport];
           
-          this.transports[level][transport] = new Ctor(level+'_log', transports[transport]);
+          this.transports[level][transport] = new Ctor(level+'_log', transports[transport], level);
           
           // Extend application with {level}Log method
           

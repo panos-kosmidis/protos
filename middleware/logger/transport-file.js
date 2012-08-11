@@ -1,14 +1,12 @@
 
 /* Logger » File Transport */
 
-var app = protos.app,
-    fs = require('fs'),
-    pathModule = require('path');
+var app = protos.app;
 
 function FileTransport(evt, file) {
-  file = file.trim();
-  var path = (file.charAt(0) == '/') ? pathModule.resolve(file) : app.fullPath('log/' + file);
-  var stream = fs.createWriteStream(path, {flags: 'a'});
+  
+  // Get file stream
+  var stream = app.logger.getFileStream(file);
   
   // Write file on log event
   app.on(evt, function(log) {
