@@ -2,6 +2,7 @@
 var app =require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
+    fs = require('fs'),
     util = require('util'),
     http = require('http'),
     Multi = require('multi'),
@@ -176,6 +177,18 @@ vows.describe('lib/application.js').addBatch({
       protos.storages.redis = redisCtor; // restore redis constructor
     }
 
+  },
+  
+  'Application::mkdir': {
+    
+    'Successfully creates directories': function() {
+      var exists,p = 'tmp/' + process.pid;
+      app.mkdir(p);
+      exists = fs.existsSync(app.fullPath(p));
+      fs.rmdir(app.fullPath(p));
+      assert.isTrue(exists);
+    }
+    
   },
 
   'Application::addFilter': {
