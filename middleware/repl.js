@@ -89,12 +89,6 @@ function startServer(arg) {
   // Remove socket file before starting
   if (socketFile && fs.existsSync(socketFile)) fs.unlinkSync(socketFile);
 
-  var sandbox = (function() {
-    return function(cmd) {
-      return eval(cmd);
-    }
-  })();
-  
   this.server = net.createServer(function (socket) {
     
     if (connections === self.config.maxConnections)  {
