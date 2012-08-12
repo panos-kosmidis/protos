@@ -1,11 +1,10 @@
-# Protos [![Build Status](https://secure.travis-ci.org/derdesign/protos.png)](http://travis-ci.org/derdesign/protos)
+![Protos](https://raw.github.com/derdesign/protos-docs/master/public/images/logo.png)
 
-Protos is an open source Web Application Development framework, focused on high performance, integration, ease of 
-deployment, maintainability and security. Protos runs on UNIX-like systems such as **Linux** &amp; **Mac OSX**. Windows 
+[![Build Status](https://secure.travis-ci.org/derdesign/protos.png)](http://travis-ci.org/derdesign/protos)
+
+Protos is an open source Web Application Framework, focused on high performance, integration, ease of 
+deployment, maintainability and security. Runs on UNIX-like systems such as **Linux** &amp; **Mac OSX**. Windows 
 support might be added in the future.
-
-**Note**: _The framework is under moderate development and the API and internal methods/functionality may change. The documentation
-may also contain topics that have been removed, and may not contain all the features the framework provides._
 
 ## Features
 
@@ -73,7 +72,7 @@ Here's the Development Stack the framework provides, in a nutshell:
 - **Caching** &nbsp; _Use any Storage supported_
 - **Sessions** &nbsp; _Use any Storage supported_
 - **Response Caching** &nbsp; _Use any Storage supported_
-- **Logging** &nbsp; _[MongoDB](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-mongodb.js), 
+- **Logging** &nbsp; [MongoDB](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-mongodb.js), 
 [Redis](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js), [File](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js), 
 [Console](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js),
 [JSON](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js)
