@@ -21,6 +21,12 @@ app.on('access_log', function(log) {
   accessLogMessage = log;
 });
 
+app.on('nice_log', function(log) {
+  mutedLogs.push(log);
+});
+
+var mutedLogs = [];
+
 vows.describe('Logger (middleware)').addBatch({
   
   'Log Transports': {
@@ -45,11 +51,13 @@ vows.describe('Logger (middleware)').addBatch({
       app.use('logger', {
         accessLog: {
           format: 'default',
-          file: 'access.log'
+          file: 'access.log',
+          console: false
         },
         levels: {
           info: null,
           error: null,
+          nice: {console: true},
           test: {
             file: 'test.log',
             console: true,
@@ -81,6 +89,14 @@ vows.describe('Logger (middleware)').addBatch({
       app.globals.nativeLog = {msg: "This log should be stored as native JSON", date: new Date().toGMTString()};
       
       app.testLog('This event should be logged!');
+      
+      app.logger.mute('nice');
+      
+      app.niceLog('IF YOU SEE THIS, MUTED LOGS ARE NOT WORKING');
+      
+      app.logger.unmute('nice');
+      
+      app.niceLog('If you see this, then muted logs are working');
       
       setTimeout(function() {
         
@@ -171,7 +187,7 @@ vows.describe('Logger (middleware)').addBatch({
     
     "Successfully forwards logs to other Transports": function(results) {
       assert.isTrue(results.forwarding);
-    }
+    },
     
   }
   
@@ -210,6 +226,20 @@ vows.describe('Logger (middleware)').addBatch({
     
     "Successfully stores access logs": function(log) {
       assert.equal(log, accessLogMessage);
+    }
+    
+  }
+  
+}).addBatch({
+  
+  'Muted Logs': {
+    
+    'Successfully mutes/unmutes logs': function() {
+      var comp = '[nice] If you see this, then muted logs are working';
+      var log = mutedLogs.pop();
+      log = log.slice(log.length - comp.length);
+      assert.strictEqual(mutedLogs.length, 0); // There should only be 1 log, since the first one was muted
+      assert.strictEqual(log, comp);
     }
     
   }

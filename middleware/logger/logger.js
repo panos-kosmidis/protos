@@ -22,6 +22,8 @@ var app = protos.app,
     util = require('util'),
     pathModule = require('path'),
     inflect = protos.require('./lib/support/inflect.js');
+    
+var slice = Array.prototype.slice;
 
 var Application = app.constructor;
 
@@ -31,6 +33,9 @@ function Logger(config, middleware) {
   
   // Attach to app singleton
   app[middleware] = this;
+  
+  // Set muted logs
+  this.mutedLevels = {};
   
   // Define access log data in same closure (faster access)
   var accessLogConsole,
@@ -105,6 +110,38 @@ var accessLogFormats = {
 }
 
 /* Methods */
+
+Logger.prototype.mute = function() {
+  var args = slice.call(arguments, 0);
+  for (var level,transports,logCb,evt,t,i=0,len=args.length; i < len; i++) {
+    level = args[i];
+    evt = level + '_log';
+    logCb = getLogCallback(level);
+    this.mutedLevels[level] = app[logCb];
+    app[logCb] = mutedLogCallback;
+    transports = this.transports[level];
+    for (t in transports) {
+      app.removeListener(evt, transports[t].write);
+    }
+  }
+}
+
+Logger.prototype.unmute = function() {
+  var args = slice.call(arguments, 0);
+  for (var level,transports,logCb,evt,t,i=0,len=args.length; i < len; i++) {
+    level = args[i];
+    if (level in this.mutedLevels) {
+      evt = level + '_log';
+      logCb = getLogCallback(level);
+      app[logCb] = this.mutedLevels[level];
+      delete this.mutedLevels[level];
+      transports = this.transports[level];
+      for (t in transports) {
+        app.on(evt, transports[t].write);
+      }
+    }
+  }
+}
 
 Logger.prototype.enableAccessLog = function(config) {
   
@@ -188,6 +225,10 @@ Logger.prototype.getFileStream = function(file) {
 
 /* Private Functions */
 
+function mutedLogCallback() {
+  // Do nothing
+}
+
 function setAdditionalTransports(evt, level) {
   var Ctor, t, transports = {};
   for (t in this.config.transports) {
@@ -195,6 +236,10 @@ function setAdditionalTransports(evt, level) {
     transports[t] = new Ctor(evt, this.config.transports[t], level);
   }
   this.otherTransports = transports;
+}
+
+function getLogCallback(level) {
+  return inflect.camelize(level, true) + 'Log';
 }
 
 function createLoggingLevels(config) {
@@ -240,8 +285,9 @@ function createLoggingLevels(config) {
 
           var context = {level: level, event: evt, app: app}; // Reuse object
 
-          Application.prototype[inflect.camelize(level, true)+'Log'] = function() {
-            app.log.apply(context, arguments);
+          // Do not attach to prototype, attach to instance instead (it's faster)
+          app[getLogCallback(level)] = function() {
+            this.log.apply(context, arguments); // Using `this`, since the method is running on the app's context
           }
 
           }).call(this, app, util.format);
