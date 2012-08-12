@@ -52,9 +52,6 @@ You can set your own validation rules with ease on a per-model basis.
 The Models can relate with eaach other by using Relationships. These are used to connect models in specific ways, storing only the
 references to their related models. You can then retrieve the related models either individually, or in groups.
 
-Each relationship add a set predefined methods using a common convention, that help you maniuplate the relationships between
-the model objects you're working with.
-
 Model (and Relationships) database-agnostic, you can change the underlying database driver used by the model, and no changes are required. This
 means you can use a database backend for development, and another for production (just to give an example). No changes needed on deployment.
 
@@ -110,9 +107,6 @@ to the template and you're set. You don't need to install any npm dependencies.
 View Partials can be used across template engines. This means you can use Jade partials within Swig templates. Or CoffeeKup
 partials within EJS templates (and vice versa). There are a few exceptions with mustache engines (due to their *logicless*
 nature), such as Hogan and Handlebars.
-
-You are not limited by the default view extensions the framework provides. You can specify your own view extensions in the
-application's configuration.
 
 The following view engine components are provided by protos:
 
