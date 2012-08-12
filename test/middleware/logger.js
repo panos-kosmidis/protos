@@ -42,8 +42,10 @@ vows.describe('Logger (middleware)').addBatch({
       });
       
       app.use('logger', {
-        accessLogFile: 'access.log',
-        accessLogConsole: false,
+        accessLog: {
+          format: 'default',
+          file: 'access.log'
+        },
         infoLevel: null,
         errorLevel: null,
         testLevel: {
@@ -180,13 +182,9 @@ vows.describe('Logger (middleware)').addBatch({
       
       fs.writeFileSync(logFile, '', 'utf-8');
       
-      app.logger.config.accessLogConsole = true;
-      
       console.log('');
       
       app.curl('/', function(err, res) {
-        
-        app.logger.config.accessLogConsole = false;
         
         console.log('');
         

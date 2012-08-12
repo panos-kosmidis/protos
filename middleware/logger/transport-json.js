@@ -26,12 +26,16 @@ function JSONTransport(evt, config, level, noAttach) {
 
   // Set write method
   this.write = function(log, data) {
-    log = app.applyFilters(evt + '_json', { // E.g.: info_log_json
-      level: level,
-      host: app.hostname,
-      date: new Date().toGMTString(),
-      msg: data[0]
-    });
+    if (typeof log == 'object') {
+      log = app.applyFilters(evt + '_json', log);
+    } else {
+      log = app.applyFilters(evt + '_json', {
+        level: level,
+        host: app.hostname,
+        date: new Date().toGMTString(),
+        msg: data[0]
+      });
+    }
     var json = JSON.stringify(log);
     if (stream) stream.write(json+'\n', 'utf8');
     if (config.stdout) console.log(json);

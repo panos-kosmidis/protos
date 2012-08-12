@@ -192,6 +192,10 @@ vows.describe('lib/application.js').addBatch({
         data.unshift('<<');
         return data;
       });
+      
+      app.addFilter('multiple_filter', function(counter, a, b, c) {
+        return (counter + a + b + c);
+      });
 
       return app.__filters;
     },
@@ -208,11 +212,18 @@ vows.describe('lib/application.js').addBatch({
   'Application::applyFilters': {
 
     topic: function() {
-      return app.applyFilters('filter', ['data']);
+      return [
+        app.applyFilters('filter', ['data']),
+        app.applyFilters('multiple_filter', 10, 1, 2, 3) // Sums 16
+      ];
     },
 
     'Returns valid values': function(topic) {
-      assert.deepEqual(topic, ['<<', 'data', '>>']);
+      assert.deepEqual(topic[0], ['<<', 'data', '>>']);
+    },
+    
+    'Accepts multiple arguments': function(topic) {
+      assert.equal(topic[1], 16);
     }
 
   },

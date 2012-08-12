@@ -70,15 +70,6 @@ var Application = app.constructor;
 
 var accessLog;
 
-// Transports
-var logTransports = {
-  console: require('./transport-console.js'),
-  file: require('./transport-file.js'),
-  mongodb: require('./transport-mongodb.js'),
-  redis: require('./transport-redis.js'),
-  json: require('./transport-json.js')
-}
-
 function Logger(config, middleware) {
   
   // Attach to app singleton
@@ -91,15 +82,24 @@ function Logger(config, middleware) {
   
   // Middleware config (levels are overridden)
   this.config = config = protos.extend({
-    accessLogFile: null,          // File to save access logs. E.g.: 'access.log'
-    accessLogConsole: true,       // Log requests to stdout
-    accessLogFormat: 'default',   // Access log format
+    accessLog: {console: true},   // By default, print access log to the console
     infoLevel: {console: true},   // Set to {console: true, file: 'info.log'} to log to stdout + file
     errorLevel: {console: true}   // Set to {console: true, file: 'error.log'} to stdout + file
   }, config);
   
+  switch (typeof config.accessLog) {
+    case 'boolean':
+      if (config.accessLog) config.accessLog = {console: true};
+      break;
+    default:
+      if (config.accessLog && !(config.accessLog instanceof Object)) {
+        config.accessLog = {console: true};
+      }
+      break;
+  }
+  
   // Enable access log
-  if (config.accessLogFile || config.accessLogConsole) this.enableAccessLog();
+  if (config.accessLog) this.enableAccessLog(config.accessLog);
   
   // Create logging levels
   createLoggingLevels.call(this, config);
@@ -107,37 +107,32 @@ function Logger(config, middleware) {
   // console.exit(this);
 }
 
-Logger.prototype.enableAccessLog = function() {
-  // Cache access log format function
-  var self = this,
-      config = this.config,
-      accessLogFormat = config.accessLogFormat;
-      
-  if (typeof accessLogFormat == 'string') {
-    if (accessLogFormat in this.logFormats) {
-      accessLogFormat = this.logFormats[accessLogFormat];
-    } else {
-      throw new Error("Logger: Unknown log format: " + accessLogFormat);
-    }
-  } else if (typeof accessLogFormat != 'function') {
-    throw new Error("Logger: accessLogFormat accepts either a string or a function: " + accessLogFormat);
-  }
-  
-  // Access log filter
-  var accessLogFilter = function() {
-    var log = accessLogFormat.call(self, this.request, this, app);
-    app.emit('access_log', log);
-    if (config.accessLogConsole) console.log(log);
-    if (config.accessLogFile) accessLog.write(log+'\n');
-  }
-  
-  if (config.accessLogFile) accessLog = fs.createWriteStream(app.fullPath('log/' + config.accessLogFile), {flags: 'a'});
-  app.on('request', function(req, res) {
-    res.on('finish', accessLogFilter);
-  });
+/* Transports */
+
+var logTransports = {
+  console: require('./transport-console.js'),
+  file: require('./transport-file.js'),
+  mongodb: require('./transport-mongodb.js'),
+  redis: require('./transport-redis.js'),
+  json: require('./transport-json.js')
 }
 
-Logger.prototype.logFormats = {
+/* Access Log Formats */
+
+var accessLogFormats = {
+  json: function(req, res, app) {
+    var ms = Date.now() - req.startTime;
+    var log = {
+      host: app.hostname,
+      date: new Date().toGMTString(),
+      remote_address: req.socket.remoteAddress,
+      method: req.method,
+      url: req.url,
+      status_code: res.statusCode,
+      response_time: this.timeDelta(ms)
+    }
+    return log;
+  },
   default: function(req, res, app) {
     var ms = Date.now() - req.startTime;
     return util.format('%s (%s) [%s] %s %s %s (%s)', app.hostname, app.date(), req.socket.remoteAddress, req.method, 
@@ -148,6 +143,57 @@ Logger.prototype.logFormats = {
     return util.format('%s (%s) [%s] %s %s %s (%s) - %s', app.hostname, app.date(), req.socket.remoteAddress, req.method, 
     req.url, res.statusCode, this.timeDelta(ms), req.headers['user-agent']);
   }
+}
+
+/* Methods */
+
+Logger.prototype.enableAccessLog = function(config) {
+  // Cache access log format function
+  var self = this, format, accessLogFormat;
+  
+  format = (accessLogFormat = config.format || 'default');
+  
+  // Delete format to leave only transports
+  delete config.format;
+  
+  if (typeof accessLogFormat == 'string') {
+    if (accessLogFormat in accessLogFormats) {
+      accessLogFormat = accessLogFormats[accessLogFormat];
+    } else {
+      throw new Error("Logger: Unknown access log format: " + accessLogFormat);
+    }
+  } else if (typeof accessLogFormat != 'function') {
+    throw new Error("Logger: Access log format accepts either a string or a function: " + accessLogFormat);
+  }
+  
+  // Simulate an instance
+  var instance = {
+    config: { transports: config },
+    otherTransports: {}
+  };
+  
+  // Setup transports
+  setAdditionalTransports.call(instance, 'access_log', 'access'); // noAttach
+  
+  var transports = instance.otherTransports;
+  
+  // Access Log Callback
+  var accessLogCallback = function() {
+    var data, json, log = accessLogFormat.call(self, this.request, this, app);
+    if (format == 'json') {
+      log = app.applyFilters('access_log_data', log, this.request, this.app);
+      json = JSON.stringify(log);
+      data = [log, json]; // msg (object), log (text)
+      app.emit('access_log', json, data, log);
+    } else {
+      data = [log, log];
+      app.emit('access_log', log, data);
+    }
+  }
+  
+  app.on('request', function(req, res) {
+    res.on('finish', accessLogCallback);
+  });
 }
 
 Logger.prototype.timeDelta = function(ms) {
@@ -180,6 +226,8 @@ Logger.prototype.getFileStream = function(file) {
   return stream;
 }
 
+/* Private Functions */
+
 function setAdditionalTransports(evt, level) {
   var Ctor, t, transports = {};
   for (t in this.config.transports) {
@@ -200,6 +248,9 @@ function createLoggingLevels(config) {
       if (!transports) continue;
       
       level = level.replace(lvlRegex, '');
+      
+      if (level == 'access') throw new Error("The 'access' level is reserved for the access log. Please use 'accessLog' instead.");
+      
       this.transports[level] = {};
 
       for (var transport in transports) {
