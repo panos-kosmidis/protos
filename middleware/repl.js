@@ -111,6 +111,7 @@ function startServer(arg) {
     }).on('exit', function() {
       connections--;
       app.log('REPL Client disconnected. %s', getActiveConnections());
+      app.emit('repl_client_disconnected', socket);
       socket.end();
     });
     
