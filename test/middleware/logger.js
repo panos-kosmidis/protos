@@ -26,6 +26,7 @@ vows.describe('Logger (middleware)').addBatch({
   'Log Transports': {
     
     topic: function() {
+      
       var promise = new EventEmitter();
       
       var db = app.config.drivers,
@@ -46,31 +47,33 @@ vows.describe('Logger (middleware)').addBatch({
           format: 'default',
           file: 'access.log'
         },
-        infoLevel: null,
-        errorLevel: null,
-        testLevel: {
-          file: 'test.log',
-          console: true,
-          json: {
-            stdout: true,
-            filename: 'json.log',
-            transports: {
-              mongodb: {
-                host: db.mongodb.host,
-                port: db.mongodb.port,
-                database: db.mongodb.database
+        levels: {
+          info: null,
+          error: null,
+          test: {
+            file: 'test.log',
+            console: true,
+            json: {
+              stdout: true,
+              filename: 'json.log',
+              transports: {
+                mongodb: {
+                  host: db.mongodb.host,
+                  port: db.mongodb.port,
+                  database: db.mongodb.database
+                }
               }
+            },
+            mongodb: {
+              host: db.mongodb.host,
+              port: db.mongodb.port,
+              logLimit: 1
+            },
+            redis: {
+              host: sto.redis.host,
+              port: sto.redis.port,
+              logLimit: 1
             }
-          },
-          mongodb: {
-            host: db.mongodb.host,
-            port: db.mongodb.port,
-            logLimit: 1
-          },
-          redis: {
-            host: sto.redis.host,
-            port: sto.redis.port,
-            logLimit: 1
           }
         }
       });
@@ -80,8 +83,6 @@ vows.describe('Logger (middleware)').addBatch({
       app.testLog('This event should be logged!');
       
       setTimeout(function() {
-        
-        console.log('');
         
         var results = {};
         
@@ -146,6 +147,9 @@ vows.describe('Logger (middleware)').addBatch({
     },
     
     "Stores logs using the JSON Transport": function(results) {
+      
+      console.log('');
+      
       assert.isTrue(results.json);
     },
     
@@ -181,8 +185,6 @@ vows.describe('Logger (middleware)').addBatch({
       var logFile = app.fullPath('/log/access.log');
       
       fs.writeFileSync(logFile, '', 'utf-8');
-      
-      console.log('');
       
       app.curl('/', function(err, res) {
         
