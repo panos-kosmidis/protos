@@ -1,4 +1,4 @@
-![Protos](https://raw.github.com/derdesign/protos-docs/master/public/images/logo.png)
+![](https://raw.github.com/derdesign/protos-docs/master/public/images/logo.png)
 
 [![Build Status](https://secure.travis-ci.org/derdesign/protos.png)](http://travis-ci.org/derdesign/protos)
 
