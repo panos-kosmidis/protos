@@ -74,8 +74,9 @@ Here's the Development Stack the framework provides, in a nutshell:
 - **Sessions** &nbsp; _Use any Storage supported_
 - **Response Caching** &nbsp; _Use any Storage supported_
 - **Logging** &nbsp; _[MongoDB](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-mongodb.js), 
-[Redis](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js) (additionally 
-[File](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js), [Console](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js) via Middleware)_
+[Redis](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js), [File](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js), 
+[Console](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js),
+[JSON](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js)
 
 To install the driver & storage component dependencies, use the `protos install <component>` command. For a full list of components and
 their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
