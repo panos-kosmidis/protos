@@ -1,4 +1,5 @@
 *.DS_Store
+/repl.sh
 /tmp
 /log/*.log
 /npm-debug.log
