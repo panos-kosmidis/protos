@@ -181,11 +181,20 @@ vows.describe('lib/application.js').addBatch({
   
   'Application::mkdir': {
     
-    'Successfully creates directories': function() {
-      var exists,p = 'tmp/' + process.pid;
+    topic: function() {
+      var promise = new EventEmitter();
+      var exists, p = '__' + process.pid + '__';
       app.mkdir(p);
-      exists = fs.existsSync(app.fullPath(p));
-      fs.rmdir(app.fullPath(p));
+      process.nextTick(function() {
+        p = app.fullPath(p);
+        exists = fs.existsSync(p);
+        fs.rmdirSync(p);
+        promise.emit('success', exists);
+      });
+      return promise;
+    },
+    
+    'Successfully creates directories': function(exists) {
       assert.isTrue(exists);
     }
     
