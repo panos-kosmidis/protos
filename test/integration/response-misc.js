@@ -259,6 +259,11 @@ vows.describe('Response Misc').addBatch({
       multi.curl('/response/buffer/specific');
 
       multi.exec(function(err, results) {
+        
+        // TODO: Implement app.removeFilter
+        delete app.__filters.response_buffer;
+        delete app.__filters.specific_response_buffer;
+        
         promise.emit('success', err || results);
       });
 
@@ -299,7 +304,7 @@ vows.describe('Response Misc').addBatch({
     },
     
     "Access app.globals as view locals": function(buf) {
-      assert.isTrue(buf.indexOf('<p>testval: 99</p>') >= 0);
+      assert.equal(buf, '<p>testval: 99</p>');
     }
     
   }
