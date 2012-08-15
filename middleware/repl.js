@@ -10,38 +10,43 @@ var app = protos.app,
     fs = require('fs'),
     net = require('net'),
     util = require('util'),
-    repl = require('repl');
+    repl = require('repl'),
+    cluster = require('cluster');
     
 var input, connections = 0;
 
 function ProtosRepl(config, middleware) {
   
-  // Attach to app
-  app[middleware] = this;
+  if (cluster.isMaster || !cluster.isWorker) {
+    
+    // Attach to app
+    app[middleware] = this;
 
-  // Create tmp directory if it doesn't exist
-  app.mkdir('tmp');
+    // Create tmp directory if it doesn't exist
+    app.mkdir('tmp');
 
-  // Define connections getter
-  this.__defineGetter__('connections', function() {
-    return connections;
-  });
-  
-  config = protos.extend({
-    socket: true,
-    port: null,
-    maxConnections: 1
-  }, config);
+    // Define connections getter
+    this.__defineGetter__('connections', function() {
+      return connections;
+    });
 
-  // Set config
-  this.config = config;
+    config = protos.extend({
+      socket: true,
+      port: null,
+      maxConnections: 1
+    }, config);
 
-  // Start REPL Servers
-  if (config.port) startServer.call(this, config.port);
-  else if (config.socket) startServer.call(this, config.socket);
-  
-  // Prepare shell script for repl
-  createReplScript();
+    // Set config
+    this.config = config;
+
+    // Start REPL Servers
+    if (config.port) startServer.call(this, config.port);
+    else if (config.socket) startServer.call(this, config.socket);
+
+    // Prepare shell script for repl
+    createReplScript();
+    
+  }
   
 }
 
@@ -54,7 +59,7 @@ function createReplScript() {
       src += util.format('socat READLINE UNIX-CONNECT:%s', input);
       break;
     case 'number':
-      src += util.format('telnet 127.0.0.1 %d', input);
+      src += util.format('socat READLINE TCP:127.0.0.1:%d', input);
       break;
   }
   
