@@ -51,15 +51,13 @@ function Logger(config, middleware) {
     }
   }, config);
   
-  switch (typeof config.accessLog) {
-    case 'boolean':
-      if (config.accessLog) config.accessLog = {console: true};
-      break;
-    default:
-      if (config.accessLog && !(config.accessLog instanceof Object)) {
-        config.accessLog = {console: true};
-      }
-      break;
+  
+  if (typeof config.accessLog == 'boolean') {
+    if (config.accessLog) config.accessLog = {console: true};
+  } else {
+    if (config.accessLog && !(config.accessLog instanceof Object)) {
+      config.accessLog = {console: true};
+    }
   }
   
   // Enable access log

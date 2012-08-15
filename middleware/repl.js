@@ -66,11 +66,11 @@ function createReplScript() {
   src += '\n';
 
   fs.writeFileSync(outFile, src, 'utf8');
-  fs.chmodSync(outFile, 0755);
+  fs.chmodSync(outFile, parseInt('0755')); // pass jshint
 }
 
 function getActiveConnections() {
-  return util.format('(%d active connection%s)', connections, (connections == 0 || connections > 1) ? 's' : '');
+  return util.format('(%d active connection%s)', connections, (connections === 0 || connections > 1) ? 's' : '');
 }
 
 function startServer(arg) {
