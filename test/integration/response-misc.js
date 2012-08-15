@@ -13,6 +13,16 @@ multi.on('post_exec', app.restoreFilters);
 
 var generalFilter, specificFilter;
 
+app.globals.testval = 99;
+app.globals.anotherVal = 101;
+
+var testval, anotherVal;
+
+app.once('view_locals', function(locals) {
+  testval = locals.testval;
+  anotherVal = locals.anotherVal;
+});
+
 vows.describe('Response Misc').addBatch({
   
   'Sending Headers': {
@@ -247,6 +257,8 @@ vows.describe('Response Misc').addBatch({
         data.buffer = '-- ' + data.buffer + ' --';
         return data;
       });
+      
+      // Note: specific_response_buffer is set by doing res.setContext('specific')
 
       app.addFilter('specific_response_buffer', function(data) {
         data.buffer = new Buffer(data.buffer).toString('base64');
@@ -259,11 +271,8 @@ vows.describe('Response Misc').addBatch({
       multi.curl('/response/buffer/specific');
 
       multi.exec(function(err, results) {
-        
-        // TODO: Implement app.removeFilter
-        delete app.__filters.response_buffer;
-        delete app.__filters.specific_response_buffer;
-        
+        app.removeFilter('response_buffer');
+        app.removeFilter('specific_response_buffer');
         promise.emit('success', err || results);
       });
 
@@ -291,20 +300,9 @@ vows.describe('Response Misc').addBatch({
   
   'Application Globals': {
     
-    topic: function() {
-      
-      var promise = new EventEmitter();
-
-      app.curl('/view-locals', function(err, buf) {
-        promise.emit('success', err || buf);
-      });
-     
-      return promise;
-      
-    },
-    
-    "Access app.globals as view locals": function(buf) {
-      assert.equal(buf, '<p>testval: 99</p>');
+    "Access app.globals as view locals": function() {
+      assert.strictEqual(testval, app.globals.testval);
+      assert.strictEqual(anotherVal, app.globals.anotherVal);
     }
     
   }

@@ -230,7 +230,7 @@ vows.describe('lib/application.js').addBatch({
     }
 
   },
-
+  
   'Application::applyFilters': {
 
     topic: function() {
@@ -248,6 +248,39 @@ vows.describe('lib/application.js').addBatch({
       assert.equal(topic[1], 16);
     }
 
+  },
+  
+  'Application::removeFilter': {
+    
+    topic: function() {
+      
+      var backup = app.__filters;
+      var cb = function() {};
+      
+      app.__filters = {};
+      
+      app.addFilter('my_filter', cb);
+      app.addFilter('another_filter', function() {});
+      
+      return {backup: backup, cb: cb};
+      
+    },
+    
+    'Removes a single filter callback': function(data) {
+      assert.deepEqual(app.__filters.my_filter, [data.cb]);
+      app.removeFilter('my_filter', data.cb);
+      assert.deepEqual(app.__filters.my_filter, []);
+    },
+    
+    'Removes all callbacks in filter': function(data) {
+      assert.isArray(app.__filters.another_filter);
+      app.removeFilter('another_filter');
+      assert.isTrue(typeof app.__filters.another_filter == 'undefined');
+      
+      // Restore filters
+      app.__filters = data.backup;
+    }
+    
   },
 
   'Application::registerViewHelper': {
