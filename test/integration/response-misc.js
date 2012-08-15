@@ -282,4 +282,26 @@ vows.describe('Response Misc').addBatch({
 
   }
   
+}).addBatch({
+  
+  'Application Globals': {
+    
+    topic: function() {
+      
+      var promise = new EventEmitter();
+
+      app.curl('/view-locals', function(err, buf) {
+        promise.emit('success', err || buf);
+      });
+     
+      return promise;
+      
+    },
+    
+    "Access app.globals as view locals": function(buf) {
+      assert.isTrue(buf.indexOf('<p>testval: 99</p>') >= 0);
+    }
+    
+  }
+  
 }).export(module);

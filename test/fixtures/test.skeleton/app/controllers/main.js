@@ -8,6 +8,14 @@ function MainController(app) {
     res.render('index');
   });
   
+  /* View Locals */
+  
+  get('/view-locals', function(req, res) {
+    app.globals.testval = 99;
+    res.render('view-locals.html', true);
+    delete app.globals.testval;
+  });
+  
   /* File Download */
   
   get('/download', function(req, res) {
