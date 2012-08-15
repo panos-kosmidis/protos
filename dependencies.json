@@ -1,6 +1,6 @@
 {
   "mongodb": {
-    "mongodb"             : ">= 1.1.2"
+    "mongodb"             : "= 1.0.2"
   },
   "mysql": {
     "mysql"               : ">= 0.9.6"
