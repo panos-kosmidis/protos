@@ -14,7 +14,7 @@ var path = require('path'),
     found = 0;
     
 // Do nothing if node_modules/ doesn't exist
-if (!path.existsSync(nodeModules)) return;
+if (!fs.existsSync(nodeModules)) return;
 
 // Grep search for "sys" module usage
 

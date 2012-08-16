@@ -4,7 +4,6 @@ var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
     util = require('util'),
-    pathModule = require('path'),
     Multi = require('multi'),
     EventEmitter = require('events').EventEmitter;
     
@@ -136,11 +135,12 @@ color:#222}#toc-sidebar ul li.section{margin-top:.5em}#toc-sidebar ul li.section
 li.sub{margin-left:0}#yelow #short{color:#fea}#yelow #long{color:#fea}#yelow #rgba{color:rgba(255,238,170,.1)}#yelow \
 #argb{color:#1affeeaa}';
 
-      var expected2 = '(function(){var a,b,c,d,e,f,g,h,i=Array.prototype.slice;e=42,f=!0,f&&(e=-42),h=function(a){return a*a}\
-,b=[1,2,3,4,5],c={root:Math.sqrt,square:h,cube:function(a){return a*h(a)}},g=function(){var a,b;b=arguments[0],a=2<=arguments.\
-length?i.call(arguments,1):[];return print(b,a)},typeof elvis!="undefined"&&elvis!==null&&alert("I knew it!"),a=function(){var \
-a,e,f;f=[];for(a=0,e=b.length;a<e;a++)d=b[a],f.push(c.cube(d));return f}()}).call(this),function(){var a,b,c,d;d=["do","re","mi",\
-"fa","so"],c={Jagger:"Rock",Elvis:"Roll"},a=[1,0,1,0,0,1,1,1,0],b={brother:{name:"Max",age:11},sister:{name:"Ida",age:9}}}.call(this)';
+      var expected2 = '(function(){var e,t,n,r,i,s,o,u,a=Array.prototype.slice;i=42,s=!0,s&&(i=-42),u=function(e){return e*e\
+},t=[1,2,3,4,5],n={root:Math.sqrt,square:u,cube:function(e){return e*u(e)}},o=function(){var e,t;return t=arguments[0],e=2<\
+=arguments.length?a.call(arguments,1):[],print(t,e)},typeof elvis!="undefined"&&elvis!==null&&alert("I knew it!"),e=function\
+(){var e,i,s;s=[];for(e=0,i=t.length;e<i;e++)r=t[e],s.push(n.cube(r));return s}()}).call(this),function(){var e,t,n,r;r=["do\
+","re","mi","fa","so"],n={Jagger:"Rock",Elvis:"Roll"},e=[1,0,1,0,0,1,1,1,0],t={brother:{name:"Max",age:11},sister:{name:"Ida\
+",age:9}}}.call(this)';
       
       assert.equal(r1, expected1);
       assert.equal(r2, expected2);
@@ -168,7 +168,7 @@ a,e,f;f=[];for(a=0,e=b.length;a<e;a++)d=b[a],f.push(c.cube(d));return f}()}).cal
     },
     
     "Does not compile ignored files": function() {
-      assert.isFalse(pathModule.existsSync(app.fullPath('public/ignore.css')));
+      assert.isFalse(fs.existsSync(app.fullPath('public/ignore.css')));
     },
     
     "LESS @import works as expected": function() {

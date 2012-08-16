@@ -1,29 +1,35 @@
 
 /* Logger » File Transport */
 
-var app = protos.app,
-    fs = require('fs'),
-    pathModule = require('path');
+var app = protos.app;
 
-function FileTransport(evt, file) {
-  file = file.trim();
-  var path = (file.charAt(0) == '/') ? pathModule.resolve(file) : app.fullPath('log/' + file);
-  var stream = fs.createWriteStream(path, {flags: 'a'});
+function FileTransport(evt, config, level, noAttach) {
   
-  // Write file on log event
-  app.on(evt, function(log) {
-    stream.write(log+'\n', 'utf8');
-  });
-  
-  Object.defineProperty(this, 'stream', {
-    value: stream,
-    writable: true,
-    enumerable: false,
-    configurable: false
-  });
- 
   this.className = this.constructor.name;
   
+  if (typeof config == 'string') {
+    config = {filename: config};
+  } else if (!(config instanceof Object)) {
+    return;
+  }
+  
+  // Set config
+  this.config = config;
+  
+  // Get file stream
+  var stream = app.logger.getFileStream(config.filename);
+  
+  // Set write method
+  this.write = function(log) {
+    stream.write(log+'\n', 'utf8');
+  }
+  
+  if (!noAttach) app.on(evt, this.write);
+  
+}
+
+FileTransport.prototype.write = function(log, data) {
+  // Interface
 }
 
 module.exports = FileTransport;

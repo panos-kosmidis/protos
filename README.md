@@ -1,11 +1,8 @@
 # Protos [![Build Status](https://secure.travis-ci.org/derdesign/protos.png)](http://travis-ci.org/derdesign/protos)
 
-Protos is an open source Web Application Development framework, focused on high performance, integration, ease of 
-deployment, maintainability and security. Protos runs on UNIX-like systems such as **Linux** &amp; **Mac OSX**. Windows 
+Protos is an open source Web Application Framework, focused on high performance, integration, ease of 
+deployment, maintainability and security. Runs on UNIX-like systems such as **Linux** &amp; **Mac OSX**. Windows 
 support might be added in the future.
-
-**Note**: _The framework is under moderate development and the API and internal methods/functionality may change. The documentation
-may also contain topics that have been removed, and may not contain all the features the framework provides._
 
 ## Features
 
@@ -55,9 +52,6 @@ You can set your own validation rules with ease on a per-model basis.
 The Models can relate with eaach other by using Relationships. These are used to connect models in specific ways, storing only the
 references to their related models. You can then retrieve the related models either individually, or in groups.
 
-Each relationship add a set predefined methods using a common convention, that help you maniuplate the relationships between
-the model objects you're working with.
-
 Model (and Relationships) database-agnostic, you can change the underlying database driver used by the model, and no changes are required. This
 means you can use a database backend for development, and another for production (just to give an example). No changes needed on deployment.
 
@@ -73,9 +67,10 @@ Here's the Development Stack the framework provides, in a nutshell:
 - **Caching** &nbsp; _Use any Storage supported_
 - **Sessions** &nbsp; _Use any Storage supported_
 - **Response Caching** &nbsp; _Use any Storage supported_
-- **Logging** &nbsp; _[MongoDB](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-mongodb.js), 
-[Redis](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js) (additionally 
-[File](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js), [Console](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js) via Middleware)_
+- **Logging** &nbsp; [MongoDB](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-mongodb.js), 
+[Redis](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-redis.js), [File](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-file.js), 
+[Console](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js),
+[JSON](https://github.com/derdesign/protos/blob/master/middleware/logger/transport-console.js)
 
 To install the driver & storage component dependencies, use the `protos install <component>` command. For a full list of components and
 their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
@@ -84,22 +79,22 @@ their dependencies, see the [dependencies.json](https://github.com/derdesign/pro
 
 The Application's functionality can be extended with the following (ready to use) components:
 
-- [asset_compiler](/middleware#asset_compiler) &nbsp; *Compiles LESS, Stylus and CoffeeScript, Supports Watch/Compress/Minify.*
-- [aws](http://protos.org/middleware#aws) &nbsp; *Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)*
-- [bcrypt](http://protos.org/middleware#bcrypt) &nbsp; *Blowfish encryption support*
-- [body_parser](http://protos.org/middleware#body_parser) &nbsp; *Parse request bodies and file uploads in POST/PUT requests*
-- [cookie_parser](http://protos.org/middleware#cookie_parser) &nbsp; *Parse cookie headers, Integrates with Sessions & Auth*
-- [csrf](http://protos.org/middleware#csrf) &nbsp; *Cross-Site Request Forgery protection, integrates with Controller Validation*
-- [logger](http://protos.org/middleware#logger) &nbsp; *Application/Request logger, supporting several transports such as MongoDB, Redis, File &amp; console*
-- [mailer](http://protos.org/middleware#mailer) &nbsp; *Send email using SMTP, Amazon SES or Sendmail*
-- [ markdown ](http://protos.org/middleware#markdown) &nbsp; *Parse markdown syntax*
-- [production_url](http://protos.org/middleware#production_url) &nbsp; *Remove port number from application-generated URLs*
-- [redirect](http://protos.org/middleware#redirect) &nbsp; *Quick redirection support (useful for "maintenance mode")*
-- [response_cache](http://protos.org/middleware#response_cache) &nbsp; *Response caching into supported Storages (Redis, MongoDB, etc)*
-- [session](http://protos.org/middleware#session) &nbsp; *Full session support with Storages, guest sessions and regeneration*
-- [shortcode](http://protos.org/middleware#shortcode) &nbsp; *Allows custom content to be inserted into views using shortcodes*
-- [socket_io](http://protos.org/middleware#socket_io) &nbsp; *Socket.io Integration with applications*
-- [static_server](http://protos.org/middleware#static_server) &nbsp; *Complete Static Server solution, supporting Ranges, Conditional GETs, etc.*
+- [asset_compiler](http://derdesign.github.com/protos/middleware#asset_compiler) &nbsp; *Compiles LESS, Stylus and CoffeeScript, Supports Watch/Compress/Minify.*
+- [aws](http://derdesign.github.com/protos/middleware#aws) &nbsp; *Amazon Web Services support. Provides clients to all services (ES3, EC2, etc)*
+- [bcrypt](http://derdesign.github.com/protos/middleware#bcrypt) &nbsp; *Blowfish encryption support*
+- [body_parser](http://derdesign.github.com/protos/middleware#body_parser) &nbsp; *Parse request bodies and file uploads in POST/PUT requests*
+- [cookie_parser](http://derdesign.github.com/protos/middleware#cookie_parser) &nbsp; *Parse cookie headers, Integrates with Sessions & Auth*
+- [csrf](http://derdesign.github.com/protos/middleware#csrf) &nbsp; *Cross-Site Request Forgery protection, integrates with Controller Validation*
+- [logger](http://derdesign.github.com/protos/middleware#logger) &nbsp; *Application/Request logger, supporting several transports such as MongoDB, Redis, File &amp; console*
+- [mailer](http://derdesign.github.com/protos/middleware#mailer) &nbsp; *Send email using SMTP, Amazon SES or Sendmail*
+- [ markdown ](http://derdesign.github.com/protos/middleware#markdown) &nbsp; *Parse markdown syntax*
+- [production_url](http://derdesign.github.com/protos/middleware#production_url) &nbsp; *Remove port number from application-generated URLs*
+- [redirect](http://derdesign.github.com/protos/middleware#redirect) &nbsp; *Quick redirection support (useful for "maintenance mode")*
+- [response_cache](http://derdesign.github.com/protos/middleware#response_cache) &nbsp; *Response caching into supported Storages (Redis, MongoDB, etc)*
+- [session](http://derdesign.github.com/protos/middleware#session) &nbsp; *Full session support with Storages, guest sessions and regeneration*
+- [shortcode](http://derdesign.github.com/protos/middleware#shortcode) &nbsp; *Allows custom content to be inserted into views using shortcodes*
+- [socket_io](http://derdesign.github.com/protos/middleware#socket_io) &nbsp; *Socket.io Integration with applications*
+- [static_server](http://derdesign.github.com/protos/middleware#static_server) &nbsp; *Complete Static Server solution, supporting Ranges, Conditional GETs, etc.*
 
 To install the middleware dependencies, use the `protos install <middleware>` command. For a full list of components and
 their dependencies, see the [dependencies.json](https://github.com/derdesign/protos/blob/master/dependencies.json) file.
@@ -112,9 +107,6 @@ to the template and you're set. You don't need to install any npm dependencies.
 View Partials can be used across template engines. This means you can use Jade partials within Swig templates. Or CoffeeKup
 partials within EJS templates (and vice versa). There are a few exceptions with mustache engines (due to their *logicless*
 nature), such as Hogan and Handlebars.
-
-You are not limited by the default view extensions the framework provides. You can specify your own view extensions in the
-application's configuration.
 
 The following view engine components are provided by protos:
 

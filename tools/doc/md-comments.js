@@ -4,9 +4,15 @@
 
 var util = require('util'),
     underscore = require('underscore'),
-    discount = require('discount'),
+    markdown = require('marked'),
     fs = require('fs'),
     pathModule = require('path');
+    
+markdown.setOptions({
+  gfm: true,
+  sanitize: false,
+  pedantic: false
+});
 
 var tagRegex = /^(\s+)?@(.*?)$/mg;
 
@@ -14,10 +20,6 @@ var tagRegex = /^(\s+)?@(.*?)$/mg;
 console.exit = function() { 
   console.log(util.format.apply(null, arguments)); 
   process.exit(); 
-}
-
-function markdown(str) {
-  return discount.parse(str, discount.flags.autolink);
 }
 
 function searchPattern(buffer, s) {
@@ -45,7 +47,7 @@ if (process.argv.length != 3) console.exit("Usage: %s file.js", pathModule.basen
 var file = process.argv[2];
 
 // Check if file exists
-if (!pathModule.existsSync(file)) console.exit("File does not exist: %s", file);
+if (!fs.existsSync(file)) console.exit("File does not exist: %s", file);
 
 var source = fs.readFileSync(file).toString('utf8');
 var startIndexes = calcIndexes(source);

@@ -2,6 +2,7 @@
 var app =require('../fixtures/bootstrap'),
     vows = require('vows'),
     assert = require('assert'),
+    fs = require('fs'),
     util = require('util'),
     http = require('http'),
     Multi = require('multi'),
@@ -27,7 +28,7 @@ vows.describe('lib/application.js').addBatch({
   'Integrity Checks': {
 
     'Sets domain': function() {
-      assert.equal(app.domain, 'localhost');
+      assert.equal(app.hostname, 'localhost');
     },
 
     'Sets application path': function() {
@@ -114,12 +115,12 @@ vows.describe('lib/application.js').addBatch({
   'Application::url': {
 
     'Returns proper url when no args provided': function() {
-      assert.equal(app.url(), util.format('http://%s:%s/', app.domain, protos.config.server.listenPort));
+      assert.equal(app.url(), util.format('http://%s:%s/', app.hostname, protos.config.server.listenPort));
     },
 
     'Returns proper url when run with path argument': function() {
       var q = '/item?id=25';
-      assert.equal(app.url(q), util.format('http://%s:%s%s', app.domain, protos.config.server.listenPort, q));
+      assert.equal(app.url(q), util.format('http://%s:%s%s', app.hostname, protos.config.server.listenPort, q));
     }
 
   },
@@ -177,6 +178,27 @@ vows.describe('lib/application.js').addBatch({
     }
 
   },
+  
+  'Application::mkdir': {
+    
+    topic: function() {
+      var promise = new EventEmitter();
+      var exists, p = '__' + process.pid + '__';
+      app.mkdir(p);
+      process.nextTick(function() {
+        p = app.fullPath(p);
+        exists = fs.existsSync(p);
+        fs.rmdirSync(p);
+        promise.emit('success', exists);
+      });
+      return promise;
+    },
+    
+    'Successfully creates directories': function(exists) {
+      assert.isTrue(exists);
+    }
+    
+  },
 
   'Application::addFilter': {
 
@@ -192,6 +214,10 @@ vows.describe('lib/application.js').addBatch({
         data.unshift('<<');
         return data;
       });
+      
+      app.addFilter('multiple_filter', function(counter, a, b, c) {
+        return (counter + a + b + c);
+      });
 
       return app.__filters;
     },
@@ -204,17 +230,57 @@ vows.describe('lib/application.js').addBatch({
     }
 
   },
-
+  
   'Application::applyFilters': {
 
     topic: function() {
-      return app.applyFilters('filter', ['data']);
+      return [
+        app.applyFilters('filter', ['data']),
+        app.applyFilters('multiple_filter', 10, 1, 2, 3) // Sums 16
+      ];
     },
 
     'Returns valid values': function(topic) {
-      assert.deepEqual(topic, ['<<', 'data', '>>']);
+      assert.deepEqual(topic[0], ['<<', 'data', '>>']);
+    },
+    
+    'Accepts multiple arguments': function(topic) {
+      assert.equal(topic[1], 16);
     }
 
+  },
+  
+  'Application::removeFilter': {
+    
+    topic: function() {
+      
+      var backup = app.__filters;
+      var cb = function() {};
+      
+      app.__filters = {};
+      
+      app.addFilter('my_filter', cb);
+      app.addFilter('another_filter', function() {});
+      
+      return {backup: backup, cb: cb};
+      
+    },
+    
+    'Removes a single filter callback': function(data) {
+      assert.deepEqual(app.__filters.my_filter, [data.cb]);
+      app.removeFilter('my_filter', data.cb);
+      assert.deepEqual(app.__filters.my_filter, []);
+    },
+    
+    'Removes all callbacks in filter': function(data) {
+      assert.isArray(app.__filters.another_filter);
+      app.removeFilter('another_filter');
+      assert.isTrue(typeof app.__filters.another_filter == 'undefined');
+      
+      // Restore filters
+      app.__filters = data.backup;
+    }
+    
   },
 
   'Application::registerViewHelper': {

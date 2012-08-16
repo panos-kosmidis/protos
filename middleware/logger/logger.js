@@ -1,3 +1,4 @@
+/*jshint immed: false */
 
 /**
   Logger
@@ -13,151 +14,181 @@
   The log events are emitted by `app.log`. If an `Error` instance is passed to it,
   the `error_log` event is automatically emitted with the error in question.
   
-  » Configuration Options:
-  
-    {boolean} accessLog: If set to true (default), will save requests to the access.log file
-    {boolean} accessLogConsole: If set to true (default), will log requests to the console
-    {function} accessLogFormat: Function to use to format the logs
-    
-  » Log Levels
-  
-    To set a log level, you specify the log level alias, ending with 'Level', for example:
-    
-    app.use('logger', {
-      noticeLevel: {
-        console: true,
-        file: 'notice.log'
-      },
-      my_coolLevel: {
-        console: true
-      },
-      criticalLevel: {
-        file: 'critical.log',
-        console: true,
-        mongodb: true
-      }
-    });
-    
-    Each level adds its own methods you can use to log messages. For example, the levels set on the example
-    code above, will set the following methods in the app singleton:
-    
-      app.noticeLog(log);
-      app.myCoolLog(log);
-      app.criticalLog(log);
-      
-    Each method accepts printf-like arguments. Additionally, the middleware sets events for the levels you
-    specify in the config. For example, the following events will be set with the config used above:
-    
-      notice_log
-      my_cool_log
-      critical_log
-      
-    You can hook your own functions to manage the logs sent to each level.
-    
-  » Log Locations:
-  
-      Info log:   skeleton/log/info.log
-     Error log:   skeleton/log/error.log
-    Access log:   skeleton/log/access.log
-    
-    By default, the path is relative to the application's log/ directory. You can also specify absolute paths for
-    logs using the file transport.
-    
  */
 
 var app = protos.app,
     fs = require('fs'),
     http = require('http'),
     util = require('util'),
+    pathModule = require('path'),
     inflect = protos.require('./lib/support/inflect.js');
+    
+var slice = Array.prototype.slice;
 
 var Application = app.constructor;
 
 var accessLog;
-
-// Transports
-var logTransports = {
-  console: require('./transport-console.js'),
-  file: require('./transport-file.js'),
-  mongodb: require('./transport-mongodb.js'),
-  redis: require('./transport-redis.js')
-}
 
 function Logger(config, middleware) {
   
   // Attach to app singleton
   app[middleware] = this;
   
-  // Expose transport constructors
-  for (var t in logTransports) {
-    t = logTransports[t];
-    this[t.name] = t;
-  }
+  // Set muted logs
+  this.mutedLevels = {};
   
   // Define access log data in same closure (faster access)
   var accessLogConsole,
-      domain = app.domain,
+      domain = app.hostname,
       appDate = app.date;
   
   // Middleware config (levels are overridden)
-  this.config = config = protos.extend({
-    accessLogFile: null,          // File to save access logs. E.g.: 'access.log'
-    accessLogConsole: true,       // Log requests to stdout
-    accessLogFormat: 'default',   // Access log format
-    infoLevel: {console: true},   // Set to {console: true, file: 'info.log'} to log to stdout + file
-    errorLevel: {console: true}   // Set to {console: true, file: 'error.log'} to stdout + file
+  this.config = config = protos.configExtend({
+    accessLog: {console: true},   // By default, print access log to the console
+    levels: {
+      info: {console: true},      // Set to {console: true, file: 'info.log'} to log on stdout + file
+      error: {console: true}      // Set to {console: true, file: 'error.log'} to log on stdout + file
+    }
   }, config);
   
+  
+  if (typeof config.accessLog == 'boolean') {
+    if (config.accessLog) config.accessLog = {console: true};
+  } else {
+    if (config.accessLog && !(config.accessLog instanceof Object)) {
+      config.accessLog = {console: true};
+    }
+  }
+  
   // Enable access log
-  if (config.accessLogFile || config.accessLogConsole) this.enableAccessLog();
+  if (config.accessLog) this.enableAccessLog(config.accessLog);
   
   // Create logging levels
-  createLoggingLevels.call(this, config);
+  if (config.levels && config.levels instanceof Object) createLoggingLevels.call(this, config.levels);
   
   // console.exit(this);
 }
 
-Logger.prototype.enableAccessLog = function() {
-  // Cache access log format function
-  var self = this,
-      config = this.config,
-      accessLogFormat = config.accessLogFormat;
-      
-  if (typeof accessLogFormat == 'string') {
-    if (accessLogFormat in this.logFormats) {
-      accessLogFormat = this.logFormats[accessLogFormat];
-    } else {
-      throw new Error("Logger: Unknown log format: " + accessLogFormat);
-    }
-  } else if (typeof accessLogFormat != 'function') {
-    throw new Error("Logger: accessLogFormat accepts either a string or a function: " + accessLogFormat);
-  }
-  
-  // Access log filter
-  var accessLogFilter = function() {
-    var log = accessLogFormat.call(self, this.request, this, app);
-    app.emit('access_log', log);
-    if (config.accessLogConsole) console.log(log);
-    if (config.accessLogFile) accessLog.write(log+'\n');
-  }
-  
-  if (config.accessLogFile) accessLog = fs.createWriteStream(app.fullPath('log/' + config.accessLogFile), {flags: 'a'});
-  app.on('request', function(req, res) {
-    res.on('finish', accessLogFilter);
-  });
+/* Transports */
+
+var logTransports = {
+  console: require('./transport-console.js'),
+  file: require('./transport-file.js'),
+  mongodb: require('./transport-mongodb.js'),
+  redis: require('./transport-redis.js'),
+  json: require('./transport-json.js')
 }
 
-Logger.prototype.logFormats = {
+/* Access Log Formats */
+
+var accessLogFormats = {
+  json: function(req, res, app) {
+    var ms = Date.now() - req.startTime;
+    var log = {
+      host: app.hostname,
+      date: new Date().toGMTString(),
+      remote_address: req.socket.remoteAddress,
+      method: req.method,
+      url: req.url,
+      status_code: res.statusCode,
+      response_time: this.timeDelta(ms)
+    }
+    return log;
+  },
   default: function(req, res, app) {
     var ms = Date.now() - req.startTime;
-    return util.format('%s (%s) [%s] %s %s %s (%s)', app.domain, app.date(), req.socket.remoteAddress, req.method, 
+    return util.format('%s (%s) [%s] %s %s %s (%s)', app.hostname, app.date(), req.socket.remoteAddress, req.method, 
     req.url, res.statusCode, this.timeDelta(ms));
   },
   detailed: function(req, res, app) {
     var ms = Date.now() - req.startTime;
-    return util.format('%s (%s) [%s] %s %s %s (%s) - %s', app.domain, app.date(), req.socket.remoteAddress, req.method, 
+    return util.format('%s (%s) [%s] %s %s %s (%s) - %s', app.hostname, app.date(), req.socket.remoteAddress, req.method, 
     req.url, res.statusCode, this.timeDelta(ms), req.headers['user-agent']);
   }
+}
+
+/* Methods */
+
+Logger.prototype.mute = function() {
+  var args = slice.call(arguments, 0);
+  for (var level,transports,logCb,evt,t,i=0,len=args.length; i < len; i++) {
+    level = args[i];
+    evt = level + '_log';
+    logCb = getLogCallback(level);
+    this.mutedLevels[level] = app[logCb];
+    app[logCb] = mutedLogCallback;
+    transports = this.transports[level];
+    for (t in transports) {
+      app.removeListener(evt, transports[t].write);
+    }
+  }
+}
+
+Logger.prototype.unmute = function() {
+  var args = slice.call(arguments, 0);
+  for (var level,transports,logCb,evt,t,i=0,len=args.length; i < len; i++) {
+    level = args[i];
+    if (level in this.mutedLevels) {
+      evt = level + '_log';
+      logCb = getLogCallback(level);
+      app[logCb] = this.mutedLevels[level];
+      delete this.mutedLevels[level];
+      transports = this.transports[level];
+      for (t in transports) {
+        app.on(evt, transports[t].write);
+      }
+    }
+  }
+}
+
+Logger.prototype.enableAccessLog = function(config) {
+  
+  // Cache access log format function
+  var self = this, format, accessLogFormat;
+  
+  format = (accessLogFormat = config.format || 'default');
+  
+  // Delete format to leave only transports
+  delete config.format;
+  
+  if (typeof accessLogFormat == 'string') {
+    if (accessLogFormat in accessLogFormats) {
+      accessLogFormat = accessLogFormats[accessLogFormat];
+    } else {
+      throw new Error("Logger: Unknown access log format: " + accessLogFormat);
+    }
+  } else if (typeof accessLogFormat != 'function') {
+    throw new Error("Logger: Access log format accepts either a string or a function: " + accessLogFormat);
+  }
+  
+  // Simulate an instance
+  var instance = {
+    config: { transports: config },
+    otherTransports: {}
+  };
+  
+  // Setup transports
+  setAdditionalTransports.call(instance, 'access_log', 'access'); // noAttach
+  
+  var transports = instance.otherTransports;
+  
+  // Access Log Callback
+  var accessLogCallback = function() {
+    var data, json, log = accessLogFormat.call(self, this.request, this, app);
+    if (format == 'json') {
+      log = app.applyFilters('access_log_data', log, this.request, this.app);
+      json = JSON.stringify(log);
+      data = [log, json]; // msg (object), log (text)
+      app.emit('access_log', json, data, log);
+    } else {
+      data = [log, log];
+      app.emit('access_log', log, data);
+    }
+  }
+  
+  app.on('request', function(req, res) {
+    res.on('finish', accessLogCallback);
+  });
 }
 
 Logger.prototype.timeDelta = function(ms) {
@@ -182,43 +213,88 @@ Logger.prototype.timeDelta = function(ms) {
   }
 }
 
+Logger.prototype.getFileStream = function(file) {
+  var path, stream;
+  file = file.trim();
+  path = (file.charAt(0) == '/') ? pathModule.resolve(file) : app.fullPath('log/' + file);
+  stream = fs.createWriteStream(path, {flags: 'a'});
+  return stream;
+}
+
+/* Private Functions */
+
+function mutedLogCallback() {
+  // Do nothing
+}
+
+function setAdditionalTransports(evt, level) {
+  var Ctor, t, transports = {};
+  for (t in this.config.transports) {
+    Ctor = logTransports[t];
+    transports[t] = new Ctor(evt, this.config.transports[t], level);
+  }
+  this.otherTransports = transports;
+}
+
+function getLogCallback(level) {
+  return inflect.camelize(level, true) + 'Log';
+}
+
 function createLoggingLevels(config) {
-  /*jshint immed: false */
-  var level, options, transports, lvlRegex = /Level$/;
+
+  var level, options, transports;
   this.transports = {};
+
   for (level in config) {
-    if (lvlRegex.test(level)) {
-      transports = config[level];
-      
-      if (!transports) continue;
-      
-      level = level.replace(lvlRegex, '');
-      this.transports[level] = {};
-      for (var transport in transports) {
-        
-        if (transport in logTransports) {
-          var Ctor = logTransports[transport];
-          
-          this.transports[level][transport] = new Ctor(level+'_log', transports[transport]);
-          
-          // Extend application with {level}Log method
-          
-          (function(app, format) {
-            
-            var context = {level: level, event: level+'_log', app: app}; // Reuse object
-            
-            Application.prototype[inflect.camelize(level, true)+'Log'] = function() {
-              app.log.apply(context, arguments);
-            }
-            
+
+    transports = config[level];
+
+    if (!transports) continue;
+
+    if (level == 'access') {
+      throw new Error("The 'access' level is reserved for the access log. Please use 'accessLog' instead.");
+    }
+
+    this.transports[level] = {};
+
+    for (var transport in transports) {
+
+      if (!transports[transport]) continue; // Ignore if transport's config is false
+
+      if (transport in logTransports) {
+        var instance, evt = level + '_log',
+        Ctor = logTransports[transport];
+
+        instance = this.transports[level][transport] = new Ctor(evt, transports[transport], level);
+        instance.otherTransports = {};
+
+        // Set additional transports
+        if (instance.config.transports) {
+          if (transport == 'json') {
+            setAdditionalTransports.call(instance, evt, level, true); // noAttach = true
+          } else {
+            setAdditionalTransports.call(instance, evt, level);
+          }
+        }
+
+        // Extend application with {level}Log method
+
+        (function(app, format) {
+
+          var context = {level: level, event: evt, app: app}; // Reuse object
+
+          // Do not attach to prototype, attach to instance instead (it's faster)
+          app[getLogCallback(level)] = function() {
+            this.log.apply(context, arguments); // Using `this`, since the method is running on the app's context
+          }
+
           }).call(this, app, util.format);
-          
+
         } else {
           throw new Error("Logger: transport not found: " + transport);
         }
       }
     }
   }
-}
 
 module.exports = Logger;

@@ -24,7 +24,7 @@ OutgoingMessage.prototype.setCookie = function(name, val, opts) {
   if (opts == null) opts = {};
   pairs = [name + "=" + (encodeURIComponent(val))];
   removeCookie = (typeof opts.expires == 'number') && opts.expires < 0;
-  if (opts.domain == null) opts.domain = app.cookieDomain || app.domain;
+  if (opts.domain == null) opts.domain = app.cookieDomain || app.hostname;
   if (opts.domain == 'localhost') opts.domain = null;
   if (opts.path == null) opts.path = '/';
 

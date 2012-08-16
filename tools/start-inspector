@@ -4,13 +4,14 @@
  * Starts the node inspector
  */
  
-var path = require('path'),
+var fs = require('fs'),
+    path = require('path'),
     child_process = require('child_process'),
     listenPort = process.argv[2] || 3000,
     inspector = path.resolve(__dirname, '../node_modules/node-inspector/bin/inspector.js'),
     cmd;
 
-if (path.existsSync(inspector)) {
+if (fs.existsSync(inspector)) {
 
   cmd = 'nohup ' + inspector + ' --web-port=' + listenPort + ' > /dev/null 2>&1&'
   child_process.exec(cmd, function() {

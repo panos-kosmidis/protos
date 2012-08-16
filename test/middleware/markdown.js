@@ -15,12 +15,7 @@ vows.describe('Markdown (middleware)').addBatch({
       var promise = new EventEmitter();
 
       // Enable markdown middleware
-      app.use('markdown', {
-        flags: {
-          insecure: ['noLinks', 'noImage']
-        },
-        sanitize: ['default']
-      });
+      app.use('markdown');
       
       // Markdown tests
       app.curl('-i /markdown', function(err, buf) {
@@ -30,27 +25,21 @@ vows.describe('Markdown (middleware)').addBatch({
       return promise;
     },
     
-    "Markdown::setFlags properly registers discount flag bits": function() {
-      assert.deepEqual(app.markdown.flags, {default: 2113536, insecure: 3});
-    },
-    
     "The '$markdown' view helper is properly registered": function() {
       assert.isFunction(app.views.partials.$markdown);
     },
     
-    "Flag methods are properly registered in markdown instance": function() {
-      assert.isFunction(app.markdown.parseInsecure);
-      assert.equal(app.markdown.parseInsecure('[Google](http://google.com)'), '<p>[Google](http://google.com)</p>');
-    },
-    
     "The '$markdown' view helper can be used within views": function(r) {
+      
+      // Note: if the helper can be used within views, Markdown::parse is already being tested
+      
       assert.isTrue(r.indexOf('HTTP/1.1 200 OK') >= 0);
       
       // The <script> tag should not be present inside <p>
       assert.isTrue(r.indexOf('<p id="sanitized"></p>') >= 0);
       
       // The <script> tag should be present, since it's unsanitized
-      assert.isTrue(r.indexOf('<p id="unsanitized"><script type="text/javascript" src="myscript.js">window.hackme = true;</script>\n</p>') >= 0);
+      assert.isTrue(r.indexOf('<p id="unsanitized"><script type="text/javascript" src="myscript.js">window.hackme = true;</script></p>') >= 0);
     }
     
   }

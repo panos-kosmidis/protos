@@ -45,8 +45,16 @@ var batch = vows.describe('drivers/mongodb.js').addBatch({
       app._getResource('drivers/mongodb', function(driver) {
         mongodb = driver;
         multi = mongodb.multi();
-        driver.client.dropDatabase(function(err) {
-           promise.emit('success', err);
+        
+        mongodb.deleteWhere({
+          collection: config.collection,
+          condition: {}
+        }, function(err, ok) {
+          mongodb.client.dropDatabase(function(err) {
+            mongodb.client.ensureIndex(config.collection, {_id: 1}, function(err) {
+              promise.emit('success', err);
+            });
+          });
         });
       });
       

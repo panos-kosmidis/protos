@@ -138,7 +138,7 @@ var commands = {
       
       var file = process.cwd() + '/' + data.args.pop();
       
-      if (!pathModule.existsSync(file)) console.exit(file);
+      if (!fs.existsSync(file)) console.exit(file);
 
       var defaults = {
         fork: true,
@@ -235,7 +235,7 @@ var commands = {
       if (len <= 1) {
         if (len === 1) {
           var p = data.args.pop();
-          if (pathModule.existsSync(p)) {
+          if (fs.existsSync(p)) {
             process.chdir(p);
           } else {
             console.exit("File not found: " + p);
@@ -284,7 +284,7 @@ var commands = {
           
           var bootFile = app + '/boot.js';
           
-          if (pathModule.existsSync(bootFile)) {
+          if (fs.existsSync(bootFile)) {
             process.env.FAUX = 1;
             var cmd = 'node ' + bootFile;
             cp.exec(cmd, function(err, stdout, stderr) {
@@ -358,7 +358,7 @@ var commands = {
       
       if (validateApp.call(this, data, true)) {
         var conf = (data.config && pathModule.resolve(data.config));
-        if (!conf) conf = (pathModule.existsSync('jshint.json')) ? pathModule.resolve('jshint.json') : Protos.path + '/jshint.json';
+        if (!conf) conf = (fs.existsSync('jshint.json')) ? pathModule.resolve('jshint.json') : Protos.path + '/jshint.json';
         var cmd = util.format('JSHINT_CONFIG="%s" node %s/tools/lint %s', conf, Protos.path, args.join(' '));
         // console.exit(cmd);
         cp.exec(cmd, function(err, stdout, stderr) {
@@ -414,7 +414,7 @@ var commands = {
         view = view.split('/');
         if (view.length === 2) {
           var controller = view[0];
-          if (pathModule.existsSync(util.format("app/views/%s", controller))) {
+          if (fs.existsSync(util.format("app/views/%s", controller))) {
             view.unshift(app);
             view.push(partial || false);
             return view;
@@ -509,7 +509,7 @@ function createApplication(data, libs) {
   // console.exit(cmd);
   
   // Check if path exists
-  if (pathModule.existsSync(path)) {
+  if (fs.existsSync(path)) {
     console.exit(util.format("Can't create %s: path exists", app));
   }
   
@@ -521,7 +521,7 @@ function createApplication(data, libs) {
       // Replace protos directory
       var bootFile = util.format('./%s/boot.js', app),
           boot = fs.readFileSync(bootFile, 'utf-8').toString();
-      var repl, isGlobal = pathModule.existsSync('/usr/local/lib/node/protos');
+      var repl, isGlobal = fs.existsSync('/usr/local/lib/node/protos');
       
       if (isGlobal) {
         // We can use `require('protos')` safely
@@ -699,7 +699,7 @@ module.exports = %s;\n\
   
   var file = util.format('%s/app/models/%s.js', app, name);
   
-  if (pathModule.existsSync(file)) {
+  if (fs.existsSync(file)) {
     console.log(util.format("» Skipping %s: file exists", file));
     return;
   }
@@ -739,7 +739,7 @@ module.exports = %s;\n\
   
   var file = util.format('%s/app/controllers/%s.js', app, name);
 
-  if (pathModule.existsSync(file)) {
+  if (fs.existsSync(file)) {
     console.log("» Skipping %s: file exists", file);
     return;
   }
@@ -758,7 +758,7 @@ function createView(app, controller, view, partial) {
   var tpl, file;
   
   var dir = util.format('%s/app/views/%s', app, controller);
-  if (!pathModule.existsSync(dir)) fs.mkdirSync(dir);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
   
   var hasExt = regex.fileWithExtension.test(view);
 
@@ -785,7 +785,7 @@ function createView(app, controller, view, partial) {
     tpl = '';
   }
   
-  if (pathModule.existsSync(file)) {
+  if (fs.existsSync(file)) {
     console.log(util.format("» Skipping %s: file exists", file));
     return;
   }
@@ -821,7 +821,7 @@ module.exports = %s;\n\
 
   var file = util.format('%s/app/helpers/%s.js', app, name);
 
-  if (pathModule.existsSync(file)) {
+  if (fs.existsSync(file)) {
     console.log("» Skipping %s: file exists", file);
     return;
   }

@@ -5,54 +5,33 @@
   
   Provides markdown support for applications & views.
   
-  The concept of "flag aliases" is introduced, as a mechanism to store a group
-  of discount flags for specific types of content. This allows fine grained parsing
-  of markdown syntax where different requirements are needed.
-  
   The markdown syntax is automatically sanitized, if the flag alias specified has been
   configured to be sanitized. In other words, if it's present in the `sanitize` 
   configuration array.
   
   » References:
-  
-    http://www.pell.portland.or.us/~orc/Code/discount/
-    https://github.com/visionmedia/node-discount
+    https://github.com/chjj/marked
     https://github.com/theSmaw/Caja-HTML-Sanitizer
     http://code.google.com/p/google-caja/source/browse/trunk/src/com/google/caja/plugin/html-sanitizer.js
-
-  » Configuration options:
-
-    {object} flags: containing flag aliases to set
-    {array} sanitize: containing the flag aliases to sanitize
     
-  » View Helpers:
+  » Configuration Options:
   
-    $markdown: Parses a markdown string. Alias of `Markdown::parse`
-    
+    {boolean} gfm: Enable github flavored markdown (enabled by default)
+    {boolean} pedantic: onform to obscure parts of markdown.pl as much as possible
+    {boolean} sanitize: Sanitize the output.
+    {function} highlight: A callback to highlight code blocks.
+
   » Example:
   
-    app.use('markdown', {
-      flags: {
-        content: ['noImage', 'noPants', 'autolink'],
-        comment: ['noHTML', 'noTables', 'strict']
-      },
-      sanitize: ['default', 'comments']
-    });
-    
-  » Usage example (liquor rendering engine):
-  
-    #{$markdown('## This is a **heading** level 2')}
-    
-    #{$markdown('This is comment text', 'comment')}
+    app.use('markdown');
 
+    app.markdown.parse("__Some Markdown__ to be **rendered**");
+    
  */
 
 var app = protos.app,
-    util = require('util'),
-    discount = protos.requireDependency('discount', 'Markdown Middleware', 'markdown'),
-    inflect = require('../lib/support/inflect.js'),
-    sanitizer = require('sanitizer'),
-    isArray = util.isArray;
+    marked = protos.requireDependency('marked', 'Markdown Middleware', 'markdown'),
+    sanitizer = require('sanitizer');
 
 function Markdown(config, middleware) {
   
@@ -61,22 +40,20 @@ function Markdown(config, middleware) {
   
   // Configuration defaults
   config = protos.extend({
-    sanitize: ['default']
+    gfm: true,
+    pedantic: false,
+    sanitize: true,
+    highlight: null,
   }, config);
   
-  // Default Flags
-  this.flags = {
-    default: ['autolink', 'extraFootnote']
-  };
-  
-  // Sanitize
+  // Setup Caja sanitizer
   this.sanitize = config.sanitize;
-  
-  // Parse default flag bits
-  this.setFlags(this.flags);
-  
-  // Config flags
-  if (config.flags && typeof config.flags == 'object') this.setFlags(config.flags);
+
+  // Will use sanitizer module instead
+  config.sanitize = false;
+
+  // Set marked config
+  marked.setOptions(config);
   
   // Define config property
   Object.defineProperty(this, 'config', {
@@ -89,98 +66,33 @@ function Markdown(config, middleware) {
   // Register Markdown view helpers
   registerViewHelpers(this);
   
-  // Add flag partial methods
-  setFlagMethods(this);
+}
+
+/**
+  Filter method that determines if a URL will be accepted by the sanitizer 
+  
+  @param {string} url URI to process
+  @return {string} url The same value of the url argument if passed (otherwise null)
+  @public
+  */
+
+Markdown.prototype.sanitizeURI = function(url) {
+  return url;
 }
 
 /**
   Parse a markdown string
   
   @param {string} str Markdown syntax to parse
-  @param {int|string|array} Discount flags or alias
+  @param {boolean} sanitize Whether or not to sanitize output 
   @return {string} html
   @public
  */
 
-Markdown.prototype.parse = function(str, flag) {
-  var bits; // Flag bits
-  
-  flag = (flag || 'default');
-  
-  if (flag in this.flags) {
-    // Flag alias
-    bits = this.flags[flag]
-  } else if (flag in discount.flags) {
-    // Discount flag
-    bits = discount.flags[flag];
-  } else if (isArray(flag)) {
-    // Array » count flags
-    bits = this.flagCounter(flag);
-  } else if (typeof flag == 'number') {
-    // Number
-    bits = flag;
-  }
-  
-  // See if buffer needs to be sanitized
-  if (this.sanitize.indexOf(flag) >= 0) {
-    str = sanitizer.sanitize(str);
-  }
-  
-  return discount.parse(str, bits);
-}
-
-/**
-  Sets markdown flags to an alias
-  
-  @param {string} alias
-  @param {int|string|array}
- */
-
-Markdown.prototype.setFlags = function(o) {
-  var key, flag;
-  for (key in o) {
-    flag = parseFlag(o[key]);
-    this.flags[key] = flagCounter(flag);
-  }
-}
- 
-/**
-  Counts discount flag bits
-  
-  @param {array} flag List of flags
-  @returns {int} flag bits
-  @private
- */
-
-function flagCounter(flags) {
-  var flag, i, sum=0;
-  for (i=0; i < flags.length; i++) {
-    flag = flags[i];
-    if (flag in discount.flags) {
-      sum += discount.flags[flag];
-    } else {
-      throw new Error(util.format("Not a discount flag: '%s'", flag));
-    }
-  }
-  return sum;
-}
-
-/**
-  Returns a valid flag representation
-  
-  @param {int|string|array} flag  Count, Flag name or Array of flags
-  @return {mixed} flag
-  @private
- */ 
-
-function parseFlag(flag) {
-  if (typeof flag == 'number' || isArray(flag)) {
-    return flag;
-  } else if (typeof flag == 'string') {
-    return [flag];
-  } else {
-    throw new Error("Invalid flag data: " + flag);
-  }
+Markdown.prototype.parse = function(str, sanitize) {
+  var html = marked(str), type = typeof sanitize;
+  if ( (type == 'undefined' && this.sanitize) || (type == 'boolean' && sanitize) ) sanitize = true;
+  return sanitize ? sanitizer.sanitize(html, this.sanitizeURI) : html;
 }
 
 /**
@@ -191,38 +103,8 @@ function parseFlag(flag) {
  */
 
 function registerViewHelpers(markdown) {
-  
   // Expose markdown.parse as `$markdown`
   app.registerViewHelper('$markdown', markdown.parse, markdown);
-  
-}
-
-/**
-  Sets flags methods in middleware instance
-  
-  @param {object} markdown
-  @private
- */
- 
-function setFlagMethods(markdown) {
-  var flag, flags = markdown.flags;
-  for (flag in flags) {
-    if (flag == 'default') continue;
-    (function(flag) {
-      markdown['parse' + inflect.camelize(flag)] = function(str) {
-        return markdown.parse(str, flag);
-      }
-    }).call(this, flag);
-  } 
 }
 
 module.exports = Markdown;
-
-
-
-
-
-
-
-
-

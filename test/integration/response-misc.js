@@ -13,6 +13,16 @@ multi.on('post_exec', app.restoreFilters);
 
 var generalFilter, specificFilter;
 
+app.globals.testval = 99;
+app.globals.anotherVal = 101;
+
+var testval, anotherVal;
+
+app.once('view_locals', function(locals) {
+  testval = locals.testval;
+  anotherVal = locals.anotherVal;
+});
+
 vows.describe('Response Misc').addBatch({
   
   'Sending Headers': {
@@ -82,6 +92,7 @@ vows.describe('Response Misc').addBatch({
     },
     
     'Ignores malformed HTTP requests': function(results) {
+      delete results[2].date; // Remove date from output
       assert.deepEqual(results, [ null, '', { connection: 'close', status: '400 Bad Request', 'transfer-encoding': 'chunked'}, 400 ]);
     }
     
@@ -246,6 +257,8 @@ vows.describe('Response Misc').addBatch({
         data.buffer = '-- ' + data.buffer + ' --';
         return data;
       });
+      
+      // Note: specific_response_buffer is set by doing res.setContext('specific')
 
       app.addFilter('specific_response_buffer', function(data) {
         data.buffer = new Buffer(data.buffer).toString('base64');
@@ -258,6 +271,8 @@ vows.describe('Response Misc').addBatch({
       multi.curl('/response/buffer/specific');
 
       multi.exec(function(err, results) {
+        app.removeFilter('response_buffer');
+        app.removeFilter('specific_response_buffer');
         promise.emit('success', err || results);
       });
 
@@ -279,6 +294,17 @@ vows.describe('Response Misc').addBatch({
       assert.equal(r3, "-- CjxwPldPUkxEPC9wPgo= --");
     }
 
+  }
+  
+}).addBatch({
+  
+  'Application Globals': {
+    
+    "Access app.globals as view locals": function() {
+      assert.strictEqual(testval, app.globals.testval);
+      assert.strictEqual(anotherVal, app.globals.anotherVal);
+    }
+    
   }
   
 }).export(module);

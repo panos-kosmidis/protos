@@ -2,7 +2,6 @@
 var app = require('../fixtures/bootstrap'),
     vows = require('vows'),
     fs = require('fs'),
-    path = require('path'),
     assert = require('assert'),
     EventEmitter = require('events').EventEmitter;
 
@@ -58,9 +57,9 @@ vows.describe('Body Parser (middleware) » FileManager').addBatch({
       
       setTimeout(function() {
         fm.__existChecks = [
-          path.existsSync(files.fileA.path),
-          path.existsSync(files.fileB.path),
-          path.existsSync(files.fileC.path)];
+          fs.existsSync(files.fileA.path),
+          fs.existsSync(files.fileB.path),
+          fs.existsSync(files.fileC.path)];
         results.push(fm);
         
         // Returns false + removes all files when required file not present
@@ -70,9 +69,9 @@ vows.describe('Body Parser (middleware) » FileManager').addBatch({
         
         setTimeout(function() {
           fm.__existChecks = [
-            path.existsSync(files.fileA.path),
-            path.existsSync(files.fileB.path),
-            path.existsSync(files.fileC.path)];
+            fs.existsSync(files.fileA.path),
+            fs.existsSync(files.fileB.path),
+            fs.existsSync(files.fileC.path)];
           results.push(fm);
           
           // Returns false + removes all files when required file empty
@@ -82,9 +81,9 @@ vows.describe('Body Parser (middleware) » FileManager').addBatch({
 
           setTimeout(function() {
             fm.__existChecks = [
-              path.existsSync(files.fileA.path),
-              path.existsSync(files.fileB.path),
-              path.existsSync(files.fileC.path)];
+              fs.existsSync(files.fileA.path),
+              fs.existsSync(files.fileB.path),
+              fs.existsSync(files.fileC.path)];
             results.push(fm);
             
             promise.emit('success', results);
@@ -136,9 +135,9 @@ vows.describe('Body Parser (middleware) » FileManager').addBatch({
       
       setTimeout(function() {
         fm.__existChecks = [
-          path.existsSync(files.fileA.path),
-          path.existsSync(files.fileB.path),
-          path.existsSync(files.fileC.path) ];
+          fs.existsSync(files.fileA.path),
+          fs.existsSync(files.fileB.path),
+          fs.existsSync(files.fileC.path) ];
         promise.emit('success', fm);
       }, t);
       
@@ -164,9 +163,9 @@ vows.describe('Body Parser (middleware) » FileManager').addBatch({
 
       setTimeout(function() {
         fm.__existChecks = [
-          path.existsSync(files.fileA.path),
-          path.existsSync(files.fileB.path),
-          path.existsSync(files.fileC.path) ];
+          fs.existsSync(files.fileA.path),
+          fs.existsSync(files.fileB.path),
+          fs.existsSync(files.fileC.path) ];
         promise.emit('success', fm);
       }, t);
 
