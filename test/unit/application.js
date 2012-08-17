@@ -84,6 +84,12 @@ vows.describe('lib/application.js').addBatch({
       assert.equal(partials.layout_dir_partial.engine, 'Kernel');
       assert.isFunction(partials.main_subdir_partial);
       assert.equal(partials.main_subdir_partial.engine, 'Jade');
+    },
+    
+    'Properly runs application event hooks': function() {
+      // Hooks events set the __loaded property to true
+      assert.isTrue(app.hooks.init.__loaded);
+      assert.isTrue(app.hooks.pre_init.__loaded);
     }
     
   }
