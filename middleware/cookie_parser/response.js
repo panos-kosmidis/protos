@@ -28,17 +28,17 @@ OutgoingMessage.prototype.setCookie = function(name, val, opts) {
   if (opts.domain == 'localhost') opts.domain = null;
   if (opts.path == null) opts.path = '/';
 
-  opts.expires = (typeof opts.expires == 'number')
+  opts.expires = (typeof opts.expires == 'number' && opts.expires)
   ? new Date(Date.now() + (opts.expires*1000))
   : null;
-
+  
   if (opts.domain != null) pairs.push("domain=" + opts.domain);
   pairs.push("path=" + opts.path);
   if (opts.expires != null) pairs.push("expires=" + (opts.expires.toUTCString()));
   if (opts.httpOnly != null) pairs.push('httpOnly');
   if (opts.secure != null) pairs.push('secure');
   if (!removeCookie) request.cookies[name.toLowerCase()] = val;
-
+  
   return this.__setCookie.push(pairs.join('; '));
 }
 
