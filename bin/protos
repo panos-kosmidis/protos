@@ -356,7 +356,10 @@ var commands = {
         return pathModule.resolve(item);
       });
       
-      if (validateApp.call(this, data, true)) {
+      var cwd = process.cwd();
+      
+      var lintCallback = function(isApp) {
+        if (args.length === 0) args.push(process.cwd());
         var conf = (data.config && pathModule.resolve(data.config));
         if (!conf) conf = (fs.existsSync('jshint.json')) ? pathModule.resolve('jshint.json') : Protos.path + '/jshint.json';
         var cmd = util.format('JSHINT_CONFIG="%s" node %s/tools/lint %s', conf, Protos.path, args.join(' '));
@@ -366,6 +369,15 @@ var commands = {
           else console.log(stdout);
         });
       }
+      
+      if (validateApp.call(this, data, true)) {
+        lintCallback();
+      } else {
+        process.chdir(cwd);
+        lintCallback();
+        
+      }
+      
     }
   },
   
@@ -874,7 +886,7 @@ function listFiles(path, regex) {
 }
 
 
-function validateApp(data, noexit) {
+function validateApp(data, noexit, callback) {
   var inApp = listFiles(process.cwd()).indexOf('boot.js') >= 0;
   if (!inApp) {
     process.chdir('../');
@@ -891,7 +903,7 @@ function validateApp(data, noexit) {
         return false;
       }
     } else {
-      return validateApp.call(this, data);
+      return validateApp.apply(this, arguments);
     }
   } else {
     return true;
