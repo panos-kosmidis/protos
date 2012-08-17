@@ -43,8 +43,6 @@ vows.describe('View Rendering').addBatch({
     'Returns valid paths for @layout views': function(res) {
       assert.strictEqual(res.getViewPath('@header'), vPath('__layout/header.mustache'));
       assert.strictEqual(res.getViewPath('@header.html'), vPath('__layout/header.html'));
-      assert.strictEqual(res.getViewPath('@dir/view'), vPath('__layout/dir/view.mustache'));
-      assert.strictEqual(res.getViewPath('@dir/view.html'), vPath('__layout/dir/view.html'));
     },
 
     'Returns valid paths for #restricted views': function(res) {

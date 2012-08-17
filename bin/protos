@@ -775,10 +775,14 @@ function createView(app, controller, view, partial) {
   var hasExt = regex.fileWithExtension.test(view);
 
   if (hasExt) {
-    file = util.format('%s/%s', dir, view);
+    if (partial) {
+      file = util.format('%s/partials/%s', dir, view);
+    } else {
+      file = util.format('%s/%s', dir, view);
+    }
   } else {
     if (partial) {
-      file = util.format('%s/_%s.', dir, view);
+      file = util.format('%s/partials/%s.', dir, view);
     } else {
       file = util.format('%s/%s-%s.', dir, controller, view);
     }
@@ -787,7 +791,7 @@ function createView(app, controller, view, partial) {
   
   // Replace static file prefix
   file = file.replace('__static-', '');
-  
+
   if (controller == 'main' && this.mustache == true) {
     tpl = "\n<p>Welcome to {{protos.className}}</p>\n";
     fs.unlinkSync(app + '/app/views/main/main-index.html');
@@ -800,6 +804,11 @@ function createView(app, controller, view, partial) {
   if (fs.existsSync(file)) {
     console.log(util.format("» Skipping %s: file exists", file));
     return;
+  }
+
+  if (partial) {
+    var partialsPath = pathModule.dirname(file);
+    if (!fs.existsSync(partialsPath)) fs.mkdirSync(partialsPath);
   }
   
   fs.writeFileSync(file, tpl, 'utf-8');

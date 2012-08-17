@@ -76,18 +76,7 @@ vows.describe('lib/application.js').addBatch({
       assert.equal(protos.hello, 101);
     },
     
-    'Properly registers view partials': function() {
-      var partials = app.views.partials;
-      assert.isFunction(partials.layout_partial);
-      assert.equal(partials.layout_partial.engine, 'EJS');
-      assert.isFunction(partials.layout_dir_partial);
-      assert.equal(partials.layout_dir_partial.engine, 'Kernel');
-      assert.isFunction(partials.main_subdir_partial);
-      assert.equal(partials.main_subdir_partial.engine, 'Jade');
-    },
-    
     'Properly runs application event hooks': function() {
-      // Hooks events set the __loaded property to true
       assert.isTrue(app.hooks.init.__loaded);
       assert.isTrue(app.hooks.pre_init.__loaded);
     }

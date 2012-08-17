@@ -66,7 +66,7 @@ function createReplScript() {
   src += '\n';
 
   fs.writeFileSync(outFile, src, 'utf8');
-  fs.chmodSync(outFile, parseInt('0755', 8)); // pass jshint
+  fs.chmodSync(outFile, parseInt('0755', 8));
 }
 
 function getActiveConnections() {
