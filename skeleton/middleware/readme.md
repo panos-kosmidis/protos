@@ -1,4 +1,4 @@
 
 ## Application Middleware
 
-Application-specific middleware goes here.
+Application-specific middleware.
