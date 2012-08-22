@@ -23,6 +23,7 @@ function Kiwi(app) {
   var opts = (app.config.engines && app.config.engines.kiwi) || {};
 
   this.options = protos.extend({
+    strict : false,
     cache : false
   }, opts);
 

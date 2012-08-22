@@ -33,6 +33,11 @@ function JinJS(app) {
   this.multiPart = false;
   this.extensions = ['jin', 'jinjs', 'jin.html'];
   
+  
+  if (this.options.outputUndefinedVariable) {
+    jinjs.outputUndefinedVariable(this.options.outputUndefinedVariable, this.options.outputUndefinedVariableWithBrackets);
+  }
+  
   // Register extensions to be available in require
   this.extensions.forEach(function (val) {
     var extension = path.extname('.' + val);
