@@ -26,6 +26,13 @@ app.libExtensions();
 vows.describe('lib/application.js').addBatch({
 
   'Integrity Checks': {
+    
+    'Sets environment': function() {
+      app.environment = null; // Make sure it can't be overridden
+      assert.isTrue(app.environment !== null);
+      delete app.environment; // Make sure it can't be deleted
+      assert.isTrue(/^(debug|development|travis)$/.test(app.environment));
+    },
 
     'Sets domain': function() {
       assert.equal(app.hostname, 'localhost');
