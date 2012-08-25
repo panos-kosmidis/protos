@@ -62,4 +62,12 @@ Kernel.prototype.compile = function(source, vars, relPath) {
   }
 }
 
+Kernel.prototype.asyncPartial = function(func) {
+ return function(arg, callback) {
+   func(arg, function(buf) {
+     callback(null, buf);
+   });
+ }
+}
+
 module.exports = Kernel;
