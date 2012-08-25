@@ -80,8 +80,7 @@ vows.describe('lib/application.js').addBatch({
     
     'Properly registers partials': function() {
       
-      // Ensure partials are registered correctly
-      assert.deepEqual(Object.keys(app.views.partials), [
+      var expected = [
         'layout_footer',
         'layout_header',
         'layout_widget',
@@ -107,7 +106,15 @@ vows.describe('lib/application.js').addBatch({
         '$kernel_link',
         '$sanitize',
         '$escape',
-        '$safe_str' ]);
+        '$safe_str' ];
+        
+      var partials = Object.keys(app.views.partials);
+        
+      expected.sort();
+      partials.sort();
+      
+      // Ensure partials are registered correctly
+      assert.deepEqual(partials, expected);
       
       // Ensure all partials are functions
       for (var key in app.views.partials) {
