@@ -28,7 +28,7 @@ multi.on('pre_exec', app.backupFilters);
 multi.on('post_exec', app.restoreFilters);
 
 vows.describe('View Rendering').addBatch({
-
+  
   'OutgoingMessage::getViewPath': {
 
     topic: function() {
