@@ -356,7 +356,10 @@ var commands = {
         return pathModule.resolve(item);
       });
       
-      if (validateApp.call(this, data, true)) {
+      var cwd = process.cwd();
+      
+      var lintCallback = function(isApp) {
+        if (args.length === 0) args.push(process.cwd());
         var conf = (data.config && pathModule.resolve(data.config));
         if (!conf) conf = (fs.existsSync('jshint.json')) ? pathModule.resolve('jshint.json') : Protos.path + '/jshint.json';
         var cmd = util.format('JSHINT_CONFIG="%s" node %s/tools/lint %s', conf, Protos.path, args.join(' '));
@@ -366,6 +369,15 @@ var commands = {
           else console.log(stdout);
         });
       }
+      
+      if (validateApp.call(this, data, true)) {
+        lintCallback();
+      } else {
+        process.chdir(cwd);
+        lintCallback();
+        
+      }
+      
     }
   },
   
@@ -763,10 +775,14 @@ function createView(app, controller, view, partial) {
   var hasExt = regex.fileWithExtension.test(view);
 
   if (hasExt) {
-    file = util.format('%s/%s', dir, view);
+    if (partial) {
+      file = util.format('%s/partials/%s', dir, view);
+    } else {
+      file = util.format('%s/%s', dir, view);
+    }
   } else {
     if (partial) {
-      file = util.format('%s/_%s.', dir, view);
+      file = util.format('%s/partials/%s.', dir, view);
     } else {
       file = util.format('%s/%s-%s.', dir, controller, view);
     }
@@ -775,7 +791,7 @@ function createView(app, controller, view, partial) {
   
   // Replace static file prefix
   file = file.replace('__static-', '');
-  
+
   if (controller == 'main' && this.mustache == true) {
     tpl = "\n<p>Welcome to {{protos.className}}</p>\n";
     fs.unlinkSync(app + '/app/views/main/main-index.html');
@@ -788,6 +804,11 @@ function createView(app, controller, view, partial) {
   if (fs.existsSync(file)) {
     console.log(util.format("» Skipping %s: file exists", file));
     return;
+  }
+
+  if (partial) {
+    var partialsPath = pathModule.dirname(file);
+    if (!fs.existsSync(partialsPath)) fs.mkdirSync(partialsPath);
   }
   
   fs.writeFileSync(file, tpl, 'utf-8');
@@ -874,7 +895,7 @@ function listFiles(path, regex) {
 }
 
 
-function validateApp(data, noexit) {
+function validateApp(data, noexit, callback) {
   var inApp = listFiles(process.cwd()).indexOf('boot.js') >= 0;
   if (!inApp) {
     process.chdir('../');
@@ -891,7 +912,7 @@ function validateApp(data, noexit) {
         return false;
       }
     } else {
-      return validateApp.call(this, data);
+      return validateApp.apply(this, arguments);
     }
   } else {
     return true;

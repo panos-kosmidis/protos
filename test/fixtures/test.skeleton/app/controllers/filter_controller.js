@@ -2,7 +2,7 @@
 function FilterController() {
   
   // Filter #1: block bad-route-1
-  this.authFilter(function(req, res, promise) {
+  this.filter(function(req, res, promise) {
     if (req.url == '/filter/bad-route-1') {
       res.sendHeaders();
       res.end('{BAD ROUTE 1}');
@@ -10,7 +10,7 @@ function FilterController() {
   });
   
   // Filter #2: block bad-route-2
-  this.authFilter(function(req, res, promise) {
+  this.filter(function(req, res, promise) {
     if (req.url == '/filter/bad-route-2') {
       res.sendHeaders();
       res.end('{BAD ROUTE 2}');

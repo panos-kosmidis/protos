@@ -99,7 +99,7 @@ Session.prototype.create = function(req, res, data, persistent, callback) {
     // Is the session persistent ? If yes, timeout should be permanentExpires
     // Otherwise, timeout should be temporaryExpires (browser session)
     expires = (persistent ? this.config.permanentExpires : this.config.temporaryExpires);
-
+    
     data = _.extend(data, {
       fpr: hashes.fingerprint,
       ua_md5: userAgentMd5,
@@ -120,7 +120,7 @@ Session.prototype.create = function(req, res, data, persistent, callback) {
 
       // Expires has been calculated a few lines back
       res.setCookie(self.config.sessCookie, hashes.sessId, {
-        expires: expires
+        expires: persistent ? expires : null
       });
 
       if (guest) {
@@ -310,7 +310,7 @@ Request Headers: \n%s\n", req.socket.remoteAddress, sessId, sessHash, req.method
                   app.serverError(res, err);
                 } else {
                   res.setCookie(self.config.sessCookie, newSess, {
-                    expires: expires
+                    expires: data.pers ? expires : null
                   });
                   res.setCookie(self.config.hashCookie, newHash, {
                     expires: self.config.regenInterval

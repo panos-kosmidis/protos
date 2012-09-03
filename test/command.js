@@ -286,20 +286,20 @@ Created myapp1/app/views/blog/blog-m2.eco.html\n» Created myapp1/app/views/admi
 
       "Properly generates view partials": function(results) {
         var r1 = results[0];
-        var expected =  '» Created myapp1/app/views/blog/_post.html\n» Created myapp1/app/views/admin/_widget.html';
+        var expected =  '» Created myapp1/app/views/blog/partials/post.html\n» Created myapp1/app/views/admin/partials/widget.html';
 
         assert.equal(r1, expected);
-        assert.isTrue(fs.existsSync('app/views/blog/_post.html'));
-        assert.isTrue(fs.existsSync('app/views/admin/_widget.html'));
+        assert.isTrue(fs.existsSync('app/views/blog/partials/post.html'));
+        assert.isTrue(fs.existsSync('app/views/admin/partials/widget.html'));
       },
 
       "Uses custom extensions when using --ext": function(results) {
         var r2 = results[1];
-        var expected =  '» Created myapp1/app/views/blog/_post.coffee\n» Created myapp1/app/views/admin/_widget.coffee';
+        var expected =  '» Created myapp1/app/views/blog/partials/post.coffee\n» Created myapp1/app/views/admin/partials/widget.coffee';
 
         assert.equal(r2, expected);
-        assert.isTrue(fs.existsSync('app/views/blog/_post.coffee'));
-        assert.isTrue(fs.existsSync('app/views/admin/_widget.coffee'));
+        assert.isTrue(fs.existsSync('app/views/blog/partials/post.coffee'));
+        assert.isTrue(fs.existsSync('app/views/admin/partials/widget.coffee'));
       }
 
     }

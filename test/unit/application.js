@@ -26,6 +26,13 @@ app.libExtensions();
 vows.describe('lib/application.js').addBatch({
 
   'Integrity Checks': {
+    
+    'Sets environment': function() {
+      app.environment = null; // Make sure it can't be overridden
+      assert.isTrue(app.environment !== null);
+      delete app.environment; // Make sure it can't be deleted
+      assert.isTrue(/^(debug|development|travis)$/.test(app.environment));
+    },
 
     'Sets domain': function() {
       assert.equal(app.hostname, 'localhost');
@@ -71,19 +78,59 @@ vows.describe('lib/application.js').addBatch({
       assert.deepEqual(app.mainHelper.constructor, app.helpers.main.constructor);
     },
     
-    "Properly loads extensions in lib/": function() {
+    'Properly registers partials': function() {
+      
+      var expected = [
+        'layout_footer',
+        'layout_header',
+        'layout_widget',
+        'layout_mydir_mywidget',
+        'main_coffeekup',
+        'main_dot',
+        'main_eco',
+        'main_ejs',
+        'main_haml',
+        'main_hamlcoffee',
+        'main_handlebars',
+        'main_hogan',
+        'main_jade',
+        'main_jazz',
+        'main_jqtpl',
+        'main_jshtml',
+        'main_kernel',
+        'main_liquor',
+        'main_swig',
+        'main_whiskers',
+        '$link',
+        '$jazz_link',
+        '$kernel_link',
+        '$sanitize',
+        '$escape',
+        '$safe_str' ];
+        
+      var partials = Object.keys(app.views.partials);
+        
+      expected.sort();
+      partials.sort();
+      
+      // Ensure partials are registered correctly
+      assert.deepEqual(partials, expected);
+      
+      // Ensure all partials are functions
+      for (var key in app.views.partials) {
+        assert.isFunction(app.views.partials[key]);
+      }
+
+    },
+    
+    'Properly loads extensions in lib/': function() {
       assert.equal(app.hello, 99);
       assert.equal(protos.hello, 101);
     },
     
-    'Properly registers view partials': function() {
-      var partials = app.views.partials;
-      assert.isFunction(partials.layout_partial);
-      assert.equal(partials.layout_partial.engine, 'EJS');
-      assert.isFunction(partials.layout_dir_partial);
-      assert.equal(partials.layout_dir_partial.engine, 'Kernel');
-      assert.isFunction(partials.main_subdir_partial);
-      assert.equal(partials.main_subdir_partial.engine, 'Jade');
+    'Properly runs application event hooks': function() {
+      assert.isTrue(app.hooks.init.__loaded);
+      assert.isTrue(app.hooks.pre_init.__loaded);
     }
     
   }
